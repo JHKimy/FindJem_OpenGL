@@ -120,8 +120,7 @@ GLuint cubeVAO2, cubeVBO2;
 void DrawCube(int x, int z);
 
 
-
-
+vector<glm::vec3> vertexTest;
 
 
 
@@ -440,6 +439,7 @@ void InitBuffer()
 
 
 
+Actor* test;
 
 
 void main(int argc, char** argv)
@@ -448,12 +448,10 @@ void main(int argc, char** argv)
 	ReadObj("Cube.obj", vertexCube2);
 
 
-	//Actor test("Cube.obj",
-	//	glm::vec3(0),
-	//	glm::vec3(1),
-	//	glm::vec3(0),
-	//	glm::vec3(1, 0, 0));
 
+
+	// Actor 객체 생성
+	//test = new Actor(vertexTest, glm::vec3(0), glm::vec3(1), glm::vec3(0), glm::vec3(1, 0, 0));
 
 // ===============================================================
 	//--- 윈도우 생성하기
@@ -481,11 +479,28 @@ void main(int argc, char** argv)
 	shaderProgram = make_shaderProgram();
 
 	// 큐브 버퍼 초기화
-	InitBuffer();
-	
+	//InitBuffer();
+
+	// ReadObj("Cube.obj", vertexTest);
+
+	// Actor 객체 생성
+	test = new Actor("Cube.obj", glm::vec3(0), glm::vec3(1), glm::vec3(0), glm::vec3(1, 0, 0));
 
 	// 깊이 테스트 활성화
 	glEnable(GL_DEPTH_TEST);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //=========================
@@ -540,7 +555,7 @@ GLvoid drawScene()
 
 
 
-	//test.Render(shaderProgram);
+	test->Render(shaderProgram);
 
 
 
@@ -565,7 +580,7 @@ GLvoid drawScene()
 
 
 
-	DrawCube(-5, -5);
+	//DrawCube(-5, -5);
 
 
 
