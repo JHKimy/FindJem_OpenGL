@@ -12,6 +12,8 @@ using namespace std;
 #include "Camera.h"
 #include "Light.h"
 #include "Actor.h"
+#include "Bullet.h"
+#include "Character.h"
 
 
 
@@ -139,6 +141,7 @@ GLuint make_shaderProgram()
 
 // 객체
 Actor* test;
+Actor* test2;
 
 
 void main(int argc, char** argv)
@@ -168,7 +171,21 @@ void main(int argc, char** argv)
 	shaderProgram = make_shaderProgram();
 
 	// Actor 객체 생성
-	test = new Actor("Cube.obj", glm::vec3(0), glm::vec3(1), glm::vec3(0), glm::vec3(1, 0, 0));
+	test = new Actor(
+		"Cube.obj", 
+		glm::vec3(0), 
+		glm::vec3(1), 
+		glm::vec3(0), 
+		glm::vec3(1, 0, 0));
+	
+	test2 = new Actor(
+		"Boss.obj",
+		glm::vec3(2.f,0.f,0.f),
+		glm::vec3(.1f),
+		glm::vec3(0),
+		glm::vec3(0, 1, 0));
+
+	cout << "djkflsf" << endl;
 
 	// 깊이 테스트 활성화
 	glEnable(GL_DEPTH_TEST);
@@ -225,7 +242,7 @@ GLvoid drawScene()
 
 
 	test->Render(shaderProgram);
-
+	test2->Render(shaderProgram);
 
 
 	// 조명
