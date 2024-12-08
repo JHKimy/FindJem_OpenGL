@@ -20,6 +20,8 @@ private:
 	float nearClip;			// 가까운 클리핑 거리
 	float farClip;			// 먼 클리핑 거리
 
+	bool isFirstPersonView;  // 현재 시점 상태
+
 public:
 	Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 up,	// 카메라 위치
 		float fov = 45.0f, float aspectRatio = 1.0f,		

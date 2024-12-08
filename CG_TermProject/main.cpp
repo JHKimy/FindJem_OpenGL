@@ -9,6 +9,7 @@ using namespace std;
 
 #include "Camera.h"
 #include "Light.h"
+#include "Actor.h"
 
 
 // 메인 카메라 생성
@@ -20,6 +21,12 @@ Camera mainCamera(
 Light mainLight(
 	glm::vec3(0.0f, 10.0f, 10.0f),		// pos
 	glm::vec3(1.0f, 1.0f, 1.0f));		// color
+
+
+
+
+
+
 
 // fov, 화면 비율, 클립, 렌더링 범위
 // 클래스 기본 초기화
@@ -111,6 +118,12 @@ GLvoid SpecialKeyboard(int key, int x, int y);
 vector<glm::vec3> vertexCube2;
 GLuint cubeVAO2, cubeVBO2;
 void DrawCube(int x, int z);
+
+
+
+
+
+
 
 
 
@@ -435,6 +448,13 @@ void main(int argc, char** argv)
 	ReadObj("Cube.obj", vertexCube2);
 
 
+	//Actor test("Cube.obj",
+	//	glm::vec3(0),
+	//	glm::vec3(1),
+	//	glm::vec3(0),
+	//	glm::vec3(1, 0, 0));
+
+
 // ===============================================================
 	//--- 윈도우 생성하기
 	glutInit(&argc, argv);
@@ -455,11 +475,14 @@ void main(int argc, char** argv)
 // ===============================================================
 
 
+	
+
 	// 셰이더 프로그램 생성
 	shaderProgram = make_shaderProgram();
 
 	// 큐브 버퍼 초기화
 	InitBuffer();
+	
 
 	// 깊이 테스트 활성화
 	glEnable(GL_DEPTH_TEST);
@@ -492,11 +515,19 @@ GLvoid drawScene()
 	// 컬러 버퍼와 깊이 버퍼 초기화
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+//============================================================
+
+
+
+
+
+
+
 	// 셰이더 사용해서 렌더링
 	glUseProgram(shaderProgram);
 
-	// VAO 설정 열기
-	glBindVertexArray(cubeVAO);
+	//// VAO 설정 열기
+	//glBindVertexArray(cubeVAO);
 
 
 
@@ -509,25 +540,25 @@ GLvoid drawScene()
 
 
 
-
+	//test.Render(shaderProgram);
 
 
 
 	//// 카메라와 빛 설정
 	//SetCamera(shaderProgram);
 
-	// 큐브 그리기
-	GLuint cubeObjectColor = glGetUniformLocation(shaderProgram, "objectColor");
-	glUniform3f(cubeObjectColor, 0.0f, 1.0f, 0.0f);
+	//// 큐브 그리기
+	//GLuint cubeObjectColor = glGetUniformLocation(shaderProgram, "objectColor");
+	//glUniform3f(cubeObjectColor, 0.0f, 1.0f, 0.0f);
 
-	// 기본 단위 행렬 (1.0f)
-	glm::mat4 model = glm::mat4(1.0f);
-	// `modelTransform` 유니폼 변수 위치 가져오기
-	GLuint modelLoc = glGetUniformLocation(shaderProgram, "modelTransform");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	//// 기본 단위 행렬 (1.0f)
+	//glm::mat4 model = glm::mat4(1.0f);
+	//// `modelTransform` 유니폼 변수 위치 가져오기
+	//GLuint modelLoc = glGetUniformLocation(shaderProgram, "modelTransform");
+	//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-	
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	//
+	//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 
 

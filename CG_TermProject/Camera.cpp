@@ -52,3 +52,21 @@ void Camera::ApplyCamera(GLuint shaderProgram)
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 }
+
+void Camera::SwitchToFirstPerson(glm::vec3 characterPos, glm::vec3 forwardVector)
+{
+	isFirstPersonView = true;
+	glm::vec3 fpvPos = characterPos + glm::vec3(0.0f, 0.7f, 0.0f);
+	glm::vec3 fpvTarget = fpvPos + forwardVector;
+	UpdatePosition(fpvPos);
+	UpdateTarget(fpvTarget);
+}
+
+void Camera::SwitchToThirdPerson(glm::vec3 characterPos, glm::vec3 forwardVector)
+{
+	isFirstPersonView = false;
+	glm::vec3 tpvPos = characterPos - forwardVector * 5.0f + glm::vec3(0.0f, 3.0f, 0.0f);
+	glm::vec3 tpvTarget = characterPos + glm::vec3(0.0f, 0.7f, 0.0f);
+	UpdatePosition(tpvPos);
+	UpdateTarget(tpvTarget);
+}
