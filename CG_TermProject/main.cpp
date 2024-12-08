@@ -3,6 +3,21 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
+#include <vector>
+using namespace std;
+
+#include "Camera.h"
+
+
+// 메인 카메라 생성
+Camera mainCamera(
+	glm::vec3(10.0f, 10.0f, 10.0f),		// pos
+	glm::vec3(0.0f, 0.0f, 0.0f),		// target
+	glm::vec3(0.0f, 1.0f, 0.0f));		// up
+
+// fov, 화면 비율, 클립, 렌더링 범위
+// 클래스 기본 초기화
 
 
 //uniform vec3 lightPos;	//--- 조명의 위치
@@ -14,13 +29,19 @@
 
 
 
+
+
+
+
+
+
 // 윈도우 사이즈
 GLfloat winWidth{ 700 }, winHeight{ 700 };
 
-// 카메라 정보
-glm::vec3 cameraPos = glm::vec3(10.0f, 10.0f, 10.0f); // 카메라 위치
-glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f); // 카메라가 바라보는 대상
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f); // 카메라의 위쪽 방향
+//// 카메라 정보
+//glm::vec3 cameraPos = glm::vec3(10.0f, 10.0f, 10.0f); // 카메라 위치
+//glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f); // 카메라가 바라보는 대상
+//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f); // 카메라의 위쪽 방향
 
 // 빛 정보
 glm::vec3 lightPos = glm::vec3(0.0f, 10.f, 10.f); // 빛의 위치
@@ -32,23 +53,24 @@ float cameraX{ 10.f }, cameraY{ 40.f }, cameraZ{ 0.f };
 
 
 
-// 카메라 설정
-void SetCamera(GLuint shaderProgram) 
-{
-
-	// 뷰 변환 행렬 계산
-	glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-
-	// 투영 변환 행렬 계산 (원근 투영)
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 700.0f / 700.0f, 0.1f, 100.0f);
-
-	// 셰이더에 전달
-	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
-	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
-	
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-}
+//// 카메라 설정
+//void SetCamera(GLuint shaderProgram) 
+//{
+//
+//	// 뷰 변환 행렬 계산
+//	glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
+//
+//	// 투영 변환 행렬 계산 (원근 투영)
+//	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 700.0f / 700.0f, 0.1f, 100.0f);
+//
+//	// 셰이더에 전달
+//	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
+//	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
+//	
+//	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+//	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+//}
+//
 
 // 빛 설정
 void SetLight(GLuint shaderProgram) {
@@ -77,6 +99,16 @@ GLvoid Mouse(int button, int state, int x, int y);
 GLvoid SpecialKeyboard(int key, int x, int y);
 
 
+
+
+
+// OBJ 담는 컨테이너
+vector<glm::vec3> vertexCube2;
+GLuint cubeVAO2, cubeVBO2;
+void DrawCube(int x, int z);
+
+
+
 GLuint vertexShader;
 GLuint fragmentShader;
 GLuint shaderProgram;
@@ -98,6 +130,90 @@ char* filetobuf(string file)
 
 	return const_cast<char*>(str_buf->c_str());
 }
+
+
+// Obj 파일 읽어오기
+void ReadObj(string file, vector<glm::vec3>& vertexInfo)
+{
+	vector<glm::vec3> vertex;
+	vector<glm::vec3> vNormal;
+
+	vector<glm::ivec3> vFace;
+	vector<glm::ivec3> vnFace;
+
+	ifstream in(file);
+	if (!in) {
+		cout << "OBJ File NO Have" << endl;
+		return;
+	}
+
+	while (in) {
+		string temp;
+		getline(in, temp);
+
+		if (temp[0] == 'v' && temp[1] == ' ') {
+			istringstream slice(temp);
+
+			glm::vec3 vertemp;
+			char tmpword;
+			slice >> tmpword >> vertemp.x >> vertemp.y >> vertemp.z;
+
+			vertex.push_back(vertemp);
+		}
+
+		else if (temp[0] == 'v' && temp[1] == 'n' && temp[2] == ' ') {
+			istringstream slice(temp);
+
+			glm::vec3 vertemp;
+			string tmpword;
+			slice >> tmpword >> vertemp.x >> vertemp.y >> vertemp.z;
+
+			vNormal.push_back(vertemp);
+		}
+
+		else if (temp[0] == 'f' && temp[1] == ' ') {
+			istringstream slice(temp);
+
+			glm::ivec3 vfacetemp;
+			glm::ivec3 vnfacetemp;
+			for (int i = -1; i < 3; ++i) {
+				string word;
+				getline(slice, word, ' ');
+				if (i == -1) continue;                  // f 읽을땐 건너뛴다
+				if (word.find("/") != string::npos) {
+					istringstream slash(word);
+					string slashtmp;
+					getline(slash, slashtmp, '/');
+
+					vfacetemp[i] = atoi(slashtmp.c_str()) - 1;         //f 읽을땐 첫번째값만(v)   //배열인덱스 쓸거라 -1해줌
+
+					getline(slash, slashtmp, '/');
+					getline(slash, slashtmp, '/');
+					vnfacetemp[i] = atoi(slashtmp.c_str()) - 1;
+				}
+				else {
+					vfacetemp[i] = atoi(word.c_str()) - 1;         //f 읽을땐 첫번째값만(v)   //배열인덱스 쓸거라 -1해줌
+				}
+			}
+			vFace.push_back(vfacetemp);
+			vnFace.push_back(vnfacetemp);
+		}
+	}
+
+	for (int i = 0; i < vFace.size(); ++i) {
+		vertexInfo.push_back(vertex[vFace[i].x]);
+		vertexInfo.push_back(vNormal[vnFace[i].x]);
+
+		vertexInfo.push_back(vertex[vFace[i].y]);
+		vertexInfo.push_back(vNormal[vnFace[i].y]);
+
+		vertexInfo.push_back(vertex[vFace[i].z]);
+		vertexInfo.push_back(vNormal[vnFace[i].z]);
+	}
+
+
+}
+
 
 bool make_vertexShaders()
 {
@@ -266,15 +382,41 @@ void InitBuffer()
 // VAO
 	// VAO 활성화 해제
 	glBindVertexArray(0);
+
+
+
+
+
+
+
+
+	// 큐브 버퍼
+	glGenVertexArrays(1, &cubeVAO2);
+	glGenBuffers(1, &cubeVBO2);
+
+
+	glBindVertexArray(cubeVAO2);
+
+	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO2);
+	glBufferData(GL_ARRAY_BUFFER, vertexCube2.size() * sizeof(glm::vec3), &vertexCube2[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);      // 버텍스 속성 배열을 사용하도록 한다.(0번 배열 활성화)
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(1);
+
+
+
+
+
 }
 
-void DrawTest()
-{
-	// 큐브 버텍스 버퍼
-	glBindVertexArray(cubeVAO);
-
-
-}
+//void DrawTest()
+//{
+//	// 큐브 버텍스 버퍼
+//	glBindVertexArray(cubeVAO);
+//
+//
+//}
 
 
 
@@ -284,6 +426,9 @@ void DrawTest()
 
 void main(int argc, char** argv)
 {
+
+	ReadObj("Cube.obj", vertexCube2);
+
 
 // ===============================================================
 	//--- 윈도우 생성하기
@@ -348,8 +493,29 @@ GLvoid drawScene()
 	// VAO 설정 열기
 	glBindVertexArray(cubeVAO);
 
-	// 카메라와 빛 설정
-	SetCamera(shaderProgram);
+
+
+
+
+
+
+	// 카메라 
+	glm::mat4 view = mainCamera.GetViewMatrix();
+	glm::mat4 projection = mainCamera.GetProjectionMatrix();
+
+	// 셰이더에 전달
+	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
+	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+
+
+
+
+	//// 카메라와 빛 설정
+	//SetCamera(shaderProgram);
 
 	// 큐브 그리기
 	GLuint cubeObjectColor = glGetUniformLocation(shaderProgram, "objectColor");
@@ -364,7 +530,23 @@ GLvoid drawScene()
 	
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
+
+
+
+
+
+	DrawCube(-5, -5);
+
+
+
+
 	SetLight(shaderProgram);
+
+
+
+
+
+
 
 
 	// 전면 버퍼와 후면 버퍼 스왑
@@ -408,4 +590,36 @@ GLvoid Mouse(int button, int state, int x, int y)
 GLvoid SpecialKeyboard(int key, int x, int y)
 {
 	return GLvoid();
+}
+
+
+
+
+
+void DrawCube(int x, int z)
+{
+	glBindVertexArray(cubeVAO2);
+
+	GLuint Color = glGetUniformLocation(shaderProgram, "objectColor");
+	glUniform3f(Color, 0.7, 0.7, 0.7);
+
+
+	// 모델링 변환
+	glm::mat4 translate = glm::mat4(1.0f);	// 이동 행렬
+	glm::mat4 scale = glm::mat4(0.1f);		// 사이즈
+	glm::mat4 rotate = glm::mat4(0.1f);		// 회전
+
+	glm::mat4 TRANS = glm::mat4(1.0f);		// 합성 변환 행렬
+
+	translate = glm::translate(translate, glm::vec3(x, 0.f, z));
+	scale = glm::scale(scale, glm::vec3(1.f, 1.7f, 1.f));
+	//rotate = glm::rotate(rotate, glm::radians(-rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	TRANS = translate * scale;
+
+	unsigned int modelLocation = glGetUniformLocation(shaderProgram, "modelTransform");
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(TRANS));
+
+	glDrawArrays(GL_TRIANGLES, 0, vertexCube2.size() * 3);
+
 }

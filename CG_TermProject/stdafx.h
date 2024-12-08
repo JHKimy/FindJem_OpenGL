@@ -5,9 +5,5 @@
 #include "OpenGL/glm/ext.hpp"
 #include "OpenGL/glm/gtc/matrix_transform.hpp"
 
-#include <vector>
-using namespace std;
-
-
 #pragma comment(lib, "glew32.lib")
 #pragma comment(lib, "freeglut.lib")
