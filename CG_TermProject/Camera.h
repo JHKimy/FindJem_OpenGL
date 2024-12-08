@@ -32,6 +32,14 @@ public:
 	void UpdatePosition(glm::vec3 newPos); // 카메라 위치 업데이트
 	void UpdateTarget(glm::vec3 newTarget); // 카메라 타겟 업데이트
 	void SetAspectRatio(float ratio);      // 화면 비율 설정
+	glm::vec3 GetPosition() const;			// 카메라 위치 가져오기
+
+	void ApplyCamera(GLuint shaderProgram); // 카메라 설정을 셰이더에 전달
+
+
+	// 시점 전환
+	void SwitchToFirstPerson(glm::vec3 characterPos, glm::vec3 forwardVector);
+	void SwitchToThirdPerson(glm::vec3 characterPos, glm::vec3 forwardVector);
 };
 
 #endif // CAMERA_H

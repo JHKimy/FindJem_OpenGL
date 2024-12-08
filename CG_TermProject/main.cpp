@@ -8,6 +8,7 @@
 using namespace std;
 
 #include "Camera.h"
+#include "Light.h"
 
 
 // 메인 카메라 생성
@@ -15,6 +16,10 @@ Camera mainCamera(
 	glm::vec3(10.0f, 10.0f, 10.0f),		// pos
 	glm::vec3(0.0f, 0.0f, 0.0f),		// target
 	glm::vec3(0.0f, 1.0f, 0.0f));		// up
+
+Light mainLight(
+	glm::vec3(0.0f, 10.0f, 10.0f),		// pos
+	glm::vec3(1.0f, 1.0f, 1.0f));		// color
 
 // fov, 화면 비율, 클립, 렌더링 범위
 // 클래스 기본 초기화
@@ -49,7 +54,7 @@ glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f); // 빛의 색상
 
 
 // 카메라 위치
-float cameraX{ 10.f }, cameraY{ 40.f }, cameraZ{ 0.f };
+float cameraX{ 0.f }, cameraY{ 10000.f }, cameraZ{ 100.f };
 
 
 
@@ -499,15 +504,9 @@ GLvoid drawScene()
 
 
 
-	// 카메라 
-	glm::mat4 view = mainCamera.GetViewMatrix();
-	glm::mat4 projection = mainCamera.GetProjectionMatrix();
+	// 카메라 설정
+	mainCamera.ApplyCamera(shaderProgram);
 
-	// 셰이더에 전달
-	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
-	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 
 
@@ -539,8 +538,19 @@ GLvoid drawScene()
 
 
 
+	// 조명
+	glm::vec3 cameraPosition = mainCamera.GetPosition();
+	mainLight.ApplyLighting(shaderProgram, cameraPosition);
+	
+	
+	
+	//// 거울 반사
+	//GLuint viewPosLocation = glGetUniformLocation(shaderProgram, "viewPos"); //--- viewPos 값 전달: 카메라 위치
+	//glUniform3f(viewPosLocation, cameraX, cameraY, cameraZ);
 
-	SetLight(shaderProgram);
+
+
+	//SetLight(shaderProgram);
 
 
 

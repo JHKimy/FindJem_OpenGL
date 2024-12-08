@@ -34,3 +34,21 @@ void Camera::SetAspectRatio(float ratio)
 {
 	aspectRatio = ratio;
 }
+
+glm::vec3 Camera::GetPosition() const
+{
+	return cameraPos;
+}
+
+void Camera::ApplyCamera(GLuint shaderProgram)
+{
+	// 뷰와 투영 행렬 계산
+	glm::mat4 view = GetViewMatrix();
+	glm::mat4 projection = GetProjectionMatrix();
+
+	// 셰이더에 행렬 전달
+	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
+	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+}
