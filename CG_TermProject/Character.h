@@ -13,6 +13,7 @@ private:
     bool isJumping;
     float jumpSpeed;
     float gravity;
+    float mass;
     //std::vector<Bullet*> bullets;
 
 public:

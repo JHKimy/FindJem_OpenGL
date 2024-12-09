@@ -6,10 +6,8 @@
 
 
 
-
 class Camera
 {
-
 private:
     glm::vec3 cameraPos;     // 카메라 위치
     glm::vec3 cameraTarget;  // 카메라가 바라보는 대상
@@ -21,6 +19,8 @@ private:
 	float farClip;			// 먼 클리핑 거리
 
 	bool isFirstPersonView;  // 현재 시점 상태
+
+	glm::vec3 forwardVector{ 0.0f, 0.0f, -1.f };	// 전방 벡터
 
 public:
 	Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 up,	// 카메라 위치

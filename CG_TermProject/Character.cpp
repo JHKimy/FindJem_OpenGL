@@ -12,10 +12,12 @@ Character::Character(
     Actor( objFilePath, position, scale, rotation, color),
     
     moveSpeed(speed), 
-    direction(glm::vec3(0.0f)), 
+    direction(glm::vec3(0.f,0.f,-1.f)), 
     health(health), isJumping(false), 
     jumpSpeed(0.2f), gravity(9.8f) 
-    { }
+{
+    mass = 2.f;
+}
 
 void Character::Move(const glm::vec3& dir) {
     direction = glm::normalize(dir);
@@ -25,18 +27,22 @@ void Character::Move(const glm::vec3& dir) {
 void Character::Jump() {
     if (!isJumping) {
         isJumping = true;
-        jumpSpeed = 0.2f; // 초기 점프 속도
+        jumpSpeed = 5.f; // 초기 점프 속도
+        printf("dfjslf");
     }
 }
 
 void Character::Update(float deltaTime) {
     // 중력 적용
-    if (isJumping) {
+    if (isJumping) 
+    {
         position.y += jumpSpeed * deltaTime;
-        jumpSpeed -= gravity * deltaTime;
+        jumpSpeed -= gravity * mass * deltaTime;
+
+        // 땅에 내려올때
         if (position.y <= 0.0f) {
             position.y = 0.0f;
-            isJumping = false;
+            isJumping = false;   
         }
     }
 

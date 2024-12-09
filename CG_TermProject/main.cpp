@@ -17,6 +17,15 @@ using namespace std;
 
 
 
+bool command_w	{ false };
+bool command_a	{ false };
+bool command_s	{ false };
+bool command_d	{ false };
+bool command_1	{ true };
+bool command_2	{ false };
+
+
+
 // 메인 카메라 생성
 Camera mainCamera(
 	glm::vec3(10.0f, 10.0f, 10.0f),		// pos
@@ -31,6 +40,7 @@ Light mainLight(
 
 // 윈도우 사이즈
 GLfloat winWidth{ 700 }, winHeight{ 700 };
+
 
 
 // 콜백 함수
@@ -141,7 +151,7 @@ GLuint make_shaderProgram()
 
 // 객체
 Actor* test;
-Actor* test2;
+Character* character;
 
 
 void main(int argc, char** argv)
@@ -178,14 +188,16 @@ void main(int argc, char** argv)
 		glm::vec3(0), 
 		glm::vec3(1, 0, 0));
 	
-	test2 = new Actor(
+	character = new Character(
 		"Boss.obj",
 		glm::vec3(2.f,0.f,0.f),
 		glm::vec3(.1f),
 		glm::vec3(0),
-		glm::vec3(0, 1, 0));
+		glm::vec3(0, 1, 0),
+		0.05f,
+		100
+	);
 
-	cout << "djkflsf" << endl;
 
 	// 깊이 테스트 활성화
 	glEnable(GL_DEPTH_TEST);
@@ -238,11 +250,11 @@ GLvoid drawScene()
 
 	// 카메라 설정
 	mainCamera.ApplyCamera(shaderProgram);
-
+	mainCamera.SwitchToFirstPerson(character->GetPosition()+10.f,character->GetDirection());
 
 
 	test->Render(shaderProgram);
-	test2->Render(shaderProgram);
+	character->Render(shaderProgram);
 
 
 	// 조명
@@ -261,12 +273,49 @@ GLvoid drawScene()
 
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
-	return GLvoid();
+	glm::vec3 moveDir(0.0f);
+
+	switch (key)
+	{
+	case 'w': command_w = true; break;		// 앞으로 이동
+	case 's': command_s = true; break;		// 뒤로 이동
+	case 'a': command_a = true; break;		// 왼쪽으로 이동
+	case 'd': command_d = true; break;		// 오른쪽으로 이동
+	case 32:								// 스페이스바 (점프)
+		character->Jump();
+		return;
+
+	case '1':
+		break;
+	}
+
+	// 방향 설정
+	character->SetDirection(moveDir);
+
+	glutPostRedisplay();
 }
 
 GLvoid KeyboardUp(unsigned char key, int x, int y)
 {
-	return GLvoid();
+	switch (key) {
+	case 'w':
+		command_w = false;
+		break;
+	case 's':
+		command_s = false;
+		break;
+	case 'a':
+		command_a = false;
+		break;
+	case 'd':
+		command_d = false;
+		break;
+	case 'q':
+		glutLeaveMainLoop();
+		break;
+	}
+
+	glutPostRedisplay();
 }
 
 GLvoid Motion(int x, int y)
@@ -276,7 +325,40 @@ GLvoid Motion(int x, int y)
 
 GLvoid TimerFunction(int value)
 {
-	return GLvoid();
+	float deltaTime = 0.016f; // 약 60FPS 기준
+
+	// 캐릭터 이동 업데이트
+	glm::vec3 direction = character->GetDirection();
+	if (direction != glm::vec3(0.0f)) 
+	{
+		// test2->Move(direction);
+	}
+
+	if (command_w) {
+		glm::vec3 dir{ 0, 0, 1 };
+		character->Move(dir);
+	}
+
+	if (command_s) {
+		glm::vec3 dir{ 0, 0, -1 };
+		character->Move(dir);
+	}
+
+	if (command_a) {
+		glm::vec3 dir{ 1, 0, 0 };
+		character->Move(dir);
+	}
+
+	if (command_d) {
+		glm::vec3 dir{ -1, 0, 0 };
+		character->Move(dir);
+	}
+	// 캐릭터 상태 업데이트 (중력 등)
+	character->Update(deltaTime);
+
+	// 다음 프레임 요청
+	glutTimerFunc(16, TimerFunction, 1);
+	glutPostRedisplay();
 }
 
 GLvoid PassiveMotion(int x, int y)
