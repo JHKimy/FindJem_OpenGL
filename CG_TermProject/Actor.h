@@ -40,4 +40,3 @@ public:
     glm::vec3 GetScale() const;
     glm::vec3 GetRotation() const;
 };
-

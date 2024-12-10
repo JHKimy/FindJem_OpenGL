@@ -6,11 +6,10 @@ std::unordered_map<CommandKey, bool> Command = {
 	{CommandKey::S,				false},
 	{CommandKey::D,				false},
 	{CommandKey::SpaceBar,		false},
-	{CommandKey::Num1,			true},
+	{CommandKey::Num1,			false},
 	{CommandKey::Num2,			false},
 	{CommandKey::MouseLeftClick,false},
 };
-
 
 void Controller::Update(float deltaTime)
 {
@@ -19,6 +18,12 @@ void Controller::Update(float deltaTime)
 	if (Command[S]) character->Move(glm::vec3(0, 0, -1));
 	if (Command[A]) character->Move(glm::vec3(1, 0, 0));
 	if (Command[D]) character->Move(glm::vec3(-1, 0, 0));
+	if (Command[SpaceBar]) character->Jump();
+	
+	if (Command[Num1])camera->SwitchToFirstPerson
+	(character->GetPosition() + 10.f, character->GetDirection());
+
+	if (Command[Num2])camera->SwitchToTopView(character->GetPosition());
 }
 
 GLvoid Controller::Keyboard(unsigned char key, int x, int y)

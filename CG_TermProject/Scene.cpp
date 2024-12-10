@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Controller.h"
 
 Scene::Scene(GLuint shaderProgram): 
     mainCamera(
@@ -13,10 +14,11 @@ Scene::Scene(GLuint shaderProgram):
 
 void Scene::Initialize()
 {
+
     // Actor 초기화
     actors.push_back(new Actor(
         "Cube.obj",             // filePath
-        glm::vec3(1,1,1),           // Position
+        glm::vec3(1,1,1),       // Position
         glm::vec3(1),           // Scale
         glm::vec3(0),           // Rotation
         glm::vec3(1, 0, 0)));   // Color 
@@ -29,17 +31,28 @@ void Scene::Initialize()
         glm::vec3(0, 1, 0),      // Color 
         0.05f,                   // speed
         100);                    // health
+
 }
 
 void Scene::Update(float deltaTime)
 {
+
     // 플레이어 상태 업데이트
     mainCharacter->Update(deltaTime);
+    
 
 }
 
 void Scene::Render()
 {
+    if (Command[Num1]) {
+        mainCamera.SwitchToFirstPerson(
+            mainCharacter->GetPosition(), mainCharacter->GetDirection());
+    }
+    if (Command[Num2]) {
+        mainCamera.SwitchToTopView(mainCharacter->GetPosition());
+    }
+
     // 카메라 설정
     mainCamera.ApplyCamera(shaderProgram);
 
@@ -61,4 +74,9 @@ void Scene::Shutdown()
 Character* Scene::GetCharacter()
 {
     return mainCharacter;
+}
+
+Camera* Scene::GetCamera()
+{
+    return &mainCamera;
 }

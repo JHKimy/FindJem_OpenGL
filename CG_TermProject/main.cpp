@@ -204,10 +204,13 @@ void main(int argc, char** argv)
 
 
 
+	// 씬 생성
 	mainScene = new Scene(shaderProgram);
 	mainScene->Initialize();
 
-	mainController = new Controller(mainScene);
+	// 컨트롤러 생성
+	mainController = new Controller(mainScene, mainScene->GetCamera());
+
 
 	//// Actor 객체 생성
 	//test = new Actor(
@@ -286,9 +289,9 @@ GLvoid drawScene()
 
 	mainScene->Render();
 
-	//// 카메라 설정
-	//mainCamera.ApplyCamera(shaderProgram);
-	////mainCamera.SwitchToFirstPerson(character->GetPosition()+10.f,character->GetDirection());
+	// 카메라 설정
+	// mainCamera.ApplyCamera(shaderProgram);
+	// mainCamera.SwitchToFirstPerson(character->GetPosition()+10.f,character->GetDirection());
 
 
 	//test->Render(shaderProgram);
@@ -409,8 +412,8 @@ GLvoid TimerFunction(int value)
 	//	controlledPlayer->Jump();
 	//}
 
-	//mainScene->Update(deltaTime);
-
+	mainScene->Update(deltaTime);
+	
 	// 캐릭터 상태 업데이트 (중력 등)
 	//controlledPlayer->Update(deltaTime);
 

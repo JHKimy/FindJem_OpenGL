@@ -56,17 +56,19 @@ void Camera::ApplyCamera(GLuint shaderProgram)
 void Camera::SwitchToFirstPerson(glm::vec3 characterPos, glm::vec3 forwardVector)
 {
 	isFirstPersonView = true;
-	glm::vec3 fpvPos = characterPos + glm::vec3(0.0f, 0.7f, 0.0f);
+	glm::vec3 fpvPos = characterPos + glm::vec3(0.0f, 5.f, 5.0f);
 	glm::vec3 fpvTarget = fpvPos + forwardVector;
 	UpdatePosition(fpvPos);
 	UpdateTarget(fpvTarget);
 }
 
-void Camera::SwitchToThirdPerson(glm::vec3 characterPos, glm::vec3 forwardVector)
+void Camera::SwitchToTopView(glm::vec3 characterPos)
 {
 	isFirstPersonView = false;
-	glm::vec3 tpvPos = characterPos - forwardVector * 5.0f + glm::vec3(0.0f, 3.0f, 0.0f);
-	glm::vec3 tpvTarget = characterPos + glm::vec3(0.0f, 0.7f, 0.0f);
-	UpdatePosition(tpvPos);
-	UpdateTarget(tpvTarget);
+	// 탑뷰의 위치와 타겟 설정
+	glm::vec3 topViewPos = glm::vec3(0.0f, 50.f, 0.0f); // 카메라를 타겟 위로 이동
+	glm::vec3 topViewTarget = characterPos; // 타겟을 중심으로 설정
+
+	UpdatePosition(topViewPos);
+	UpdateTarget(topViewTarget);
 }

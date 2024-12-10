@@ -1,6 +1,7 @@
 #pragma once
 #include "Scene.h"
 #include <unordered_map>
+#include "Camera.h"
 
 enum CommandKey {
 	W, A, S, D,
@@ -19,10 +20,13 @@ class Controller
 {
 private:
 	Scene* scene = nullptr;                // Scene 참조
+	Camera* camera;
 
 public:
 
-	Controller(Scene* scene) :scene(scene) {}
+	// 참조형 변수는 반드시 생성자에서 초기화
+	Controller(Scene* scene, Camera* camera) 
+		:scene(scene), camera(camera) {}
     ~Controller() {}
 
 	// 업데이트 함수

@@ -11,13 +11,13 @@
 class Scene
 {
 private:
-    Camera mainCamera;  // 카메라
-    Light mainLight;    // 조명
+    Camera mainCamera;          // 카메라
+    Light mainLight;            // 조명
     std::vector<Actor*> actors; // 씬에 포함된 Actor 객체들
-    GLuint shaderProgram;   // 셰이더 프로그램 ID
-    Character* mainCharacter;  // 플레이어 캐릭터
-    //Enemy* enemy;   // 적 객체
-    std::vector<Enemy*> enemeys;    // 적 객체들
+    GLuint shaderProgram;       // 셰이더 프로그램 ID
+    Character* mainCharacter;   // 플레이어 캐릭터
+    //Enemy* enemy;             // 적 객체
+    std::vector<Enemy*> enemeys;// 적 객체들
 
     //void InitializeCubeBuffers();             // 버퍼 초기화
     //void InitializeEnemies();               // 적 초기화
@@ -37,5 +37,6 @@ public:
     void Render();       // 렌더링
     void Shutdown();     // 리소스 정리
     Character* GetCharacter();
+    Camera* GetCamera();
 
 };

@@ -28,12 +28,12 @@ public:
 		float nearClip = 0.1f, float farClip = 100.0f);		// 카메라 속성
 
 
-	glm::mat4 GetViewMatrix() const;       // 뷰 행렬 계산
-	glm::mat4 GetProjectionMatrix() const; // 투영 행렬 계산
+	glm::mat4 GetViewMatrix() const;        // 뷰 행렬 계산
+	glm::mat4 GetProjectionMatrix() const;  // 투영 행렬 계산
 
-	void UpdatePosition(glm::vec3 newPos); // 카메라 위치 업데이트
+	void UpdatePosition(glm::vec3 newPos);  // 카메라 위치 업데이트
 	void UpdateTarget(glm::vec3 newTarget); // 카메라 타겟 업데이트
-	void SetAspectRatio(float ratio);      // 화면 비율 설정
+	void SetAspectRatio(float ratio);       // 화면 비율 설정
 	glm::vec3 GetPosition() const;			// 카메라 위치 가져오기
 
 	void ApplyCamera(GLuint shaderProgram); // 카메라 설정을 셰이더에 전달
@@ -41,7 +41,7 @@ public:
 
 	// 시점 전환
 	void SwitchToFirstPerson(glm::vec3 characterPos, glm::vec3 forwardVector);
-	void SwitchToThirdPerson(glm::vec3 characterPos, glm::vec3 forwardVector);
+	void SwitchToTopView(glm::vec3 characterPos);
 };
 
 #endif // CAMERA_H
