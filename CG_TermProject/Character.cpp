@@ -53,8 +53,8 @@ void Character::Update(float deltaTime) {
 }
 
 void Character::Shoot() {
-    //Bullet* bullet = new Bullet(position + glm::vec3(0.0f, 0.7f, 0.0f), direction);
-    //bullets.push_back(bullet);
+    // Bullet* bullet = new Bullet(position + glm::vec3(0.0f, 0.7f, 0.0f), direction);
+    // bullets.push_back(bullet);
 }
 
 void Character::TakeDamage(int amount) {

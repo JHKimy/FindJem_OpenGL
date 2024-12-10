@@ -18,40 +18,31 @@ using namespace std;
 
 
 #include "Scene.h"
+#include "Controller.h"
 
 #include <unordered_map>
 
 
-enum CommandKey {
-	W,	A,	S,	D,
-	SpaceBar,
-	Num1,	Num2,
-	MouseLeftClick
-};
-
-
-std::unordered_map<CommandKey, bool> Command = {
-	{CommandKey::W,				false},
-	{CommandKey::A,				false},
-	{CommandKey::S,				false},
-	{CommandKey::D,				false},
-	{CommandKey::SpaceBar,		false},
-	{CommandKey::Num1,			true},
-	{CommandKey::Num2,			false},
-	{CommandKey::MouseLeftClick,false},
-};
-
-using enum CommandKey;  // CommandKey 멤버를 전역으로 사용 가능
-
-//using std::unordered_map;
+//enum CommandKey {
+//	W,	A,	S,	D,
+//	SpaceBar,
+//	Num1,	Num2,
+//	MouseLeftClick
+//};
 //
 //
-//bool command_w	{ false };
-//bool command_a	{ false };
-//bool command_s	{ false };
-//bool command_d	{ false };
-//bool command_1	{ true };
-//bool command_2	{ false };
+//std::unordered_map<CommandKey, bool> Command = {
+//	{CommandKey::W,				false},
+//	{CommandKey::A,				false},
+//	{CommandKey::S,				false},
+//	{CommandKey::D,				false},
+//	{CommandKey::SpaceBar,		false},
+//	{CommandKey::Num1,			true},
+//	{CommandKey::Num2,			false},
+//	{CommandKey::MouseLeftClick,false},
+//};
+//
+//using enum CommandKey;  // CommandKey 멤버를 전역으로 사용 가능
 
 
 
@@ -74,13 +65,13 @@ GLfloat winWidth{ 700 }, winHeight{ 700 };
 
 // 콜백 함수
 GLvoid drawScene();
-GLvoid Keyboard(unsigned char key, int x, int y);
-GLvoid KeyboardUp(unsigned char key, int x, int y);
+//GLvoid Keyboard(unsigned char key, int x, int y);
+//GLvoid KeyboardUp(unsigned char key, int x, int y);
 GLvoid Motion(int x, int y);
 GLvoid TimerFunction(int value);
 GLvoid PassiveMotion(int x, int y);
-GLvoid Mouse(int button, int state, int x, int y);
-GLvoid SpecialKeyboard(int key, int x, int y);
+//GLvoid Mouse(int button, int state, int x, int y);
+//GLvoid SpecialKeyboard(int key, int x, int y);
 
 // 셰이더
 GLuint vertexShader;
@@ -183,7 +174,7 @@ GLuint make_shaderProgram()
 //Character* character;
 
 Scene* mainScene = nullptr;
-
+Controller* mainController = nullptr;
 
 void main(int argc, char** argv)
 {
@@ -215,6 +206,9 @@ void main(int argc, char** argv)
 
 	mainScene = new Scene(shaderProgram);
 	mainScene->Initialize();
+
+	mainController = new Controller(mainScene);
+
 	//// Actor 객체 생성
 	//test = new Actor(
 	//	"Cube.obj", 
@@ -254,17 +248,21 @@ void main(int argc, char** argv)
 //=========================
 	glutDisplayFunc(drawScene);
 	
-	glutKeyboardFunc(Keyboard);
-	glutKeyboardUpFunc(KeyboardUp);
-	
+	glutKeyboardFunc(Controller::Keyboard);
+	glutKeyboardUpFunc(Controller::KeyboardUp);
+	glutMouseFunc(Controller::Mouse);
+	glutSpecialFunc(Controller::SpecialKeyboard);
+
 	glutTimerFunc(17, TimerFunction, 1);
 	glutMotionFunc(Motion);
 	glutPassiveMotionFunc(PassiveMotion);
-	glutMouseFunc(Mouse);
-	glutSpecialFunc(SpecialKeyboard);
 
 	glutMainLoop();
 //=========================
+
+
+	delete mainScene;
+	delete mainController;
 }
 
 
@@ -311,53 +309,53 @@ GLvoid drawScene()
 
 
 
-GLvoid Keyboard(unsigned char key, int x, int y)
-{
-	//glm::vec3 moveDir(0.0f);
-
-	switch (key)
-	{
-	case 'w': Command[W] = true; break;		// 앞으로 이동
-	case 's': Command[S] = true; break;		// 뒤로 이동
-	case 'a': Command[A] = true; break;		// 왼쪽으로 이동
-	case 'd': Command[D] = true; break;		// 오른쪽으로 이동
-	
-	
-	case 32/*SpaceBar*/ : Command[SpaceBar] = true; break; // 캐릭터 점프	
-		
-		
-
-	case '1': Command[Num1] = true; break;
-	case '2': Command[Num2] = true; break;
-	}
-
-	// 방향 설정
-	// character->SetDirection(moveDir);
-
-	glutPostRedisplay();
-}
-
-GLvoid KeyboardUp(unsigned char key, int x, int y)
-{
-	switch (key) 
-	{
-	case 'w':Command[W] = false; break;
-	case 's':Command[S] = false; break;
-	case 'a':Command[A] = false; break;
-	case 'd':Command[D] = false; break;
-
-	case 32: Command[SpaceBar] = false; return;
-
-	case '1': Command[Num1] = false; break;
-	case '2': Command[Num2] = false; break;
-
-	case 'q':
-		glutLeaveMainLoop();
-		break;
-	}
-
-	glutPostRedisplay();
-}
+//GLvoid Keyboard(unsigned char key, int x, int y)
+//{
+//	//glm::vec3 moveDir(0.0f);
+//
+//	switch (key)
+//	{
+//	case 'w': Command[W] = true; break;		// 앞으로 이동
+//	case 's': Command[S] = true; break;		// 뒤로 이동
+//	case 'a': Command[A] = true; break;		// 왼쪽으로 이동
+//	case 'd': Command[D] = true; break;		// 오른쪽으로 이동
+//	
+//	
+//	case 32/*SpaceBar*/ : Command[SpaceBar] = true; break; // 캐릭터 점프	
+//		
+//		
+//
+//	case '1': Command[Num1] = true; break;
+//	case '2': Command[Num2] = true; break;
+//	}
+//
+//	// 방향 설정
+//	// character->SetDirection(moveDir);
+//
+//	glutPostRedisplay();
+//}
+//
+//GLvoid KeyboardUp(unsigned char key, int x, int y)
+//{
+//	switch (key) 
+//	{
+//	case 'w':Command[W] = false; break;
+//	case 's':Command[S] = false; break;
+//	case 'a':Command[A] = false; break;
+//	case 'd':Command[D] = false; break;
+//
+//	case 32: Command[SpaceBar] = false; return;
+//
+//	case '1': Command[Num1] = false; break;
+//	case '2': Command[Num2] = false; break;
+//
+//	case 'q':
+//		glutLeaveMainLoop();
+//		break;
+//	}
+//
+//	glutPostRedisplay();
+//}
 
 GLvoid Motion(int x, int y)
 {
@@ -368,36 +366,50 @@ GLvoid TimerFunction(int value)
 {
 	float deltaTime = 0.016f; // 약 60FPS 기준
 
-	// 컨트롤 하는 캐릭터
-	Character* controlledPlayer = mainScene->GetCharacter();
 
-	//// 캐릭터 이동 업데이트
-	//glm::vec3 direction = controlledPlayer->GetDirection();
-	//if (direction != glm::vec3(0.0f)) 
-	//{
-	//	// test2->Move(direction);
+
+	mainController->Update(deltaTime);
+
+
+
+
+
+
+	//// 컨트롤 하는 캐릭터
+	//Character* controlledPlayer = mainScene->GetCharacter();
+
+
+
+
+
+
+	////// 캐릭터 이동 업데이트
+	////glm::vec3 direction = controlledPlayer->GetDirection();
+	////if (direction != glm::vec3(0.0f)) 
+	////{
+	////	// test2->Move(direction);
+	////}
+
+	//if (Command[W]) {
+	//	controlledPlayer->Move(glm::vec3 ( 0, 0, 1 ));
 	//}
 
-	if (Command[W]) {
-		controlledPlayer->Move(glm::vec3 ( 0, 0, 1 ));
-	}
+	//if (Command[S]) {
+	//	controlledPlayer->Move(glm::vec3(0, 0, -1));
+	//}
 
-	if (Command[S]) {
-		controlledPlayer->Move(glm::vec3(0, 0, -1));
-	}
+	//if (Command[A]) {
+	//	controlledPlayer->Move(glm::vec3(1, 0, 0));
+	//}
 
-	if (Command[A]) {
-		controlledPlayer->Move(glm::vec3(1, 0, 0));
-	}
+	//if (Command[D]) {
+	//	controlledPlayer->Move(glm::vec3(-1, 0, 0));
+	//}
+	//if (Command[SpaceBar]) {
+	//	controlledPlayer->Jump();
+	//}
 
-	if (Command[D]) {
-		controlledPlayer->Move(glm::vec3(-1, 0, 0));
-	}
-	if (Command[SpaceBar]) {
-		controlledPlayer->Jump();
-	}
-
-	mainScene->Update(deltaTime);
+	//mainScene->Update(deltaTime);
 
 	// 캐릭터 상태 업데이트 (중력 등)
 	//controlledPlayer->Update(deltaTime);
@@ -412,12 +424,12 @@ GLvoid PassiveMotion(int x, int y)
 	return GLvoid();
 }
 
-GLvoid Mouse(int button, int state, int x, int y)
-{
-	return GLvoid();
-}
+//GLvoid Mouse(int button, int state, int x, int y)
+//{
+//	return GLvoid();
+//}
 
-GLvoid SpecialKeyboard(int key, int x, int y)
-{
-	return GLvoid();
-}
+//GLvoid SpecialKeyboard(int key, int x, int y)
+//{
+//	return GLvoid();
+//}

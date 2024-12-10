@@ -1,5 +1,17 @@
 #include "Controller.h"
 
+std::unordered_map<CommandKey, bool> Command = {
+	{CommandKey::W,				false},
+	{CommandKey::A,				false},
+	{CommandKey::S,				false},
+	{CommandKey::D,				false},
+	{CommandKey::SpaceBar,		false},
+	{CommandKey::Num1,			true},
+	{CommandKey::Num2,			false},
+	{CommandKey::MouseLeftClick,false},
+};
+
+
 void Controller::Update(float deltaTime)
 {
 	Character* character = scene->GetCharacter();
