@@ -17,8 +17,16 @@ private:
     //std::vector<Bullet*> bullets;
 
 public:
-    Character(const std::string& objFilePath, const glm::vec3& position, const glm::vec3& scale,
-        const glm::vec3& rotation, const glm::vec3& color, float speed = 1.0f, int health = 100);
+    Character(
+        const std::string& objFilePath,
+        const glm::vec3& position,
+        const glm::vec3& scale,
+        const glm::vec3& rotation, 
+        const glm::vec3& color, 
+        float speed = 1.0f, 
+        int health = 100);
+
+
 
     void Move(const glm::vec3& dir);
     void Jump();

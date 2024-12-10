@@ -17,6 +17,34 @@ using namespace std;
 
 
 
+#include "Scene.h"
+
+#include <unordered_map>
+
+
+enum CommandKey {
+	W,	A,	S,	D,
+	SpaceBar,
+	Num1,	Num2,
+	MouseLeftClick
+};
+
+//using enum CommandKey;  // CommandKey 멤버를 전역으로 사용 가능
+
+std::unordered_map<CommandKey, bool> Command = {
+	{CommandKey::W,				false},
+	{CommandKey::A,				false},
+	{CommandKey::S,				false},
+	{CommandKey::D,				false},
+	{CommandKey::SpaceBar,		false},
+	{CommandKey::Num1,			true},
+	{CommandKey::Num2,			false},
+	{CommandKey::MouseLeftClick,false},
+};
+
+//using std::unordered_map;
+
+
 bool command_w	{ false };
 bool command_a	{ false };
 bool command_s	{ false };
@@ -149,9 +177,11 @@ GLuint make_shaderProgram()
 
 
 
-// 객체
-Actor* test;
-Character* character;
+//// 객체
+//Actor* test;
+//Character* character;
+
+Scene* mainScene = nullptr;
 
 
 void main(int argc, char** argv)
@@ -180,23 +210,27 @@ void main(int argc, char** argv)
 	// 셰이더 프로그램 생성
 	shaderProgram = make_shaderProgram();
 
-	// Actor 객체 생성
-	test = new Actor(
-		"Cube.obj", 
-		glm::vec3(0), 
-		glm::vec3(1), 
-		glm::vec3(0), 
-		glm::vec3(1, 0, 0));
-	
-	character = new Character(
-		"Boss.obj",
-		glm::vec3(2.f,0.f,0.f),
-		glm::vec3(.1f),
-		glm::vec3(0),
-		glm::vec3(0, 1, 0),
-		0.05f,
-		100
-	);
+
+
+	mainScene = new Scene(shaderProgram);
+	mainScene->Initialize();
+	//// Actor 객체 생성
+	//test = new Actor(
+	//	"Cube.obj", 
+	//	glm::vec3(0), 
+	//	glm::vec3(1), 
+	//	glm::vec3(0), 
+	//	glm::vec3(1, 0, 0));
+	//
+	//character = new Character(
+	//	"Boss.obj",
+	//	glm::vec3(2.f,0.f,0.f),
+	//	glm::vec3(.1f),
+	//	glm::vec3(0),
+	//	glm::vec3(0, 1, 0),
+	//	0.05f,
+	//	100
+	//);
 
 
 	// 깊이 테스트 활성화
@@ -248,18 +282,21 @@ GLvoid drawScene()
 	// 셰이더 사용해서 렌더링
 	// glUseProgram(shaderProgram);
 
-	// 카메라 설정
-	mainCamera.ApplyCamera(shaderProgram);
-	mainCamera.SwitchToFirstPerson(character->GetPosition()+10.f,character->GetDirection());
+
+	mainScene->Render();
+
+	//// 카메라 설정
+	//mainCamera.ApplyCamera(shaderProgram);
+	////mainCamera.SwitchToFirstPerson(character->GetPosition()+10.f,character->GetDirection());
 
 
-	test->Render(shaderProgram);
-	character->Render(shaderProgram);
+	//test->Render(shaderProgram);
+	//character->Render(shaderProgram);
 
 
-	// 조명
-	glm::vec3 cameraPosition = mainCamera.GetPosition();
-	mainLight.ApplyLighting(shaderProgram, cameraPosition);
+	//// 조명
+	//glm::vec3 cameraPosition = mainCamera.GetPosition();
+	//mainLight.ApplyLighting(shaderProgram, cameraPosition);
 	
 
 
@@ -273,16 +310,18 @@ GLvoid drawScene()
 
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
-	glm::vec3 moveDir(0.0f);
+	//glm::vec3 moveDir(0.0f);
 
 	switch (key)
 	{
-	case 'w': command_w = true; break;		// 앞으로 이동
+	case 'w': 
+		//Command
+		command_w = true; break;		// 앞으로 이동
 	case 's': command_s = true; break;		// 뒤로 이동
 	case 'a': command_a = true; break;		// 왼쪽으로 이동
 	case 'd': command_d = true; break;		// 오른쪽으로 이동
 	case 32:								// 스페이스바 (점프)
-		character->Jump();
+		mainScene->GetCharacter()->Jump();
 		return;
 
 	case '1':
@@ -290,7 +329,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	}
 
 	// 방향 설정
-	character->SetDirection(moveDir);
+	// character->SetDirection(moveDir);
 
 	glutPostRedisplay();
 }
@@ -327,34 +366,38 @@ GLvoid TimerFunction(int value)
 {
 	float deltaTime = 0.016f; // 약 60FPS 기준
 
-	// 캐릭터 이동 업데이트
-	glm::vec3 direction = character->GetDirection();
-	if (direction != glm::vec3(0.0f)) 
-	{
-		// test2->Move(direction);
-	}
+	// 컨트롤 하는 캐릭터
+	Character* controlledPlayer = mainScene->GetCharacter();
 
+	//// 캐릭터 이동 업데이트
+	//glm::vec3 direction = controlledPlayer->GetDirection();
+	//if (direction != glm::vec3(0.0f)) 
+	//{
+	//	// test2->Move(direction);
+	//}
 	if (command_w) {
-		glm::vec3 dir{ 0, 0, 1 };
-		character->Move(dir);
+		controlledPlayer->Move(glm::vec3 ( 0, 0, 1 ));
 	}
 
 	if (command_s) {
 		glm::vec3 dir{ 0, 0, -1 };
-		character->Move(dir);
+		controlledPlayer->Move(dir);
 	}
 
 	if (command_a) {
 		glm::vec3 dir{ 1, 0, 0 };
-		character->Move(dir);
+		controlledPlayer->Move(dir);
 	}
 
 	if (command_d) {
 		glm::vec3 dir{ -1, 0, 0 };
-		character->Move(dir);
+		controlledPlayer->Move(dir);
 	}
+
+	mainScene->Update(deltaTime);
+
 	// 캐릭터 상태 업데이트 (중력 등)
-	character->Update(deltaTime);
+	//controlledPlayer->Update(deltaTime);
 
 	// 다음 프레임 요청
 	glutTimerFunc(16, TimerFunction, 1);

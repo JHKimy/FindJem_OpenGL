@@ -1,5 +1,4 @@
-#ifndef GAMESCENE_H
-#define GAMESCENE_H
+#pragma once
 
 //#include "stdafx.h"
 #include <vector>
@@ -7,15 +6,19 @@
 #include "Light.h"
 #include "Actor.h"
 #include "Character.h"
+#include "Enemy.h"
 
 class Scene
 {
 private:
-    Camera mainCamera;            // 카메라
-    Light mainLight;              // 조명
-    std::vector<Actor*> actors;   // 씬에 포함된 Actor 객체들
-    Character* player;            // 플레이어 캐릭터
-    GLuint shaderProgram;         // 셰이더 프로그램 ID
+    Camera mainCamera;  // 카메라
+    Light mainLight;    // 조명
+    std::vector<Actor*> actors; // 씬에 포함된 Actor 객체들
+    GLuint shaderProgram;   // 셰이더 프로그램 ID
+    Character* mainCharacter;  // 플레이어 캐릭터
+    //Enemy* enemy;   // 적 객체
+    std::vector<Enemy*> enemeys;    // 적 객체들
+
     //void InitializeCubeBuffers();             // 버퍼 초기화
     //void InitializeEnemies();               // 적 초기화
     //void UpdateEnemies(float deltaTime);    // 적 업데이트
@@ -33,8 +36,6 @@ public:
     void Update(float deltaTime); // 업데이트
     void Render();       // 렌더링
     void Shutdown();     // 리소스 정리
-
+    Character* GetCharacter();
 
 };
-
-#endif
