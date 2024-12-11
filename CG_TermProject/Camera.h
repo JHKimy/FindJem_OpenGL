@@ -40,7 +40,7 @@ public:
 
 
 	// 시점 전환
-	void FirstPersonView(glm::vec3 characterPos);
+	void FirstPersonView(glm::vec3 characterPos,float characterYaw);
 	void TopView();
 };
 

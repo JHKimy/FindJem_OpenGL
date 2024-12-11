@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include"Global.h"
 
 void Actor::InitializeBuffers()
 {
@@ -155,38 +156,50 @@ Actor::~Actor()
 
 void Actor::Render(GLuint shaderProgram)
 {
-    //glUseProgram(shaderProgram);
-
-
 	glBindVertexArray(vao);
 
 
-	// 색상 전달
-	GLuint colorLoc = glGetUniformLocation(shaderProgram, "objectColor");
-	glUniform3f(colorLoc, color.r, color.g, color.b);
-
-    //glBindVertexArray(vao);
 
     // 모델 변환 행렬 계산
     glm::mat4 translate = glm::mat4(1.0f);	// 이동 행렬
-    glm::mat4 size = glm::mat4(0.1f);		// 사이즈
-    //glm::vec3 size = glm::vec3(1.f);
-    glm::mat4 rotate = glm::mat4(0.1f);		// 회전
+    glm::mat4 size = glm::mat4(0.1f);		// 사이즈 행렬
+    glm::mat4 rotate = glm::mat4(0.1f);		// 회전 행렬
 
-    glm::mat4 model = glm::mat4(1.0f);
 
-    translate = glm::translate(model, position);
+
+	// 이동 변환
+    translate = glm::translate(translate, position);
     size = glm::scale(size, scale);
-    //model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	//rotate = glm::rotate(rotate, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // 회전 변환
+    
+	rotate = glm::rotate(rotate, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+
+
+
+	//// forwardVector를 기준으로 캐릭터 회전 행렬 계산
+	//glm::vec3 up(0.0f, 1.0f, 0.0f); // 월드 업 벡터
+	//glm::vec3 right = glm::normalize(glm::cross(up, forwardVector)); // 오른쪽 벡터
+	//glm::vec3 correctedUp = glm::normalize(glm::cross(forwardVector, right)); // 수정된 위쪽 벡터
+
+	//rotate[0] = glm::vec4(right, 0.0f);        // 오른쪽 벡터
+	//rotate[1] = glm::vec4(correctedUp, 0.0f); // 위쪽 벡터
+	//rotate[2] = glm::vec4(forwardVector, 0.0f); // 전방 벡터
+
+
+
+
 
     glm::mat4 TRANS = glm::mat4(1.0f);		// 합성 변환 행렬
+	TRANS = translate * rotate * size;
 
-    TRANS = translate * size;
+
 
     GLuint modelLoc = glGetUniformLocation(shaderProgram, "modelTransform");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(TRANS));
 
-
+	// 색상 전달
+	GLuint colorLoc = glGetUniformLocation(shaderProgram, "objectColor");
+	glUniform3f(colorLoc, color.r, color.g, color.b);
 
     glDrawArrays(GL_TRIANGLES, 0, vertices.size() * 3);
     // glBindVertexArray(0);

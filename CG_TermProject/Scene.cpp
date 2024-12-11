@@ -55,24 +55,13 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
-    //glm::vec3 cameraOffset(0.0f, 5.0f, 10.0f); // 카메라가 캐릭터 뒤에 위치
-    //glm::vec3 characterPosition = mainCharacter->GetPosition();
-    //glm::vec3 characterDirection = mainCharacter->GetDirection();
 
-    if (Command[Num1]) {
-        // mainCamera.SwitchToFirstPerson(
-        // mainCharacter->GetPosition(), mainCharacter->GetDirection());
-        //mainCamera.UpdatePosition(characterPosition + cameraOffset);
-        //mainCamera.UpdateTarget(characterPosition + mainCharacter->GetDirection());
-        mainCamera.FirstPersonView(
-            GetCharacter()->GetPosition()
-            );
-
-    }
-
-    if (Command[Num2]) {
-        mainCamera.TopView();
-    }
+    //if (Command[Num1]) {
+    //    mainCamera.FirstPersonView(GetCharacter()->GetPosition());
+    //}
+    //if (Command[Num2]) {
+    //    mainCamera.TopView();
+    //}
 
     // 카메라 설정
     mainCamera.ApplyCamera(shaderProgram);

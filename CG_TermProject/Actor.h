@@ -7,7 +7,7 @@ using namespace std;
 
 class Actor
 {
-private:
+protected:
     GLuint vao, vbo, ebo;             // OpenGL 버퍼 객체
     vector<glm::vec3> vertices; // 정점 데이터
     glm::vec3 color;                 // 색상

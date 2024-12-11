@@ -1,4 +1,5 @@
 ﻿#include "stdafx.h"
+#include "Global.h"
 
 #include <iostream>
 #include <fstream>
@@ -7,15 +8,11 @@
 #include <vector>
 using namespace std;
 
-
-
 #include "Camera.h"
 #include "Light.h"
 #include "Actor.h"
 #include "Bullet.h"
 #include "Character.h"
-
-
 
 #include "Scene.h"
 #include "Controller.h"
@@ -58,8 +55,7 @@ Light mainLight(
 
 
 
-// 윈도우 사이즈
-GLfloat winWidth{ 700 }, winHeight{ 700 };
+
 
 
 
@@ -212,39 +208,9 @@ void main(int argc, char** argv)
 	mainController = new Controller(mainScene, mainScene->GetCamera());
 
 
-	//// Actor 객체 생성
-	//test = new Actor(
-	//	"Cube.obj", 
-	//	glm::vec3(0), 
-	//	glm::vec3(1), 
-	//	glm::vec3(0), 
-	//	glm::vec3(1, 0, 0));
-	//
-	//character = new Character(
-	//	"Boss.obj",
-	//	glm::vec3(2.f,0.f,0.f),
-	//	glm::vec3(.1f),
-	//	glm::vec3(0),
-	//	glm::vec3(0, 1, 0),
-	//	0.05f,
-	//	100
-	//);
-
 
 	// 깊이 테스트 활성화
 	glEnable(GL_DEPTH_TEST);
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -258,11 +224,10 @@ void main(int argc, char** argv)
 
 	glutTimerFunc(17, TimerFunction, 1);
 	glutMotionFunc(Motion);
-	glutPassiveMotionFunc(PassiveMotion);
+	glutPassiveMotionFunc(Controller::PassiveMotion);
 
 	glutMainLoop();
 //=========================
-
 
 	delete mainScene;
 	delete mainController;
@@ -389,10 +354,31 @@ GLvoid TimerFunction(int value)
 	glutPostRedisplay();
 }
 
-GLvoid PassiveMotion(int x, int y)
-{
-	return GLvoid();
-}
+//GLvoid PassiveMotion(int x, int y)
+//{
+//	float sensitivity = 0.1f;  // 마우스 민감도
+//
+//	// 마우스 이동 변화에 따라 시점을 업데이트
+//	float deltaX = x - winWidth / 2;
+//	float deltaY = y - winHeight / 2;
+//
+//	// 시점 변화에 따라 캐릭터의 전방 방향 업데이트
+//	rotationAngle += sensitivity * deltaX;
+//	if (rotationAngle > 360.0f) rotationAngle -= 360.0f;
+//	if (rotationAngle < 0.0f) rotationAngle += 360.0f;
+//
+//	float pitch = sensitivity * deltaY;
+//	if (pitch > 89.0f) pitch = 89.0f;
+//	if (pitch < -89.0f) pitch = -89.0f;
+//
+//	forwardVector.x = cos(glm::radians(rotationAngle)) * cos(glm::radians(pitch));
+//	forwardVector.y = sin(glm::radians(pitch));
+//	forwardVector.z = sin(glm::radians(rotationAngle)) * cos(glm::radians(pitch));
+//
+//	glutWarpPointer(winWidth / 2, winHeight / 2); // 마우스를 중앙으로 되돌립니다.
+//	glutPostRedisplay();
+//	return GLvoid();
+//}
 
 //GLvoid Mouse(int button, int state, int x, int y)
 //{

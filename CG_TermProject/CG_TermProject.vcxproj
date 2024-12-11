@@ -135,6 +135,7 @@
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FrameWork.cpp" />
+    <ClCompile Include="Global.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="Character.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Global.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="stdafx.h" />

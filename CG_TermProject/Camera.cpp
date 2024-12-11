@@ -53,14 +53,19 @@ void Camera::ApplyCamera(GLuint shaderProgram)
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 }
 
-void Camera::FirstPersonView(glm::vec3 characterPos)
+void Camera::FirstPersonView(glm::vec3 characterPos, float characterYaw)
 {
 	//isFirstPersonView = true;
 	//
 	glm::vec3 cameraOffset(0.0f, 0.0f, 0.0f); // 카메라가 캐릭터 뒤에 위치
-	glm::vec3 lookAt(0.0f, 0.0f, 1.0f); // 카메라가 캐릭터 뒤에 위치
+	
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(characterYaw)); // 좌우 방향
+	direction.y = 0.0f;                            // 상하 방향 없음
+	direction.z = sin(glm::radians(characterYaw)); // 전후 방향
+	
 	cameraPos = characterPos + cameraOffset;
-	cameraTarget = cameraPos + lookAt;
+	cameraTarget = cameraPos + glm::normalize(direction);
 	//UpdatePosition(fpvPos);
 	//UpdateTarget(fpvTarget);
 
