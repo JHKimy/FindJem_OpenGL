@@ -31,3 +31,9 @@ bool Bullet::IsActive() const {
 void Bullet::Deactivate() {
     isActive = false;
 }
+
+bool Bullet::CheckCollision(const glm::vec3& targetPos, float targetRadius)
+{
+    float distance = glm::length(position - targetPos);
+    return distance < targetRadius;
+}

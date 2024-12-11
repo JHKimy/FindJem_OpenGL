@@ -69,6 +69,11 @@ bool Character::IsGameOver() const {
 //    return bullets;
 //}
 
+//glm::vec3 Character::GetPosition()
+//{
+//    return glm::vec3();
+//}
+
 void Character::SetDirection(const glm::vec3& dir) {
     direction = glm::normalize(dir);
 }

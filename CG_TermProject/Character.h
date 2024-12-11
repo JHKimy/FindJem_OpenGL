@@ -37,6 +37,8 @@ public:
 
     //const std::vector<Bullet*>& GetBullets() const;
 
+
+    //glm::vec3 GetPosition();
     void SetDirection(const glm::vec3& dir);
     glm::vec3 GetDirection() const;
 };

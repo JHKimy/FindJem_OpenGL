@@ -20,10 +20,10 @@ void Controller::Update(float deltaTime)
 	if (Command[D]) character->Move(glm::vec3(-1, 0, 0));
 	if (Command[SpaceBar]) character->Jump();
 	
-	if (Command[Num1])camera->SwitchToFirstPerson
-	(character->GetPosition() + 10.f, character->GetDirection());
+	//if (Command[Num1])camera->SwitchToFirstPerson
+	//(character->GetPosition() + 10.f, character->GetDirection());
 
-	if (Command[Num2])camera->SwitchToTopView(character->GetPosition());
+	//if (Command[Num2])camera->SwitchToTopView();
 }
 
 GLvoid Controller::Keyboard(unsigned char key, int x, int y)
@@ -42,8 +42,14 @@ GLvoid Controller::Keyboard(unsigned char key, int x, int y)
 
 
 
-	case '1': Command[Num1] = true; break;
-	case '2': Command[Num2] = true; break;
+	case '1': 
+		Command[Num1] = true; 
+		Command[Num2] = false;
+		break;
+	case '2': 
+		Command[Num2] = true; 
+		Command[Num1] = false;
+		break;
 	}
 
 	// 방향 설정
@@ -63,8 +69,8 @@ GLvoid Controller::KeyboardUp(unsigned char key, int x, int y)
 
 	case 32: Command[SpaceBar] = false; return;
 
-	case '1': Command[Num1] = false; break;
-	case '2': Command[Num2] = false; break;
+	case '1': /*Command[Num1] = false;*/ break;
+	case '2': /*Command[Num2] = false;*/ break;
 
 	case 'q':
 		glutLeaveMainLoop();

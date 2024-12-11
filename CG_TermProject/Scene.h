@@ -19,6 +19,7 @@ private:
     //Enemy* enemy;             // 적 객체
     std::vector<Enemy*> enemeys;// 적 객체들
 
+
     //void InitializeCubeBuffers();             // 버퍼 초기화
     //void InitializeEnemies();               // 적 초기화
     //void UpdateEnemies(float deltaTime);    // 적 업데이트
@@ -29,6 +30,9 @@ private:
     //void DrawBullets();                     // 총알 그리기
 
 
+
+    std::vector<std::vector<int>> mazeMap;    // 0과 1로 구성된 미로 데이터
+
 public:
     // 생성자
     Scene(GLuint shaderProgram);
@@ -38,5 +42,5 @@ public:
     void Shutdown();     // 리소스 정리
     Character* GetCharacter();
     Camera* GetCamera();
-
+    void InitializeMaze();                    // 미로 초기화 및 큐브 생성
 };

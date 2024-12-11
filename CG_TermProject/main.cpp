@@ -372,50 +372,17 @@ GLvoid TimerFunction(int value)
 
 
 	mainController->Update(deltaTime);
+	
+	// 카메라 위치 출력
+	glm::vec3 characterPosition = mainScene->GetCharacter()->GetPosition();
+	cout << "Character Position: ("
+		<< characterPosition.x << ", "
+		<< characterPosition.y << ", "
+		<< characterPosition.z << ")" << endl;
 
 
-
-
-
-
-	//// 컨트롤 하는 캐릭터
-	//Character* controlledPlayer = mainScene->GetCharacter();
-
-
-
-
-
-
-	////// 캐릭터 이동 업데이트
-	////glm::vec3 direction = controlledPlayer->GetDirection();
-	////if (direction != glm::vec3(0.0f)) 
-	////{
-	////	// test2->Move(direction);
-	////}
-
-	//if (Command[W]) {
-	//	controlledPlayer->Move(glm::vec3 ( 0, 0, 1 ));
-	//}
-
-	//if (Command[S]) {
-	//	controlledPlayer->Move(glm::vec3(0, 0, -1));
-	//}
-
-	//if (Command[A]) {
-	//	controlledPlayer->Move(glm::vec3(1, 0, 0));
-	//}
-
-	//if (Command[D]) {
-	//	controlledPlayer->Move(glm::vec3(-1, 0, 0));
-	//}
-	//if (Command[SpaceBar]) {
-	//	controlledPlayer->Jump();
-	//}
 
 	mainScene->Update(deltaTime);
-	
-	// 캐릭터 상태 업데이트 (중력 등)
-	//controlledPlayer->Update(deltaTime);
 
 	// 다음 프레임 요청
 	glutTimerFunc(16, TimerFunction, 1);
