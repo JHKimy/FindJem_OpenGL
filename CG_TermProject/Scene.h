@@ -8,6 +8,8 @@
 #include "Character.h"
 #include "Enemy.h"
 
+using std::vector;
+
 class Scene
 {
 private:
@@ -31,7 +33,9 @@ private:
 
 
 
-    std::vector<std::vector<int>> mazeMap;    // 0과 1로 구성된 미로 데이터
+    vector<vector<int>> mazeMap;    // 0과 1로 구성된 미로 데이터
+    class MazeGenerator* mazeGenerator;
+    void InitializeMaze(); // 미로를 Actor로 변환
 
 public:
     // 생성자
@@ -42,5 +46,5 @@ public:
     void Shutdown();     // 리소스 정리
     Character* GetCharacter();
     Camera* GetCamera();
-    void InitializeMaze();                    // 미로 초기화 및 큐브 생성
+    //void InitializeMaze();                    // 미로 초기화 및 큐브 생성
 };

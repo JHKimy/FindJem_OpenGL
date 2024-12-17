@@ -70,6 +70,9 @@ GLvoid Controller::Keyboard(unsigned char key, int x, int y)
 		glutSetCursor(GLUT_CURSOR_INHERIT);
 
 		break;
+
+	case 27:
+		glutLeaveMainLoop();
 	}
 
 	// 방향 설정

@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "Controller.h"
+#include "MazeGenerator.h"
 
 Scene::Scene(GLuint shaderProgram): 
     mainCamera(
@@ -14,24 +15,29 @@ Scene::Scene(GLuint shaderProgram):
 
 
 {
-    mazeMap =
-    { {1,1,1,1,1,1},
-      {0,0,0,0,0,0},
-      {1,0,1,0,1,0},
-      {0,1,0,1,0,1}
-    };
+    // MazeGenerator 초기화
+    mazeGenerator = new MazeGenerator(21, 21); // 21x21 크기의 미로 생성
 }
 
 void Scene::Initialize()
 {
+    // MazeGenerator를 통해 미로 생성
+    mazeGenerator->GeneratePrimMaze();
+    mazeGenerator->addEntrances();
+    mazeMap = mazeGenerator->GetMaze();
+
     InitializeMaze();
+
+
+
+
     // Actor 초기화
-    actors.push_back(new Actor(
-        "Cube.obj",             // filePath
-        glm::vec3(1,1,1),       // Position
-        glm::vec3(1),           // Scale
-        glm::vec3(0),           // Rotation
-        glm::vec3(1, 0, 0)));   // Color 
+    //actors.push_back(new Actor(
+    //    "Cube.obj",             // filePath
+    //    glm::vec3(1,1,1),       // Position
+    //    glm::vec3(1),           // Scale
+    //    glm::vec3(0),           // Rotation
+    //    glm::vec3(1, 0, 0)));   // Color 
     
     mainCharacter = new Character(
         "Boss.obj",              // filePath
@@ -81,6 +87,14 @@ void Scene::Render()
 
 void Scene::Shutdown()
 {
+    for (Actor* actor : actors)
+    {
+        delete actor;
+    }
+    actors.clear();
+
+    delete mazeGenerator;
+    delete mainCharacter;
 }
 
 Character* Scene::GetCharacter()
@@ -95,7 +109,8 @@ Camera* Scene::GetCamera()
 
 void Scene::InitializeMaze()
 {
-    glm::vec3 blockSize(1.f, 1.f, 1.f);
+    // 미로의 블럭 1개 크기
+    glm::vec3 blockSize(2.f, 2.f, 2.f);
 
     for (int y{}; y < mazeMap.size(); ++y) {
         for (int x{}; x < mazeMap[y].size(); ++x) {

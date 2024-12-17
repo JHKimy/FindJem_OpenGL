@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Global.h"
 
 Camera::Camera(
 	glm::vec3 pos, glm::vec3 target, glm::vec3 up, 
@@ -57,13 +58,20 @@ void Camera::FirstPersonView(glm::vec3 characterPos, float characterYaw)
 {
 	//isFirstPersonView = true;
 	//
-	glm::vec3 cameraOffset(0.0f, 0.0f, 0.0f); // 카메라가 캐릭터 뒤에 위치
+	
+
 	
 	glm::vec3 direction;
 	direction.x = cos(glm::radians(characterYaw)); // 좌우 방향
 	direction.y = 0.0f;                            // 상하 방향 없음
 	direction.z = sin(glm::radians(characterYaw)); // 전후 방향
 	
+	// 카메라가 캐릭터 앞에 위치
+	glm::vec3 cameraOffset(
+		direction.x,
+		direction.y + 1.2f,
+		direction.z);
+
 	cameraPos = characterPos + cameraOffset;
 	cameraTarget = cameraPos + glm::normalize(direction);
 	//UpdatePosition(fpvPos);
@@ -76,7 +84,7 @@ void Camera::TopView()
 	//isFirstPersonView = false;
 	// 탑뷰의 위치와 타겟 설정
 	cameraPos = glm::vec3(0.0f, 50.f, 0.0f); // 카메라를 타겟 위로 이동
-	cameraTarget = glm::vec3(11.0f, 0.f, 0.0f); // 타겟을 중심으로 설정
+	cameraTarget = glm::vec3(0.1f, 0.f, 00.f); // 타겟을 중심으로 설정
 	//UpdatePosition(topViewPos);
 	//UpdateTarget(topViewTarget);
 }
