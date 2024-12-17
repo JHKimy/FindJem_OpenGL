@@ -186,7 +186,7 @@ void main(int argc, char** argv)
 	glewInit();
 
 	// 은면 제거
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	//glShadeModel(GL_SMOOTH);
 	//glEnable(GL_DITHER);        // 표면을 매끄럽게
 

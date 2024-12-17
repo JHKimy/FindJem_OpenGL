@@ -21,61 +21,47 @@ void Controller::Update(float deltaTime)
 {
 	character = scene->GetCharacter();
 
-	// 이전 위치 저장 (충돌 처리)
+	// 이전 위치 저장 (충돌 감지용)
 	glm::vec3 prevCharacterPosition = character->GetPosition();
 
+	// 이동 방향 계산
+	glm::vec3 moveDirection(0.0f);
 
-	// 회전
-	character->Rotate(forwardVector);
+	if (Command[W]) moveDirection += forwardVector;
+	if (Command[S]) moveDirection -= forwardVector;
+	if (Command[A]) moveDirection -= glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f));
+	if (Command[D]) moveDirection += glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f));
 
-
+	// 이동 수행 (임시로 이동)
+	if (glm::length(moveDirection) > 0.0f) {
+		moveDirection = glm::normalize(moveDirection);
+		character->Move(moveDirection * character->GetMoveSpeed());
+	}
 
 	// 충돌 감지
 	bool collisionDetected = false;
 	for (Actor* otherActor : scene->GetActors()) {
-		if (character != otherActor && 
-			character->CheckCollision(otherActor))	
-		{
+		if (character != otherActor && character->CheckCollision(otherActor)) {
 			collisionDetected = true;
-			//std::cout << "Collision with Actor ID: " << otherActor->GetPosition().x << std::endl;
 			break;
 		}
 	}
 
-
-	//prevCharacterPosition = character->GetPosition();
-
-	//if (!collisionDetected)
-	//{
-		if (Command[W]) character->Move(forwardVector);
-		if (Command[S]) character->Move(-forwardVector);
-		if (Command[A]) character->Move(-glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
-		if (Command[D]) character->Move(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
-		if (Command[SpaceBar]) character->Jump();
-	//}
-
-	else if (collisionDetected) {
-		character->SetPosition(prevCharacterPosition - (forwardVector)*0.005f);
+	// 충돌이 감지되면 위치를 이전 위치로 되돌림
+	if (collisionDetected) {
+		character->SetPosition(prevCharacterPosition);
 	}
 
-	prevCharacterPosition = character->GetPosition();
+	// 점프 처리
+	if (Command[SpaceBar]) character->Jump();
 
-
-	// 1인칭 시점
-	if (Command[Num1])
-	{
-		camera->FirstPersonView(
-			character->GetPosition(),
-			rotateY);
+	// 카메라 설정
+	if (Command[Num1]) {
+		camera->FirstPersonView(character->GetPosition(), rotateY);
 	}
-	// 탑 뷰 시점
-	if (Command[Num2]) {
-
+	else if (Command[Num2]) {
 		camera->TopView();
 	}
-
-
-
 }
 
 GLvoid Controller::Keyboard(unsigned char key, int x, int y)

@@ -142,7 +142,7 @@ Actor::Actor(
 	InitializeBuffers();
 
 
-	boundingRadius = 1.f;
+	boundingRadius = 1.5f;
 }
 
 Actor::~Actor()

@@ -18,14 +18,12 @@ private:
 	float nearClip;			// 가까운 클리핑 거리
 	float farClip;			// 먼 클리핑 거리
 
-	//bool isFirstPersonView;  // 현재 시점 상태
+	bool isFirstPersonView;  // 현재 시점 상태
 
 	glm::vec3 forwardVector{ 0.0f, 0.0f, -1.f };	// 전방 벡터
 
 public:
-	Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 up,	// 카메라 위치
-		float fov = 45.0f, float aspectRatio = 1.0f,		
-		float nearClip = 0.1f, float farClip = 100.0f);		// 카메라 속성
+	Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 up);	// 카메라 위치		// 카메라 속성
 
 
 	// glm::mat4 GetViewMatrix() const;        // 뷰 행렬 계산

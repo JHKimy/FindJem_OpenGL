@@ -16,7 +16,7 @@ Scene::Scene(GLuint shaderProgram):
 
 {
     // MazeGenerator 초기화
-    mazeGenerator = new MazeGenerator(21, 21); // 21x21 크기의 미로 생성
+    mazeGenerator = new MazeGenerator(15, 15); // 21x21 크기의 미로 생성
 }
 
 void Scene::Initialize()
@@ -45,7 +45,7 @@ void Scene::Initialize()
         glm::vec3(.05f),          // Scale
         glm::vec3(0),            // Rotation
         glm::vec3(0, 1, 0),      // Color 
-        0.05f,                   // speed
+        0.5f,                   // speed
         100);                    // health
 
 }
@@ -115,7 +115,7 @@ const std::vector<Actor*>& Scene::GetActors() const
 void Scene::InitializeMaze()
 {
     // 미로의 블럭 1개 크기
-    glm::vec3 blockSize(2.f, 2.f, 2.f);
+    glm::vec3 blockSize(5.f, 2.f, 5.f);
 
     for (int y{}; y < mazeMap.size(); ++y) {
         for (int x{}; x < mazeMap[y].size(); ++x) {

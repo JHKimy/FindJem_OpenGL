@@ -18,7 +18,7 @@ Character::Character(
     jumpSpeed(0.2f), gravity(9.8f) 
 {
     mass = 2.f;
-    boundingRadius = 1.f;
+    boundingRadius = 1.5f;
 }
 
 void Character::Move(const glm::vec3& dir) {
