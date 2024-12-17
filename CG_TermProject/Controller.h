@@ -21,6 +21,7 @@ class Controller
 private:
 	Scene* scene = nullptr;                // Scene ÂüÁ¶
 	Camera* camera;
+	Character* character;
 
 public:
 

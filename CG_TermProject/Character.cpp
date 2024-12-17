@@ -18,6 +18,7 @@ Character::Character(
     jumpSpeed(0.2f), gravity(9.8f) 
 {
     mass = 2.f;
+    boundingRadius = 1.f;
 }
 
 void Character::Move(const glm::vec3& dir) {
@@ -73,6 +74,26 @@ void Character::TakeDamage(int amount) {
 bool Character::IsGameOver() const {
     return health <= 0;
 }
+
+float Character::GetMoveSpeed()
+{
+    return moveSpeed;
+}
+
+void Character::SetMoveSpeed(float speed)
+{
+    moveSpeed = speed;
+}
+
+//void Character::Stop()
+//{
+//    moveSpeed = 0.f;
+//}
+//
+//void Character::ResetSpeed()
+//{
+//    moveSpeed = 0.05f;
+//}
 
 //const std::vector<Bullet*>& Character::GetBullets() const {
 //    return bullets;

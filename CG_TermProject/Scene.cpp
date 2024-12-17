@@ -41,8 +41,8 @@ void Scene::Initialize()
     
     mainCharacter = new Character(
         "Boss.obj",              // filePath
-        glm::vec3(2.f, 0.f, 0.f),// Position,
-        glm::vec3(.1f),          // Scale
+        glm::vec3(-3.f, 0.f, -3.f),// Position,
+        glm::vec3(.05f),          // Scale
         glm::vec3(0),            // Rotation
         glm::vec3(0, 1, 0),      // Color 
         0.05f,                   // speed
@@ -105,6 +105,11 @@ Character* Scene::GetCharacter()
 Camera* Scene::GetCamera()
 {
     return &mainCamera;
+}
+
+const std::vector<Actor*>& Scene::GetActors() const
+{
+    return actors;
 }
 
 void Scene::InitializeMaze()

@@ -335,15 +335,15 @@ GLvoid TimerFunction(int value)
 	float deltaTime = 0.016f; // 약 60FPS 기준
 
 
-
+	
 	mainController->Update(deltaTime);
 	
 	// 카메라 위치 출력
-	glm::vec3 characterPosition = mainScene->GetCharacter()->GetPosition();
-	cout << "Character Position: ("
-		<< characterPosition.x << ", "
-		<< characterPosition.y << ", "
-		<< characterPosition.z << ")" << endl;
+	//glm::vec3 characterPosition = mainScene->GetCharacter()->GetPosition();
+	//cout << "Character Position: ("
+	//	<< characterPosition.x << ", "
+	//	<< characterPosition.y << ", "
+	//	<< characterPosition.z << ")" << endl;
 
 
 

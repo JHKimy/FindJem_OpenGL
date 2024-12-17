@@ -35,7 +35,10 @@ public:
     void Shoot();
     void TakeDamage(int amount);
     bool IsGameOver() const;
-
+    float GetMoveSpeed();
+    void SetMoveSpeed(float speed);
+    //void Stop();
+    //void ResetSpeed();
     //const std::vector<Bullet*>& GetBullets() const;
 
 
@@ -47,15 +50,8 @@ public:
     float GetYaw() const; // 추가된 메서드
 
 
-
-
-
-
-
-
-
-
     // 렌더링 함수 (Actor의 Render를 오버라이드)
     void Render(GLuint shaderProgram) override;
+
 };
 

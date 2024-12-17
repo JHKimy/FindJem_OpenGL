@@ -1,5 +1,6 @@
 #include "Controller.h"
 #include "Global.h"
+#include "iostream"
 
 
 
@@ -18,17 +19,46 @@ std::unordered_map<CommandKey, bool> Command = {
 
 void Controller::Update(float deltaTime)
 {
-	Character* character = scene->GetCharacter();
+	character = scene->GetCharacter();
 
+	// 이전 위치 저장 (충돌 처리)
+	glm::vec3 prevCharacterPosition = character->GetPosition();
+
+
+	// 회전
 	character->Rotate(forwardVector);
 
 
-	if (Command[W]) character->Move(forwardVector);
-	if (Command[S]) character->Move(-forwardVector);
-	if (Command[A]) character->Move(-glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
-	if (Command[D]) character->Move(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
-	if (Command[SpaceBar]) character->Jump();
-	
+
+	// 충돌 감지
+	bool collisionDetected = false;
+	for (Actor* otherActor : scene->GetActors()) {
+		if (character != otherActor && 
+			character->CheckCollision(otherActor))	
+		{
+			collisionDetected = true;
+			//std::cout << "Collision with Actor ID: " << otherActor->GetPosition().x << std::endl;
+			break;
+		}
+	}
+
+
+	//prevCharacterPosition = character->GetPosition();
+
+	//if (!collisionDetected)
+	//{
+		if (Command[W]) character->Move(forwardVector);
+		if (Command[S]) character->Move(-forwardVector);
+		if (Command[A]) character->Move(-glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
+		if (Command[D]) character->Move(glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f)));
+		if (Command[SpaceBar]) character->Jump();
+	//}
+
+	else if (collisionDetected) {
+		character->SetPosition(prevCharacterPosition - (forwardVector)*0.005f);
+	}
+
+	prevCharacterPosition = character->GetPosition();
 
 
 	// 1인칭 시점
@@ -43,6 +73,9 @@ void Controller::Update(float deltaTime)
 
 		camera->TopView();
 	}
+
+
+
 }
 
 GLvoid Controller::Keyboard(unsigned char key, int x, int y)
@@ -56,7 +89,11 @@ GLvoid Controller::Keyboard(unsigned char key, int x, int y)
 	case 'a': Command[A] = true; break;		// 왼쪽으로 이동
 	case 'd': Command[D] = true; break;		// 오른쪽으로 이동
 
-	case 32/*SpaceBar*/: Command[SpaceBar] = true; break; // 캐릭터 점프	
+	case 32/*SpaceBar*/: Command[SpaceBar] = true; 
+		
+		break; // 캐릭터 점프	
+
+		 
 
 	case '1': 
 		Command[Num1] = true; 

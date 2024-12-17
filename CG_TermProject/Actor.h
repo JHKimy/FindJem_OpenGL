@@ -8,17 +8,19 @@ using namespace std;
 class Actor
 {
 protected:
-    GLuint vao, vbo, ebo;             // OpenGL 버퍼 객체
-    vector<glm::vec3> vertices; // 정점 데이터
+    GLuint vao, vbo, ebo;            // OpenGL 버퍼 객체
+    vector<glm::vec3> vertices;      // 정점 데이터
     glm::vec3 color;                 // 색상
 
     void InitializeBuffers();        // 버퍼 초기화
     void LoadObj(const std::string& objFilePath); // OBJ 파일 로드
 
+
 protected:
     glm::vec3 position;              // 위치
     glm::vec3 scale;                 // 크기
     glm::vec3 rotation;              // 회전 (yaw, pitch, roll)
+    float boundingRadius;            // 경계 구체 반지름
 
 
 public:
@@ -39,4 +41,7 @@ public:
     glm::vec3 GetPosition() const;
     glm::vec3 GetScale() const;
     glm::vec3 GetRotation() const;
+
+    float GetBoundingRadius() const;
+    bool CheckCollision(const Actor* other) const;
 };

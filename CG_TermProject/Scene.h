@@ -47,4 +47,7 @@ public:
     Character* GetCharacter();
     Camera* GetCamera();
     //void InitializeMaze();                    // 미로 초기화 및 큐브 생성
+
+    // 액터 반환 함수
+    const std::vector<Actor*>& GetActors() const;
 };

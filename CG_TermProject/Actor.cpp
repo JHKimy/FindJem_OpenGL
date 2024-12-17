@@ -140,6 +140,9 @@ Actor::Actor(
 {
 	LoadObj(objFilePath);
 	InitializeBuffers();
+
+
+	boundingRadius = 1.f;
 }
 
 Actor::~Actor()
@@ -233,4 +236,15 @@ glm::vec3 Actor::GetScale() const
 glm::vec3 Actor::GetRotation() const
 {
 	return rotation;
+}
+
+float Actor::GetBoundingRadius() const
+{
+	return boundingRadius;
+}
+
+bool Actor::CheckCollision(const Actor* other) const
+{
+	float distance = glm::length(position - other->GetPosition());
+	return distance < (boundingRadius + other->GetBoundingRadius());
 }
