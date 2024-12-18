@@ -1,7 +1,8 @@
 #include "Camera.h"
 #include "Global.h"
 
-Camera::Camera(GLuint shaderProgram) : shaderProgram(shaderProgram)
+Camera::Camera(GLuint shaderProgram) 
+	: CameraShader(shaderProgram)
 {
 	cameraUp = glm::vec3(0.f, 1.f, 0.f);
 	fov = 45.f;				// Field of View
@@ -11,34 +12,34 @@ Camera::Camera(GLuint shaderProgram) : shaderProgram(shaderProgram)
 }
 
 
-void Camera::ApplyCamera(GLuint shaderProgram)
-{
-
-	// 뷰와 투영 행렬 계산
-	glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-	
-	// 3인칭일때
-	if (!isFirstPersonView) {
-		fov = 45.f;
-	}
-	else {
-		fov = 60.f;
-	}
-
-	glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
-
-	// 3인칭일때
-	if (!isFirstPersonView) {
-		projection = glm::translate(projection, glm::vec3(0.0, 0.0, 10.0)); //--- 공간을 z축 이동
-	}
-
-
-	// 셰이더에 행렬 전달
-	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
-	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-}
+//void Camera::ApplyCamera(GLuint shaderProgram)
+//{
+//
+//	// 뷰와 투영 행렬 계산
+//	glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
+//	
+//	// 3인칭일때
+//	if (!isFirstPersonView) {
+//		fov = 45.f;
+//	}
+//	else {
+//		fov = 60.f;
+//	}
+//
+//	glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
+//
+//	// 3인칭일때
+//	if (!isFirstPersonView) {
+//		projection = glm::translate(projection, glm::vec3(0.0, 0.0, 10.0)); //--- 공간을 z축 이동
+//	}
+//
+//
+//	// 셰이더에 행렬 전달
+//	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
+//	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
+//	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+//	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+//}
 
 void Camera::FirstPersonView(glm::vec3 characterPos, float characterYaw)
 {
@@ -71,8 +72,8 @@ void Camera::FirstPersonView(glm::vec3 characterPos, float characterYaw)
 	glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
 
 	// 셰이더에 행렬 전달
-	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
-	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
+	GLuint viewLoc = glGetUniformLocation(CameraShader, "viewTransform");
+	GLuint projLoc = glGetUniformLocation(CameraShader, "projectionTransform");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
@@ -93,8 +94,8 @@ void Camera::TopView()
 	glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
 
 	// 셰이더에 행렬 전달
-	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
-	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
+	GLuint viewLoc = glGetUniformLocation(CameraShader, "viewTransform");
+	GLuint projLoc = glGetUniformLocation(CameraShader, "projectionTransform");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 

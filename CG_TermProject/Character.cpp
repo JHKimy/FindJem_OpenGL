@@ -19,6 +19,11 @@ Character::Character(const glm::vec3& position)
         boundingRadius = 1.5f;  // 충돌 범위
 }
 
+glm::vec3 Character::GetForwardVector() const
+{
+    return forwardVector2;
+}
+
 void Character::Move(const glm::vec3& dir) 
 {
     glm::vec3 direction;
@@ -27,9 +32,22 @@ void Character::Move(const glm::vec3& dir)
     position += direction * moveSpeed;
 }
 
-void Character::Rotate(glm::vec3 forwardVector)
+void Character::Rotate(float deltaX, float deltaY)
 {
-    SetRotation(forwardVector);
+    float sensitivity = 0.1f;
+
+    // Y축 회전
+    float angleY = sensitivity * deltaX;
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(angleY), glm::vec3(0, 1, 0));
+    forwardVector2 = glm::normalize(glm::vec3(rotation * glm::vec4(forwardVector2, 0.0f)));
+
+    // Pitch 제한
+    float pitch = glm::degrees(asin(forwardVector2.y)) + sensitivity * deltaY;
+    if (pitch > 89.0f) pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
+
+    forwardVector2.y = sin(glm::radians(pitch));
+    forwardVector2 = glm::normalize(forwardVector2); // 정규화
 }
 
 void Character::Jump() {
@@ -114,7 +132,7 @@ void Character::SetMoveSpeed(float speed)
 
 float Character::GetYaw() const
 {
-    return rotation.y; // Y축 회전 값 반환
+    return yaw;
 }
 
 

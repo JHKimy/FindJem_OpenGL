@@ -26,17 +26,17 @@ private:
 public:
 
 	// 참조형 변수는 반드시 생성자에서 초기화
-	Controller(Scene* scene, Camera* camera) 
-		:scene(scene), camera(camera) {}
+	Controller(Scene* scene, Camera* camera);
+
     ~Controller() {}
 
 
 	// 입력 이벤트
 	GLvoid Keyboard(unsigned char key, int x, int y);
-	static GLvoid KeyboardUp(unsigned char key, int x, int y);
-	static GLvoid SpecialKeyboard(int key, int x, int y);
-	static GLvoid Mouse(int button, int state, int x, int y);
-	static GLvoid PassiveMotion(int x, int y);
+	GLvoid KeyboardUp(unsigned char key, int x, int y);
+	GLvoid SpecialKeyboard(int key, int x, int y);
+	GLvoid Mouse(int button, int state, int x, int y);
+	GLvoid PassiveMotion(int x, int y);
 
 
 	// 업데이트 함수

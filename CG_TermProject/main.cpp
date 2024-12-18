@@ -163,17 +163,35 @@ void main(int argc, char** argv)
 //=========================
 	glutDisplayFunc(drawScene);
 	
+	// 일반 함수는 특정 객체에 의존하지 않고 독립적으로 호출
+	// glutKeyboardFunc가 원하는건 독립적인 함수
+	// 일반 함수는 하나의 고유한 메모리 주소 가짐
+	// 
+	// 멤버 함수는 객체를 통해 호출
+	// 내부적으로 this 포인터를 사용
+	// this 포인터는 객체의 인스턴스 주소를 가리킴
+	// 멤버 함수는 호출 시 마다 해당 객체의 주소까지 필요
+	// void Controller::SpecialKeyboard(Controller* this, int key, int x, int y)
 
 	glutKeyboardFunc([](unsigned char key, int x, int y) {
 		mainController->Keyboard(key, x, y); });
 
-	glutKeyboardUpFunc(Controller::KeyboardUp);
-	glutMouseFunc(Controller::Mouse);
-	glutSpecialFunc(Controller::SpecialKeyboard);
+	glutKeyboardUpFunc([](unsigned char key, int x, int y) {
+		mainController->KeyboardUp(key, x, y);});
+
+	glutMouseFunc([](int button, int state, int x, int y) {
+		mainController->Mouse(button, state, x, y);});
+
+	glutSpecialFunc([](int key, int x, int y) {
+		mainController->SpecialKeyboard(key, x, y);});
+
+	glutPassiveMotionFunc([](int x, int y) {
+		mainController->PassiveMotion(x, y); });
+
 
 	glutTimerFunc(17, TimerFunction, 1);
 	// glutMotionFunc(Motion);
-	glutPassiveMotionFunc(Controller::PassiveMotion);
+
 
 	glutMainLoop();
 //=========================

@@ -19,6 +19,12 @@ std::unordered_map<CommandKey, bool> Command = {
 };
 
 
+Controller::Controller
+(Scene* scene, Camera* camera)
+	: scene(scene), camera(camera)
+{
+}
+
 
 void Controller::Update(float deltaTime)
 {
@@ -38,7 +44,7 @@ void Controller::Update(float deltaTime)
 	// 이동 수행 (임시로 이동)
 	if (glm::length(moveDirection) > 0.0f) {
 		moveDirection = glm::normalize(moveDirection);
-		character->Move(moveDirection * character->GetMoveSpeed());
+		character->Move(moveDirection);
 	}
 
 	// 충돌 감지
@@ -70,6 +76,8 @@ void Controller::Update(float deltaTime)
 		camera->TopView();
 	}
 }
+
+
 
 GLvoid Controller::Keyboard(unsigned char key, int x, int y)
 {

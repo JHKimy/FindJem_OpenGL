@@ -22,7 +22,7 @@ private:
 
 	glm::vec3 forwardVector{ 0.0f, 0.0f, -1.f };	// 전방 벡터
 
-	GLuint shaderProgram;
+	GLuint CameraShader;
 
 public:
 	Camera(GLuint shaderprogram);	// 카메라 위치		// 카메라 속성
@@ -36,7 +36,7 @@ public:
 	// void SetAspectRatio(float ratio);       // 화면 비율 설정
 	glm::vec3 GetPosition() const;			// 카메라 위치 가져오기
 
-	void ApplyCamera(GLuint shaderProgram); // 카메라 설정을 셰이더에 전달
+	//void ApplyCamera(GLuint shaderProgram); // 카메라 설정을 셰이더에 전달
 
 
 	// 시점 전환

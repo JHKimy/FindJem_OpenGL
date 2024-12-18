@@ -4,9 +4,15 @@
 //#include "Bullet.h"
 #include <vector>
 
+
 class Character : public Actor
 {
 private:
+    
+    glm::vec3 forwardVector2;
+    float yaw;
+    float pitch;
+
     int health;
     float mass;
     float moveSpeed;
@@ -18,10 +24,10 @@ private:
 public:
     Character(const glm::vec3& position);
 
-
+    glm::vec3 GetForwardVector() const;
 
     void Move(const glm::vec3& dir);
-    void Rotate(glm::vec3 forwardVector);
+    void Rotate(float deltaX, float deltaY);
     void Jump();
     void Update(float deltaTime);
     void Shoot();
