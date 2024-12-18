@@ -1,5 +1,9 @@
 #include "pch.h"
 
+//전역변수 
+vector<SOCKET>	g_clientSocket;
+mutex			g_mutex;
+
 int main()
 {
 	SocketUtils::Init();
@@ -10,7 +14,7 @@ int main()
 
 	SocketUtils::SetReuseAddress(listenSocket, true);
 
-	if (SocketUtils::BindAnyAddress(listenSocket, 9000) == false)
+	if (SocketUtils::BindAnyAddress(listenSocket, SERVER_PORT) == false)
 		return 0;
 
 	if (SocketUtils::Listen(listenSocket, SOMAXCONN) == false)
@@ -20,10 +24,11 @@ int main()
 	SOCKADDR_IN clientAddr;
 	int addrLen = sizeof(clientAddr);
 
-
+	// 맵 생성 함수 호출 
+	
 	while (true)
 	{
-		// 스레드 처리
+		
 	}
 	SocketUtils::Close(listenSocket);
 	SocketUtils::Clear();
