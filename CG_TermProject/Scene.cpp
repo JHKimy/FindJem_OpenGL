@@ -1,123 +1,81 @@
 #include "Scene.h"
-#include "Controller.h"
-#include "MazeGenerator.h"
+#include "Camera.h"
+#include "Light.h"
+#include "Actor.h"
+#include "Character.h"
 
+#include "MazeGenerator.h"
+#include "Controller.h"
 
 // 씬 생성
-Scene::Scene(GLuint shaderProgram) :
-
-   mainCamera(shaderProgram),
-    
-    mainLight(
-        glm::vec3(0.0f, 10.0f, 10.0f),  // pos
-        glm::vec3(1.0f)),               // color
-
-    shaderProgram(shaderProgram) 
+Scene::Scene(GLuint shaderProgram) 
+    :   SceneShader(shaderProgram)
 {
-    // MazeGenerator 초기화
-    mazeGenerator = new MazeGenerator(15, 15); // 15x15 크기의 미로 생성
+    // 카메라 생성
+    mainCamera = make_unique<Camera>(shaderProgram);
+    // 라이트 생성 (이 게임에선 하나만 필요)
+    mainLight = make_unique<Light>(
+        glm::vec3(0.0f, 10.0f, 10.0f),  // pos
+        glm::vec3(1.0f));               // color
+
+    // 미로 생성기
+    mazeGenerator = make_unique<MazeGenerator>(15, 15);
 }
-
-
-
-
 
 // 씬 초기화
 void Scene::Initialize()
 {
     // MazeGenerator를 통해 미로 생성
     mazeGenerator->GeneratePrimMaze();
+    // 입구 뚫기
     mazeGenerator->addEntrances();
+    // 미로 데이터 (0과 1)
     mazeMap = mazeGenerator->GetMaze();
 
+    // 렌더링 해야할 actors에 큐브형태로 추가
     InitializeMaze();
 
+    // 처음시작 시 탑뷰
+    mainCamera->TopView();
 
-
-
-    mainCamera.TopView();
-
-
-
-
-
-
-    // Actor 초기화
-    //actors.push_back(new Actor(
-    //    "Cube.obj",             // filePath
-    //    glm::vec3(1,1,1),       // Position
-    //    glm::vec3(1),           // Scale
-    //    glm::vec3(0),           // Rotation
-    //    glm::vec3(1, 0, 0)));   // Color 
-    
-    mainCharacter = new Character(
-        "Boss.obj",              // filePath
-        glm::vec3(-3.f, 0.f, -3.f),// Position,
-        glm::vec3(.05f),          // Scale
-        glm::vec3(0),            // Rotation
-        glm::vec3(0, 1, 0),      // Color 
-        0.5f,                   // speed
-        100);                    // health
-
+    // 플레이어 캐릭터 초기화
+    mainCharacter = make_unique<Character>
+        (glm::vec3(-3.f, 0.f, -3.f));// Position                    
 }
 
 void Scene::Update(float deltaTime)
 {
-
     // 플레이어 상태 업데이트
     mainCharacter->Update(deltaTime);
-
-
 }
 
 void Scene::Render()
 {
-
-    //if (Command[Num1]) {
-    //    mainCamera.FirstPersonView(GetCharacter()->GetPosition());
-    //}
-    //if (Command[Num2]) {
-    //    mainCamera.TopView();
-    //}
-    // 카메라 설정
-    //mainCamera.ApplyCamera(shaderProgram);
-
-
-
+    // 카메라는 Controller에서 관리
+    
     // 조명 설정
-    mainLight.ApplyLighting(shaderProgram, mainCamera.GetPosition());
+    mainLight->ApplyLighting(SceneShader, mainCamera->GetPosition());
 
     // 플레이어 렌더링
-    mainCharacter->Render(shaderProgram);
+    mainCharacter->Render(SceneShader);
 
-    for (Actor* actor : actors) {
-        actor->Render(shaderProgram);
+    // Actor 렌더링
+    for (const auto& actor : actors) {
+        actor->Render(SceneShader);
     }
-}
-
-void Scene::Shutdown()
-{
-    for (Actor* actor : actors)
-    {
-        delete actor;
-    }
-    actors.clear();
-
-    delete mazeGenerator;
-    delete mainCharacter;
 }
 
 Character* Scene::GetCharacter()
 {
-    return mainCharacter;
+    return mainCharacter.get();
 }
 
 Camera* Scene::GetCamera()
 {
-    return &mainCamera;
+    return mainCamera.get();
 }
 
-const std::vector<Actor*>& Scene::GetActors() const
+const std::vector<std::unique_ptr<Actor>>& Scene::GetActors() const
 {
     return actors;
 }
@@ -125,19 +83,20 @@ const std::vector<Actor*>& Scene::GetActors() const
 void Scene::InitializeMaze()
 {
     // 미로의 블럭 1개 크기
-    glm::vec3 blockSize(5.f, 2.f, 5.f);
+    glm::vec3 blockSize(5.f, 3.f, 5.f);
 
-    for (int y{}; y < mazeMap.size(); ++y) {
-        for (int x{}; x < mazeMap[y].size(); ++x) {
+    for (int y = 0; y < mazeMap.size(); ++y) 
+    {
+        for (int x = 0; x < mazeMap[y].size(); ++x) 
+        {
             if (mazeMap[y][x] == 1) {
-                actors.push_back(new Actor(
-                        "Cube.obj",             // filePath
-                        glm::vec3(x * blockSize.x, 0.0f, y * blockSize.z), // Position
-                        glm::vec3(blockSize),           // Scale
-                        glm::vec3(0),           // Rotation
-                        glm::vec3(0, 0, 1)));   // Color
+                actors.push_back(make_unique<Actor>(
+                    "Cube.obj",           
+                    glm::vec3(x * blockSize.x, 0.0f, y * blockSize.z), // Position
+                    glm::vec3(blockSize),   // 크기
+                    glm::vec3(0),           // 회전값
+                    glm::vec3(0, 0, 1)));   // 색상
             }
         }
     }
-
 }

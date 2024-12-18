@@ -1,57 +1,58 @@
 #pragma once
 
-//#include "stdafx.h"
 #include <vector>
 #include <memory> // 스마트 포인터 사용
-#include "Camera.h"
-#include "Light.h"
-#include "Actor.h"
-#include "Character.h"
-#include "Enemy.h"
+#include "MazeGenerator.h" // Scene.h에 직접 포함 (덜 권장됨)
+#include <GL/glew.h> // OpenGL의 GLuint 및 관련 타입 정의
+//#include "Enemy.h"
 
 using std::vector;
 using std::unique_ptr;
+using std::make_unique;
 
-
+// 전방 선언
+class Camera;
+class Light;
+class Actor;
+class Character;
+//class Enemy;
+class MazeGenerator;
 
 class Scene
 {
 private:
-    Camera mainCamera;          // 카메라
-    Light mainLight;            // 조명
-    std::vector<Actor*> actors; // 씬에 포함된 Actor 객체들
-    GLuint shaderProgram;       // 셰이더 프로그램 ID
-    Character* mainCharacter;   // 플레이어 캐릭터
-    //Enemy* enemy;             // 적 객체
-    std::vector<Enemy*> enemeys;// 적 객체들
+    // 셰이더 프로그램 ID
+    GLuint SceneShader;                     
+    
+    // 카메라
+    std::unique_ptr<Camera> mainCamera;       
+    // 조명 
+    std::unique_ptr<Light> mainLight;         
+    // 씬에 포함된 Actor 객체들
+    std::vector<std::unique_ptr<Actor>> actors; 
+    // 플레이어 캐릭터
+    std::unique_ptr<Character> mainCharacter; 
+    // 미로 생성기
+    std::unique_ptr<MazeGenerator> mazeGenerator; 
+    
+    //std::vector<std::unique_ptr<class Enemy>> enemies; // 적 객체들
 
-
-    //void InitializeCubeBuffers();             // 버퍼 초기화
-    //void InitializeEnemies();               // 적 초기화
-    //void UpdateEnemies(float deltaTime);    // 적 업데이트
-    //void CheckCollisions();                 // 충돌 검사
-    //void DrawFloor();                       // 바닥 그리기
-    //void DrawCharacter();                   // 캐릭터 그리기
-    //void DrawEnemies();                     // 적 그리기
-    //void DrawBullets();                     // 총알 그리기
-
-
-
-    vector<vector<int>> mazeMap;    // 0과 1로 구성된 미로 데이터
-    class MazeGenerator* mazeGenerator;
-    void InitializeMaze(); // 미로를 Actor로 변환
+    // 미로 데이터
+    vector<vector<int>> mazeMap;    
+    // 미로데이터를 Actor로 변환
+    void InitializeMaze();          
 
 public:
-    // 생성자
+    // 생성자 및 소멸자
     Scene(GLuint shaderProgram);
-    void Initialize();   // 초기화
-    void Update(float deltaTime); // 업데이트
-    void Render();       // 렌더링
-    void Shutdown();     // 리소스 정리
+    // 유니크 포인터가 자동으로 메모리 정리
+    ~Scene() = default; 
+
+    void Initialize();   
+    void Update(float deltaTime);
+    void Render();       
+
     Character* GetCharacter();
     Camera* GetCamera();
-    //void InitializeMaze();                    // 미로 초기화 및 큐브 생성
-
-    // 액터 반환 함수
-    const std::vector<Actor*>& GetActors() const;
+    const std::vector<std::unique_ptr<Actor>>& GetActors() const;
 };

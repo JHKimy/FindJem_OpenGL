@@ -7,24 +7,16 @@
 class Character : public Actor
 {
 private:
-    float moveSpeed;
-    glm::vec3 direction;
     int health;
+    float mass;
+    float moveSpeed;
     bool isJumping;
     float jumpSpeed;
     float gravity;
-    float mass;
     //std::vector<Bullet*> bullets;
 
 public:
-    Character(
-        const std::string& objFilePath,
-        const glm::vec3& position,
-        const glm::vec3& scale,
-        const glm::vec3& rotation, 
-        const glm::vec3& color, 
-        float speed = 1.0f, 
-        int health = 100);
+    Character(const glm::vec3& position);
 
 
 
@@ -43,8 +35,8 @@ public:
 
 
     //glm::vec3 GetPosition();
-    void SetDirection(const glm::vec3& dir);
-    glm::vec3 GetDirection() const;
+    //void SetDirection(const glm::vec3& dir);
+    //glm::vec3 GetDirection() const;
 
     // 캐릭터 y축 회전값
     float GetYaw() const; // 추가된 메서드

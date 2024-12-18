@@ -2,6 +2,9 @@
 #include "Global.h"
 #include "iostream"
 
+#include "Character.h"
+#include "Scene.h"
+
 
 
 std::unordered_map<CommandKey, bool> Command = {
@@ -12,7 +15,7 @@ std::unordered_map<CommandKey, bool> Command = {
 	{CommandKey::SpaceBar,		false},
 	{CommandKey::Num1,			false},
 	{CommandKey::Num2,			false},
-	{CommandKey::MouseLeftClick,false},
+	{CommandKey::MouseLeftClick,false}
 };
 
 
@@ -40,8 +43,11 @@ void Controller::Update(float deltaTime)
 
 	// 충돌 감지
 	bool collisionDetected = false;
-	for (Actor* otherActor : scene->GetActors()) {
-		if (character != otherActor && character->CheckCollision(otherActor)) {
+	for (const auto& otherActor : scene->GetActors()) 
+	{
+		if (character != otherActor.get() 
+			&& character->CheckCollision(otherActor.get())) 
+		{
 			collisionDetected = true;
 			break;
 		}

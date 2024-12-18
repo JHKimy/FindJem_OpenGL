@@ -32,7 +32,7 @@ public:
 
 
 	// 입력 이벤트
-	static GLvoid Keyboard(unsigned char key, int x, int y);
+	GLvoid Keyboard(unsigned char key, int x, int y);
 	static GLvoid KeyboardUp(unsigned char key, int x, int y);
 	static GLvoid SpecialKeyboard(int key, int x, int y);
 	static GLvoid Mouse(int button, int state, int x, int y);

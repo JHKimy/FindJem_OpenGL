@@ -163,7 +163,10 @@ void main(int argc, char** argv)
 //=========================
 	glutDisplayFunc(drawScene);
 	
-	glutKeyboardFunc(Controller::Keyboard);
+
+	glutKeyboardFunc([](unsigned char key, int x, int y) {
+		mainController->Keyboard(key, x, y); });
+
 	glutKeyboardUpFunc(Controller::KeyboardUp);
 	glutMouseFunc(Controller::Mouse);
 	glutSpecialFunc(Controller::SpecialKeyboard);
@@ -208,7 +211,6 @@ GLvoid TimerFunction(int value)
 	float deltaTime = 0.016f; // 약 60FPS 기준
 
 	mainController->Update(deltaTime);
-
 	mainScene->Update(deltaTime);
 
 	// 다음 프레임 요청
