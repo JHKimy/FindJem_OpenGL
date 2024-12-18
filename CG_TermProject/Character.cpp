@@ -1,5 +1,7 @@
 #include "Character.h"
 #include "Global.h"
+#include "Bullet.h"
+#include <algorithm>
 
 Character::Character(const glm::vec3& position)
     : Actor(
@@ -32,22 +34,17 @@ void Character::Move(const glm::vec3& dir)
     position += direction * moveSpeed;
 }
 
-void Character::Rotate(float deltaX, float deltaY)
+void Character::Rotate(float deltaYaw)
 {
-    float sensitivity = 0.1f;
+    yaw += deltaYaw;
+    if (yaw > 360.0f) yaw -= 360.0f;
+    if (yaw < 0.0f) yaw += 360.0f;
 
-    // Y축 회전
-    float angleY = sensitivity * deltaX;
-    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(angleY), glm::vec3(0, 1, 0));
-    forwardVector2 = glm::normalize(glm::vec3(rotation * glm::vec4(forwardVector2, 0.0f)));
-
-    // Pitch 제한
-    float pitch = glm::degrees(asin(forwardVector2.y)) + sensitivity * deltaY;
-    if (pitch > 89.0f) pitch = 89.0f;
-    if (pitch < -89.0f) pitch = -89.0f;
-
-    forwardVector2.y = sin(glm::radians(pitch));
-    forwardVector2 = glm::normalize(forwardVector2); // 정규화
+    // 전방 벡터 업데이트 (Pitch는 항상 0)
+    forwardVector2.x = cos(glm::radians(yaw));
+    forwardVector2.y = 0.f; // 캐릭터는 수평 방향만 회전
+    forwardVector2.z = sin(glm::radians(yaw));
+    forwardVector2 = glm::normalize(forwardVector2);
 }
 
 void Character::Jump() {
@@ -80,10 +77,7 @@ void Character::Update(float deltaTime) {
     //}
 }
 
-void Character::Shoot() {
-    // Bullet* bullet = new Bullet(position + glm::vec3(0.0f, 0.7f, 0.0f), direction);
-    // bullets.push_back(bullet);
-}
+
 
 void Character::TakeDamage(int amount) {
     health -= amount;
@@ -102,6 +96,34 @@ void Character::SetMoveSpeed(float speed)
 {
     moveSpeed = speed;
 }
+
+
+void Character::Shoot() {
+    glm::vec3 bulletPos = position + forwardVector2 * 1.5f + glm::vec3(0.0f, 1.0f, 0.0f); // 총알 위치
+    float bulletSpeed = 30.0f;
+
+    bullets.push_back(std::make_unique<Bullet>(bulletPos, forwardVector2, bulletSpeed));
+}
+
+void Character::UpdateBullets(float deltaTime)
+{
+    for (auto& bullet : bullets) {
+        bullet->Update(deltaTime);
+    }
+
+    //// 비활성화된 총알 제거
+    //bullets.erase(
+    //    std::remove_if(bullets.begin(), bullets.end(),
+    //        [](const std::unique_ptr<Bullet>& bullet) { return !bullet->IsActive(); }),
+    //    bullets.end()
+    //);
+}
+
+const std::vector<std::unique_ptr<Bullet>>& Character::GetBullets() const
+{
+    return bullets;
+}
+
 
 //void Character::Stop()
 //{
@@ -149,6 +171,7 @@ float Character::GetYaw() const
 
 
 
+
 void Character::Render(GLuint shaderProgram)
 {
     glBindVertexArray(vao);
@@ -159,13 +182,13 @@ void Character::Render(GLuint shaderProgram)
 
     // forwardVector를 사용한 회전 변환
     glm::vec3 up(0.0f, 1.0f, 0.0f);                                  // 월드 업 벡터
-    glm::vec3 right = glm::normalize(glm::cross(up, forwardVector)); // 오른쪽 벡터
-    glm::vec3 correctedUp = glm::normalize(glm::cross(forwardVector, right)); // 수정된 위쪽 벡터
+    glm::vec3 right = glm::normalize(glm::cross(up, forwardVector2)); // 오른쪽 벡터
+    glm::vec3 correctedUp = glm::normalize(glm::cross(forwardVector2, right)); // 수정된 위쪽 벡터
 
     glm::mat4 rotate = glm::mat4(1.0f);
     rotate[0] = glm::vec4(right, 0.0f);        // 오른쪽 벡터
     rotate[1] = glm::vec4(correctedUp, 0.0f); // 위쪽 벡터
-    rotate[2] = glm::vec4(forwardVector, 0.0f); // 전방 벡터
+    rotate[2] = glm::vec4(forwardVector2, 0.0f); // 전방 벡터
 
     // 합성 변환 행렬
     glm::mat4 TRANS = translate * rotate * size;
@@ -178,4 +201,10 @@ void Character::Render(GLuint shaderProgram)
     glUniform3f(colorLoc, color.r, color.g, color.b);
 
     glDrawArrays(GL_TRIANGLES, 0, vertices.size() * 3);
+
+    //// 총알 렌더링
+    //for (const auto& bullet : bullets) {
+    //    bullet->Render(shaderProgram);
+    //}
+
 }

@@ -36,10 +36,10 @@ void Controller::Update(float deltaTime)
 	// 이동 방향 계산
 	glm::vec3 moveDirection(0.0f);
 
-	if (Command[W]) moveDirection += forwardVector;
-	if (Command[S]) moveDirection -= forwardVector;
-	if (Command[A]) moveDirection -= glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f));
-	if (Command[D]) moveDirection += glm::cross(forwardVector, glm::vec3(0.0f, 1.0f, 0.0f));
+	if (Command[W]) moveDirection += character->GetForwardVector();
+	if (Command[S]) moveDirection -= character->GetForwardVector();
+	if (Command[A]) moveDirection -= glm::cross(character->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f));
+	if (Command[D]) moveDirection += glm::cross(character->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// 이동 수행 (임시로 이동)
 	if (glm::length(moveDirection) > 0.0f) {
@@ -69,10 +69,11 @@ void Controller::Update(float deltaTime)
 
 	// 카메라 설정
 	if (Command[Num1]) {
-		camera->FirstPersonView(character->GetPosition(), rotateY);
-		shaderProgram;
+		isFirstPersonView = true; // 1인칭 모드 활성화
+		//camera->FirstPersonView(character->GetPosition(), character->GetYaw(), 0.f);
 	}
 	else if (Command[Num2]) {
+		isFirstPersonView = false; // 탑뷰 모드 활성화
 		camera->TopView();
 	}
 }
@@ -143,32 +144,33 @@ GLvoid Controller::KeyboardUp(unsigned char key, int x, int y)
 
 GLvoid Controller::Mouse(int button, int state, int x, int y)
 {
-	return GLvoid();
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		character->Shoot(); // 캐릭터가 총알 발사
+	}
+
 }
 
 GLvoid Controller::PassiveMotion(int x, int y)
 {
-	float sensitivity = 0.1f;  // 마우스 민감도
+	float sensitivity = 0.1f;
 
-	// 마우스 이동 변화에 따라 시점을 업데이트
-	float deltaX = x - winWidth / 2;
-	float deltaY = y - winHeight / 2;
 
-	// 시점 변화에 따라 캐릭터의 전방 방향 업데이트
-	rotateY += sensitivity * deltaX;
-	if (rotateY > 360.0f) rotateY -= 360.0f;
-	if (rotateY < 0.0f) rotateY += 360.0f;
+	if (isFirstPersonView) { // 1인칭 모드일 때만 처리
+		// 마우스 이동 변화에 따라 시점을 업데이트
+		float deltaX = x - winWidth / 2;
+		float deltaY = y - winHeight / 2;
 
-	float pitch = sensitivity * deltaY;
-	if (pitch > 89.0f) pitch = 89.0f;
-	if (pitch < -89.0f) pitch = -89.0f;
+		// 캐릭터 회전 업데이트
+		character->Rotate(deltaX * sensitivity);
 
-	forwardVector.x = cos(glm::radians(rotateY)) * cos(glm::radians(pitch));
-	forwardVector.y = sin(glm::radians(pitch));
-	forwardVector.z = sin(glm::radians(rotateY)) * cos(glm::radians(pitch));
+		// 카메라의 pitch 업데이트
+		camera->FirstPersonView(character->GetPosition(), character->GetYaw(), deltaY * sensitivity);
 
-	glutWarpPointer(winWidth / 2, winHeight / 2); // 마우스를 중앙으로 되돌립니다.
+		glutWarpPointer(winWidth / 2, winHeight / 2); // 마우스를 중앙으로 되돌립니다.
+		
+	}
 	glutPostRedisplay();
+
 }
 
 GLvoid Controller::SpecialKeyboard(int key, int x, int y)

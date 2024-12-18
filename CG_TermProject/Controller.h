@@ -22,6 +22,8 @@ private:
 	Scene* scene = nullptr;                // Scene 참조
 	Camera* camera;
 	Character* character;
+	bool isFirstPersonView; // 현재 카메라 모드
+	float pitch{};
 
 public:
 

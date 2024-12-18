@@ -1,7 +1,9 @@
 #include "Camera.h"
 #include "Global.h"
 
-Camera::Camera(GLuint shaderProgram) 
+
+
+Camera::Camera(GLuint shaderProgram)
 	: CameraShader(shaderProgram)
 {
 	cameraUp = glm::vec3(0.f, 1.f, 0.f);
@@ -11,7 +13,22 @@ Camera::Camera(GLuint shaderProgram)
 	farClip = 200.f;		// 먼 클리핑 거리
 }
 
+float Camera::GetPitch()
+{
+	return pitch;
+}
 
+void Camera::UpdateViewProjection()
+{
+	glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
+	glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
+
+	// 셰이더에 행렬 전달
+	GLuint viewLoc = glGetUniformLocation(CameraShader, "viewTransform");
+	GLuint projLoc = glGetUniformLocation(CameraShader, "projectionTransform");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+}
 //void Camera::ApplyCamera(GLuint shaderProgram)
 //{
 //
@@ -41,47 +58,49 @@ Camera::Camera(GLuint shaderProgram)
 //	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 //}
 
-void Camera::FirstPersonView(glm::vec3 characterPos, float characterYaw)
+void Camera::FirstPersonView(
+	glm::vec3 characterPos, 
+	float characterYaw, 
+	float deltaPitch)
 {
-	isFirstPersonView = true;
+	//isFirstPersonView = true;
 
+	yaw = characterYaw;
+	pitch += deltaPitch;
+
+	// Pitch 제한 (±60도)
+	if (pitch > 20.0f) pitch = 20.0f;
+	if (pitch < -20.0f) pitch = -20.0f;
+
+
+	// 방향 벡터 계산
 	glm::vec3 direction;
-	direction.x = cos(glm::radians(characterYaw)); // 좌우 방향
-	direction.y = 0.0f;                            // 상하 방향 없음
-	direction.z = sin(glm::radians(characterYaw)); // 전후 방향
-	
-	// 카메라가 캐릭터 앞에 위치
-	glm::vec3 cameraOffset(
-		direction.x,
-		direction.y + 1.f ,
-		direction.z);
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(-pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction = glm::normalize(direction);
 
+	// 카메라 위치 설정: 캐릭터의 전방 방향으로 오프셋 적용
+	glm::vec3 cameraOffset = direction * 1.1f; // 캐릭터 앞쪽 2.0 단위 거리
+	cameraOffset.y += 1.5f; // 캐릭터 머리 위로 약간 이동
 	cameraPos = characterPos + cameraOffset;
-	cameraTarget = cameraPos + glm::normalize(direction);
+
+
+	cameraTarget = cameraPos + direction;
 	cameraUp = glm::vec3(0.f, 1.f, 0.f);
 
 	fov = 60.f;
 
 
 
-
-
-	// 뷰와 투영 행렬 계산
-	glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-
-	glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
-
-	// 셰이더에 행렬 전달
-	GLuint viewLoc = glGetUniformLocation(CameraShader, "viewTransform");
-	GLuint projLoc = glGetUniformLocation(CameraShader, "projectionTransform");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	// 뷰와 투영 행렬 업데이트
+	UpdateViewProjection();
 
 }
 
 void Camera::TopView()
 {
-	isFirstPersonView = false;
+	//isFirstPersonView = false;
 	// 탑뷰의 위치와 타겟 설정
 	cameraPos = glm::vec3(20.f, 150.f, 0.1f); // 카메라를 타겟 위로 이동
 	cameraTarget = glm::vec3(20.f, 0.f, 20.f); // 타겟을 중심으로 설정
@@ -89,20 +108,8 @@ void Camera::TopView()
 
 	fov = 45.f;
 
-	// 뷰와 투영 행렬 계산
-	glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-	glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
-
-	// 셰이더에 행렬 전달
-	GLuint viewLoc = glGetUniformLocation(CameraShader, "viewTransform");
-	GLuint projLoc = glGetUniformLocation(CameraShader, "projectionTransform");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-
-
-	//UpdatePosition(topViewPos);
-	//UpdateTarget(topViewTarget);
+	// 뷰와 투영 행렬 업데이트
+	UpdateViewProjection();
 }
 
 
@@ -119,11 +126,15 @@ void Camera::TopView()
 void Camera::UpdatePosition(glm::vec3 newPos)
 {
 	cameraPos = newPos;
+	UpdateViewProjection();
+
 }
 
 void Camera::UpdateTarget(glm::vec3 newTarget)
 {
 	cameraTarget = newTarget;
+	UpdateViewProjection();
+
 }
 
 glm::vec3 Camera::GetPosition() const

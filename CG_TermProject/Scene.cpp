@@ -3,6 +3,7 @@
 #include "Light.h"
 #include "Actor.h"
 #include "Character.h"
+#include"Bullet.h"
 
 #include "MazeGenerator.h"
 #include "Controller.h"
@@ -32,6 +33,8 @@ void Scene::Initialize()
     // 미로 데이터 (0과 1)
     mazeMap = mazeGenerator->GetMaze();
 
+
+
     // 렌더링 해야할 actors에 큐브형태로 추가
     InitializeMaze();
 
@@ -40,13 +43,17 @@ void Scene::Initialize()
 
     // 플레이어 캐릭터 초기화
     mainCharacter = make_unique<Character>
-        (glm::vec3(-3.f, 0.f, -3.f));// Position                    
+        (glm::vec3(-3.f, 0.f, -3.f));// Position 
+
+
+
 }
 
 void Scene::Update(float deltaTime)
 {
     // 플레이어 상태 업데이트
     mainCharacter->Update(deltaTime);
+    mainCharacter->UpdateBullets(deltaTime); // 총알 업데이트
 }
 
 void Scene::Render()
@@ -58,6 +65,12 @@ void Scene::Render()
 
     // 플레이어 렌더링
     mainCharacter->Render(SceneShader);
+
+    // 캐릭터의 총알 렌더링
+    const auto& bullets = mainCharacter->GetBullets();
+    for (const auto& bullet : bullets) {
+        bullet->Render(SceneShader);
+    }
 
     // Actor 렌더링
     for (const auto& actor : actors) {

@@ -6,7 +6,7 @@ Bullet::Bullet(
     const glm::vec3& direction, 
     float speed)
     : Actor(
-        "Sphere.obj", 
+        "Cube.obj", 
         position, 
         glm::vec3(0.1f), 
         glm::vec3(0.0f), 

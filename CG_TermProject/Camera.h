@@ -18,16 +18,25 @@ private:
 	float nearClip;			// 가까운 클리핑 거리
 	float farClip;			// 먼 클리핑 거리
 
+
+	float yaw;   // 좌우 회전값
+	float pitch; // 위아래 회전값
+
+
 	bool isFirstPersonView;  // 현재 시점 상태
 
 	glm::vec3 forwardVector{ 0.0f, 0.0f, -1.f };	// 전방 벡터
 
 	GLuint CameraShader;
 
+
+	// 내부 함수로 뷰와 투영 행렬 계산 및 셰이더 업데이트
+	void UpdateViewProjection(); 
+
 public:
 	Camera(GLuint shaderprogram);	// 카메라 위치		// 카메라 속성
 
-
+	float GetPitch();
 	// glm::mat4 GetViewMatrix() const;        // 뷰 행렬 계산
 	// glm::mat4 GetProjectionMatrix() const;  // 투영 행렬 계산
 
@@ -40,7 +49,11 @@ public:
 
 
 	// 시점 전환
-	void FirstPersonView(glm::vec3 characterPos,float characterYaw);
+	void FirstPersonView(
+		glm::vec3 characterPos,
+		float characterYaw, 
+		float deltaPitch);
+
 	void TopView();
 };
 

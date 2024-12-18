@@ -8,7 +8,7 @@ GLfloat winHeight{ 700 };
 float rotateY{ 0.0f };
 
 // 캐릭터 전방 벡터
-glm::vec3 forwardVector(0.f);
+// glm::vec3 forwardVector(0.f);
 
 
 
