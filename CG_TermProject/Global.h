@@ -15,3 +15,5 @@ extern float rotateY;
 
 // 캐릭터 전방 벡터
 extern glm::vec3 forwardVector;
+
+extern GLuint shaderProgram;

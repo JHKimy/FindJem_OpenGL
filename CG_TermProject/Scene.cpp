@@ -2,23 +2,27 @@
 #include "Controller.h"
 #include "MazeGenerator.h"
 
-Scene::Scene(GLuint shaderProgram): 
-    mainCamera(
-        glm::vec3(10.0f, 10.0f, 10.0f), // pos
-        glm::vec3(0.0f),                // target
-        glm::vec3(0.0f, 1.0f, 0.0f)),   // up
+
+// 씬 생성
+Scene::Scene(GLuint shaderProgram) :
+
+   mainCamera(shaderProgram),
     
     mainLight(
         glm::vec3(0.0f, 10.0f, 10.0f),  // pos
         glm::vec3(1.0f)),               // color
+
     shaderProgram(shaderProgram) 
-
-
 {
     // MazeGenerator 초기화
-    mazeGenerator = new MazeGenerator(15, 15); // 21x21 크기의 미로 생성
+    mazeGenerator = new MazeGenerator(15, 15); // 15x15 크기의 미로 생성
 }
 
+
+
+
+
+// 씬 초기화
 void Scene::Initialize()
 {
     // MazeGenerator를 통해 미로 생성
@@ -27,6 +31,13 @@ void Scene::Initialize()
     mazeMap = mazeGenerator->GetMaze();
 
     InitializeMaze();
+
+
+
+
+    mainCamera.TopView();
+
+
 
 
 
@@ -68,9 +79,8 @@ void Scene::Render()
     //if (Command[Num2]) {
     //    mainCamera.TopView();
     //}
-
     // 카메라 설정
-    mainCamera.ApplyCamera(shaderProgram);
+    //mainCamera.ApplyCamera(shaderProgram);
 
 
 

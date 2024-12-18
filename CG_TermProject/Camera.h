@@ -22,8 +22,10 @@ private:
 
 	glm::vec3 forwardVector{ 0.0f, 0.0f, -1.f };	// 전방 벡터
 
+	GLuint shaderProgram;
+
 public:
-	Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 up);	// 카메라 위치		// 카메라 속성
+	Camera(GLuint shaderprogram);	// 카메라 위치		// 카메라 속성
 
 
 	// glm::mat4 GetViewMatrix() const;        // 뷰 행렬 계산

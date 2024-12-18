@@ -58,6 +58,7 @@ void Controller::Update(float deltaTime)
 	// 카메라 설정
 	if (Command[Num1]) {
 		camera->FirstPersonView(character->GetPosition(), rotateY);
+		shaderProgram;
 	}
 	else if (Command[Num2]) {
 		camera->TopView();

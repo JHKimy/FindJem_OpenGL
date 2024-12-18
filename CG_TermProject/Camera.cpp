@@ -1,49 +1,15 @@
 #include "Camera.h"
 #include "Global.h"
 
-Camera::Camera(
-	glm::vec3 pos, glm::vec3 target, glm::vec3 up
-)
-	: cameraPos(pos), cameraTarget(target), cameraUp(up) 
+Camera::Camera(GLuint shaderProgram) : shaderProgram(shaderProgram)
 {
-
-	fov = 45.f;
-	aspectRatio = 1.0f;
-	nearClip = 0.01f;
-	farClip = 200.f;
-
+	cameraUp = glm::vec3(0.f, 1.f, 0.f);
+	fov = 45.f;				// Field of View
+	aspectRatio = 1.0f;		// 화면 비율
+	nearClip = 0.01f;		// 가까운 클리핑 거리
+	farClip = 200.f;		// 먼 클리핑 거리
 }
 
-//glm::mat4 Camera::GetViewMatrix() const
-//{
-//	return glm::lookAt(cameraPos, cameraTarget, cameraUp);
-//}
-//
-//
-//glm::mat4 Camera::GetProjectionMatrix() const
-//{
-//	return glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
-//}
-
-void Camera::UpdatePosition(glm::vec3 newPos)
-{
-	cameraPos = newPos;
-}
-
-void Camera::UpdateTarget(glm::vec3 newTarget)
-{
-	cameraTarget = newTarget;
-}
-
-//void Camera::SetAspectRatio(float ratio)
-//{
-//	aspectRatio = ratio;
-//}
-
-glm::vec3 Camera::GetPosition() const
-{
-	return cameraPos;
-}
 
 void Camera::ApplyCamera(GLuint shaderProgram)
 {
@@ -91,19 +57,24 @@ void Camera::FirstPersonView(glm::vec3 characterPos, float characterYaw)
 
 	cameraPos = characterPos + cameraOffset;
 	cameraTarget = cameraPos + glm::normalize(direction);
+	cameraUp = glm::vec3(0.f, 1.f, 0.f);
 
-	//// 뷰와 투영 행렬 계산
-	//glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-	//glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
-	////projection = glm::translate(projection, glm::vec3(0.0, 0.0, 0.0)); //--- 공간을 z축 이동
+	fov = 60.f;
 
-	//// 셰이더에 행렬 전달
-	//GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
-	//GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
-	//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	//glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-	////UpdatePosition(fpvPos);
-	////UpdateTarget(fpvTarget);
+
+
+
+
+	// 뷰와 투영 행렬 계산
+	glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
+
+	glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
+
+	// 셰이더에 행렬 전달
+	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
+	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 }
 
@@ -113,6 +84,48 @@ void Camera::TopView()
 	// 탑뷰의 위치와 타겟 설정
 	cameraPos = glm::vec3(20.f, 150.f, 0.1f); // 카메라를 타겟 위로 이동
 	cameraTarget = glm::vec3(20.f, 0.f, 20.f); // 타겟을 중심으로 설정
+	cameraUp = glm::vec3(0.f, 1.f, 0.f);
+
+	fov = 45.f;
+
+	// 뷰와 투영 행렬 계산
+	glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
+	glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
+
+	// 셰이더에 행렬 전달
+	GLuint viewLoc = glGetUniformLocation(shaderProgram, "viewTransform");
+	GLuint projLoc = glGetUniformLocation(shaderProgram, "projectionTransform");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+
 	//UpdatePosition(topViewPos);
 	//UpdateTarget(topViewTarget);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+void Camera::UpdatePosition(glm::vec3 newPos)
+{
+	cameraPos = newPos;
+}
+
+void Camera::UpdateTarget(glm::vec3 newTarget)
+{
+	cameraTarget = newTarget;
+}
+
+glm::vec3 Camera::GetPosition() const
+{
+	return cameraPos;
 }

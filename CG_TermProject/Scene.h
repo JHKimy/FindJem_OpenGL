@@ -2,6 +2,7 @@
 
 //#include "stdafx.h"
 #include <vector>
+#include <memory> // 스마트 포인터 사용
 #include "Camera.h"
 #include "Light.h"
 #include "Actor.h"
@@ -9,6 +10,9 @@
 #include "Enemy.h"
 
 using std::vector;
+using std::unique_ptr;
+
+
 
 class Scene
 {
