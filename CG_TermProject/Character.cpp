@@ -50,7 +50,7 @@ void Character::Rotate(float deltaYaw)
 void Character::Jump() {
     if (!isJumping) {
         isJumping = true;
-        jumpSpeed = 5.f; // 초기 점프 속도
+        jumpSpeed = 10.f; // 초기 점프 속도
     }
 }
 
@@ -119,7 +119,7 @@ void Character::UpdateBullets(float deltaTime)
     //);
 }
 
-const std::vector<std::unique_ptr<Bullet>>& Character::GetBullets() const
+std::vector<std::unique_ptr<Bullet>>& Character::GetBullets()
 {
     return bullets;
 }

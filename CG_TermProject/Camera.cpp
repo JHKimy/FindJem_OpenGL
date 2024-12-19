@@ -81,7 +81,7 @@ void Camera::FirstPersonView(
 	direction = glm::normalize(direction);
 
 	// 카메라 위치 설정: 캐릭터의 전방 방향으로 오프셋 적용
-	glm::vec3 cameraOffset = direction * 1.1f; // 캐릭터 앞쪽 2.0 단위 거리
+	glm::vec3 cameraOffset = direction * 1.001f; // 캐릭터 앞쪽 2.0 단위 거리
 	cameraOffset.y += 1.5f; // 캐릭터 머리 위로 약간 이동
 	cameraPos = characterPos + cameraOffset;
 

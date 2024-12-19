@@ -44,7 +44,7 @@ public:
 
     void UpdateBullets(float deltaTime); // 총알 업데이트
     // 총알 리스트 반환
-    const std::vector<std::unique_ptr<Bullet>>& GetBullets() const; 
+    std::vector<std::unique_ptr<Bullet>>& GetBullets(); 
     
     
     //void Stop();
