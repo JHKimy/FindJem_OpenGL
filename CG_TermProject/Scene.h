@@ -4,7 +4,7 @@
 #include <memory> // 스마트 포인터 사용
 #include "MazeGenerator.h" // Scene.h에 직접 포함 (덜 권장됨)
 #include <GL/glew.h> // OpenGL의 GLuint 및 관련 타입 정의
-//#include "Enemy.h"
+#include "Enemy.h"
 
 using std::vector;
 using std::unique_ptr;
@@ -15,7 +15,7 @@ class Camera;
 class Light;
 class Actor;
 class Character;
-//class Enemy;
+class Enemy;
 class MazeGenerator;
 
 class Scene
@@ -25,22 +25,28 @@ private:
     GLuint SceneShader;                     
     
     // 카메라
-    std::unique_ptr<Camera> mainCamera;       
+    unique_ptr<Camera> mainCamera;       
     // 조명 
-    std::unique_ptr<Light> mainLight;         
+    unique_ptr<Light> mainLight;         
     // 씬에 포함된 Actor 객체들
-    std::vector<std::unique_ptr<Actor>> actors; 
+    vector<unique_ptr<Actor>> actors; 
     // 플레이어 캐릭터
-    std::unique_ptr<Character> mainCharacter; 
+    unique_ptr<Character> mainCharacter; 
     // 미로 생성기
-    std::unique_ptr<MazeGenerator> mazeGenerator; 
+    unique_ptr<MazeGenerator> mazeGenerator; 
     
-    //std::vector<std::unique_ptr<class Enemy>> enemies; // 적 객체들
+    vector<unique_ptr<Enemy>> enemies; // 적 객체들
 
     // 미로 데이터
     vector<vector<int>> mazeMap;    
     // 미로데이터를 Actor로 변환
-    void InitializeMaze();          
+    void InitializeMaze();      
+
+    glm::vec3 blockSize; // 블록 크기
+
+
+    // 적 소환
+    void InitializeEnemies();
 
 public:
     // 생성자 및 소멸자

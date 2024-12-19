@@ -1,23 +1,25 @@
 #include "Enemy.h"
 
-Enemy::Enemy(
-    const std::string& objFilePath, 
-    const glm::vec3& position, 
-    const glm::vec3& scale,
-    const glm::vec3& rotation, 
-    const glm::vec3& color, 
-    float speed, 
-    int health)
-    : 
-    Actor(
-        objFilePath, 
-        position, 
-        scale, 
-        rotation, 
-        color), 
-    moveSpeed(speed), 
-    health(health), 
-    isActive(true) {}
+Enemy::Enemy(const glm::vec3& position)
+    : Actor("Cube.obj", 
+        position, glm::vec3(1.0f), 
+        glm::vec3(0.0f), 
+        glm::vec3(1.0f, 0.0f, 0.0f)),
+    health(3), 
+    isActive(true), 
+    moveSpeed(5.f), 
+    currentState(EnemyState::Patrol),
+    detectionRadius(10.0f), 
+    chaseRadius(15.0f), 
+    homePosition(position)
+{
+    // 초기 위치와 기본 상태 설정
+    patrolStart = position;
+    patrolEnd = position + glm::vec3(5.0f, 0.0f, 0.0f); // 5단위 거리에서 패트롤
+    direction = glm::normalize(patrolEnd - patrolStart);
+    boundingRadius = 1.f;
+}
+
 
 void Enemy::Move() {
     if (isActive) {
@@ -34,4 +36,72 @@ void Enemy::TakeDamage(int amount) {
 
 bool Enemy::IsActive() const {
     return isActive;
+}
+
+
+void Enemy::SetPatrolPoints(const glm::vec3& start, const glm::vec3& end)
+{
+    patrolStart = start;
+    patrolEnd = end;
+    direction = glm::normalize(patrolEnd - patrolStart); // 패트롤 기본 방향 설정
+}
+
+
+void Enemy::Update(float deltaTime, const glm::vec3& playerPosition, const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize)
+{
+    if (!isActive) return;
+
+    float distanceToPlayer = glm::length(playerPosition - position);
+
+    switch (currentState)
+    {
+    case EnemyState::Patrol:
+        // 캐릭터가 탐지 반경 안에 들어오면 추적 상태로 전환
+        if (distanceToPlayer < detectionRadius)
+        {
+            currentState = EnemyState::Chase;
+        }
+        else
+        {
+            // 이동 예정 위치 계산
+            glm::vec3 nextPosition = position + direction * moveSpeed * deltaTime;
+
+            // 미로의 빈 공간 여부 확인
+            int mazeX = static_cast<int>(nextPosition.x / blockSize.x);
+            int mazeZ = static_cast<int>(nextPosition.z / blockSize.z);
+
+            if (mazeX >= 0 && mazeZ >= 0 && mazeX < mazeMap[0].size() && mazeZ < mazeMap.size() && mazeMap[mazeZ][mazeX] == 0)
+            {
+                // 이동 가능하면 위치 업데이트
+                position = nextPosition;
+            }
+            else
+            {
+                // 이동 불가능하면 방향 반대로 변경
+                direction = -direction;
+            }
+        }
+        break;
+
+    case EnemyState::Chase:
+        // 플레이어를 향해 이동
+        direction = glm::normalize(playerPosition - position);
+        glm::vec3 nextPosition = position + direction * moveSpeed * 1.5f * deltaTime;
+
+        // 미로의 빈 공간 여부 확인
+        int mazeX = static_cast<int>(nextPosition.x / blockSize.x);
+        int mazeZ = static_cast<int>(nextPosition.z / blockSize.z);
+
+        if (mazeX >= 0 && mazeZ >= 0 && mazeX < mazeMap[0].size() && mazeZ < mazeMap.size() && mazeMap[mazeZ][mazeX] == 0)
+        {
+            position = nextPosition;
+        }
+        else
+        {
+            // 벽에 부딪힌 경우 다시 패트롤로 복귀
+            currentState = EnemyState::Patrol;
+            direction = glm::normalize(patrolEnd - patrolStart);
+        }
+        break;
+    }
 }
