@@ -1,5 +1,6 @@
 #pragma once
 #include "Actor.h"
+#include"memory"
 
 enum class EnemyState {
     Patrol,   
@@ -22,6 +23,11 @@ private:
     float chaseRadius;      // 추적 반경
 
 
+    float jumpSpeed;
+    bool isJumping;
+    const float gravity = 20.f;
+
+
 
 
 
@@ -31,8 +37,13 @@ public:
 
     void Move();
     void Update(float deltaTime, const glm::vec3& playerPosition, const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize);
-    void TakeDamage(int amount);
+    void TakeDamage(int amount, const glm::vec3& bulletDirection);
     bool IsActive() const;
     void SetPatrolPoints(const glm::vec3& start, const glm::vec3& end);
     float GetBoundingRadius();
+
+    bool CheckCollisionWithActors(
+        const std::vector<std::unique_ptr<Actor>>& actors,
+        glm::vec3 blockSize);
+    glm::vec3 GetDirection();
 };

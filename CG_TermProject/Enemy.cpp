@@ -11,8 +11,10 @@ Enemy::Enemy(const glm::vec3& position)
     moveSpeed(5.f),
     currentState(EnemyState::Patrol),
     detectionRadius(10.0f),
-    chaseRadius(15.0f),
-    homePosition(position)
+    chaseRadius(20.0f),
+    homePosition(position),
+    isJumping(false),
+    jumpSpeed(0.0f)
 {
     // 초기 위치와 기본 상태 설정
     patrolStart = position;
@@ -29,10 +31,17 @@ bool Enemy::IsActive() const {
 
 
 
-void Enemy::TakeDamage(int amount) {
+void Enemy::TakeDamage(int amount, const glm::vec3& bulletDirection) {
     health -= amount;
     if (health <= 0) {
         isActive = false;
+    }
+    // 뒤로 밀려남
+    position += bulletDirection * 2.f; // 총알 방향의 반대로 밀려남
+    // 총알에 맞았을 때 점프 시작
+    if (!isJumping) {
+        isJumping = true;
+        jumpSpeed = 3.0f; // 초기 점프 속도
     }
 }
 
@@ -60,6 +69,24 @@ float Enemy::GetBoundingRadius()
     return boundingRadius;
 }
 
+bool Enemy::CheckCollisionWithActors(const std::vector<std::unique_ptr<Actor>>& actors, glm::vec3 blockSize)
+{
+    for (const auto& actor : actors)
+    {
+        glm::vec3 actorPos = actor->GetPosition();
+        if (glm::distance(this->GetPosition(), actorPos) < blockSize.x) {
+            direction = -direction;
+            return true; // 충돌 발생
+        }
+    }
+    return false; // 충돌 없음
+}
+
+glm::vec3 Enemy::GetDirection()
+{
+    return direction;
+}
+
 
 void Enemy::Update(float deltaTime, 
     const glm::vec3& playerPosition, 
@@ -67,6 +94,21 @@ void Enemy::Update(float deltaTime,
     const glm::vec3& blockSize)
 {
     if (!isActive) return;
+
+
+    // 중력 및 점프 처리
+    if (isJumping) {
+        position.y += jumpSpeed * deltaTime;
+        jumpSpeed -= gravity * deltaTime;
+
+        // 땅에 도달했을 때
+        if (position.y <= 0.0f) {
+            position.y = 0.0f;
+            isJumping = false;
+        }
+    }
+
+
 
     float distanceToPlayer = glm::length(playerPosition - position);
 

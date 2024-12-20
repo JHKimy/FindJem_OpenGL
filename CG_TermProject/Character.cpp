@@ -72,7 +72,7 @@ void Character::Update(float deltaTime) {
         }
     }
 
-    bulletPool.UpdateAllBullets(deltaTime);
+    bulletPool.UpdateAllBullets(deltaTime,GetPosition());
 
     //// 총알 업데이트
     //for (auto bullet : bullets) {

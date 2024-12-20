@@ -10,7 +10,7 @@ Camera::Camera(GLuint shaderProgram)
 	fov = 45.f;				// Field of View
 	aspectRatio = 1.0f;		// 화면 비율
 	nearClip = 0.01f;		// 가까운 클리핑 거리
-	farClip = 200.f;		// 먼 클리핑 거리
+	farClip = 210.f;		// 먼 클리핑 거리
 }
 
 float Camera::GetPitch()
@@ -100,10 +100,10 @@ void Camera::FirstPersonView(
 
 void Camera::TopView()
 {
-	//isFirstPersonView = false;
+	float pos{35.f};
 	// 탑뷰의 위치와 타겟 설정
-	cameraPos = glm::vec3(20.f, 150.f, 0.1f); // 카메라를 타겟 위로 이동
-	cameraTarget = glm::vec3(20.f, 0.f, 20.f); // 타겟을 중심으로 설정
+	cameraPos = glm::vec3(pos, 130.f, pos); // 카메라를 타겟 위로 이동
+	cameraTarget = glm::vec3(pos, 0.f, pos+0.00001); // 타겟을 중심으로 설정
 	cameraUp = glm::vec3(0.f, 1.f, 0.f);
 
 	fov = 45.f;

@@ -10,7 +10,7 @@ Bullet::Bullet() : Actor
 	glm::vec3(1.0f)
 ),  isActive(false),
     direction(glm::vec3(0.f)),
-    moveSpeed(5.f)
+    moveSpeed(30.f)
 {
 	std::cout << "Bullet object created!" << std::endl;
 }
@@ -65,14 +65,17 @@ std::shared_ptr<Bullet> BulletPool::GetBullet()
     }
 }
 
-void BulletPool::UpdateAllBullets(float deltaTime)
+void BulletPool::UpdateAllBullets(float deltaTime, glm::vec3 startPos)
 {
     for (auto& bullet : pool) {
         if (bullet->IsActive()) { // 활성화된 총알만 업데이트
             bullet->Update(deltaTime);
 
-            // 추가로 충돌 처리나 비활성화 조건을 확인할 수 있음
-            if (glm::length(bullet->GetPosition()) > 5.0f) { // 예: 화면 경계 초과
+            // startPos로부터 현재 위치까지의 거리 계산
+            float distance = glm::distance(startPos, bullet->GetPosition());
+
+            // 거리가 30을 초과하면 비활성화
+            if (distance > 30.0f) {
                 bullet->Deactivate();
             }
         }

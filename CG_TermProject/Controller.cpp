@@ -74,6 +74,8 @@ void Controller::Update(float deltaTime)
 	}
 	else if (Command[Num2]) {
 		isFirstPersonView = false; // 탑뷰 모드 활성화
+		const auto& mazeMap = scene->GetMazeMap();
+
 		camera->TopView();
 	}
 }

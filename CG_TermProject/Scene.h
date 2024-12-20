@@ -61,4 +61,9 @@ public:
     Character* GetCharacter();
     Camera* GetCamera();
     const std::vector<std::unique_ptr<Actor>>& GetActors() const;
+
+    const std::vector<std::vector<int>>& GetMazeMap() const
+    {return mazeMap;}
+    
+
 };

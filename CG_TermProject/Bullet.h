@@ -18,6 +18,10 @@ public:
     void Deactivate();
     bool CheckCollision(const glm::vec3& targetPos, float targetRadius);
     void Activate(const glm::vec3& position, const glm::vec3& newDirection);
+    glm::vec3 GetDirection() const
+    {
+        return direction;
+    }
 };
 
 
@@ -31,10 +35,10 @@ private:
 
 public:
     BulletPool(size_t poolSize);
-
+    
     // 비활성화 된 총알 반환
     std::shared_ptr<Bullet> GetBullet();
-    void UpdateAllBullets(float deltaTime);
+    void UpdateAllBullets(float deltaTime, glm::vec3 startPos);
     const std::vector<std::shared_ptr<Bullet>>& GetAllBullets() const;
 
 
@@ -45,4 +49,5 @@ public:
 
     // 사용 가능한 총알(비활성화된 총알) 개수 반환
     size_t GetAvailableBulletCount() const;
+
 };

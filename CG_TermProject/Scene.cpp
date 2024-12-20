@@ -22,6 +22,7 @@ Scene::Scene(GLuint shaderProgram)
     mazeGenerator = make_unique<MazeGenerator>(15, 15);
 
     blockSize = glm::vec3(5.f, 3.f, 5.f);
+
 }
 
 void Scene::Initialize()
@@ -37,7 +38,8 @@ void Scene::Initialize()
 
 
     mainCharacter = make_unique<Character>
-        (glm::vec3(-3.f, 0.f, -3.f));// Position 
+        (glm::vec3(-10.f, 0.f, 5.f));// Position 
+
 
     mainCamera->TopView();
 
@@ -47,13 +49,21 @@ void Scene::Initialize()
 void Scene::Update(float deltaTime)
 {
     mainCharacter->Update(deltaTime);
-    mainCharacter->GetBulletPool().UpdateAllBullets(deltaTime);
 
     glm::vec3 playerPosition = mainCharacter->GetPosition();
     for (auto& enemy : enemies)
     {
         if (!enemy->IsActive()) continue; // 비활성화된 적은 업데이트하지 않음
+
+        // 기존 위치 저장
+        glm::vec3 prevPosition = enemy->GetPosition();
+
         enemy->Update(deltaTime, playerPosition, mazeMap, blockSize);
+
+        // 적과 벽돌(Actor) 충돌 감지
+        if (enemy->CheckCollisionWithActors(actors, blockSize - 0.3f)) {
+            enemy->SetPosition(prevPosition); // 충돌 시 이전 위치로 복구
+        }
     }
 
     // 적과 총알 간 충돌 처리
@@ -67,7 +77,11 @@ void Scene::Update(float deltaTime)
 
             if (bullet->CheckCollision(enemy->GetPosition(), enemy->GetBoundingRadius()))
             {
-                enemy->TakeDamage(1);  // 체력 감소
+                // 총알 방향 계산
+                glm::vec3 bulletDirection = glm::normalize(bullet->GetDirection());
+
+                enemy->TakeDamage(1, bulletDirection);  // 체력 감소
+              
                 bullet->Deactivate(); // 총알 비활성화
 
                 printf("11111111\n"); // 충돌 확인 메시지
@@ -99,11 +113,6 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
-
-
-
-
-
     mainLight->ApplyLighting(SceneShader, mainCamera->GetPosition());
 
 
