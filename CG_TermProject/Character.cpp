@@ -10,15 +10,16 @@ Character::Character(const glm::vec3& position)
         glm::vec3(0.05f),   // 크기 
         glm::vec3(0),       // 회전
         glm::vec3(0, 1, 0)  // 색상
-        ),
+    ),
 
-        health(100),        // 체력
-        mass(2.f),          // 질량
-        moveSpeed(0.5f),    // 스피드
-        isJumping(false),   // 점프 상태
-        gravity(9.8f)       // 중력 영향
+    health(100),        // 체력
+    mass(2.f),          // 질량
+    moveSpeed(0.5f),    // 스피드
+    isJumping(false),   // 점프 상태
+    gravity(9.8f),       // 중력 영향
+    bulletPool(30)
 {
-        boundingRadius = 1.5f;  // 충돌 범위
+    boundingRadius = 1.5f;  // 충돌 범위
 }
 
 glm::vec3 Character::GetForwardVector() const
@@ -26,7 +27,7 @@ glm::vec3 Character::GetForwardVector() const
     return forwardVector2;
 }
 
-void Character::Move(const glm::vec3& dir) 
+void Character::Move(const glm::vec3& dir)
 {
     glm::vec3 direction;
 
@@ -59,7 +60,7 @@ void Character::Update(float deltaTime) {
     // SetRotation(forwardVector);
 
     // 중력 적용
-    if (isJumping) 
+    if (isJumping)
     {
         position.y += jumpSpeed * deltaTime;
         jumpSpeed -= gravity * mass * deltaTime;
@@ -67,9 +68,11 @@ void Character::Update(float deltaTime) {
         // 땅에 내려올때
         if (position.y <= 0.0f) {
             position.y = 0.0f;
-            isJumping = false;   
+            isJumping = false;
         }
     }
+
+    bulletPool.UpdateAllBullets(deltaTime);
 
     //// 총알 업데이트
     //for (auto bullet : bullets) {
@@ -97,32 +100,40 @@ void Character::SetMoveSpeed(float speed)
     moveSpeed = speed;
 }
 
+BulletPool& Character::GetBulletPool()
+{
+    return bulletPool;
+}
 
-void Character::Shoot() {
+
+void Character::Shoot() 
+{
     glm::vec3 bulletPos = position + forwardVector2 * 1.5f + glm::vec3(0.0f, 1.0f, 0.0f); // 총알 위치
-    float bulletSpeed = 30.0f;
 
-    bullets.push_back(std::make_unique<Bullet>(bulletPos, forwardVector2, bulletSpeed));
-}
-
-void Character::UpdateBullets(float deltaTime)
-{
-    for (auto& bullet : bullets) {
-        bullet->Update(deltaTime);
+    auto bullet = bulletPool.GetBullet(); // 비활성화된 총알 가져오기
+    if (bullet) {
+        bullet->Activate(bulletPos, forwardVector2); // 활성화 및 초기화
     }
-
-    //// 비활성화된 총알 제거
-    //bullets.erase(
-    //    std::remove_if(bullets.begin(), bullets.end(),
-    //        [](const std::unique_ptr<Bullet>& bullet) { return !bullet->IsActive(); }),
-    //    bullets.end()
-    //);
 }
 
-std::vector<std::unique_ptr<Bullet>>& Character::GetBullets()
-{
-    return bullets;
-}
+//void Character::UpdateBullets(float deltaTime)
+//{
+//    for (auto& bullet : bullets) {
+//        bullet->Update(deltaTime);
+//    }
+//
+//    //// 비활성화된 총알 제거
+//    //bullets.erase(
+//    //    std::remove_if(bullets.begin(), bullets.end(),
+//    //        [](const std::unique_ptr<Bullet>& bullet) { return !bullet->IsActive(); }),
+//    //    bullets.end()
+//    //);
+//}
+
+//std::vector<std::unique_ptr<Bullet>>& Character::GetBullets()
+//{
+//    return bullets;
+//}
 
 
 //void Character::Stop()

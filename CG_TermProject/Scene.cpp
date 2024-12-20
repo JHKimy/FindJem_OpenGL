@@ -9,6 +9,7 @@
 #include "MazeGenerator.h"
 #include "Controller.h"
 #include <random>
+#include <iostream>
 
 Scene::Scene(GLuint shaderProgram)
     : SceneShader(shaderProgram)
@@ -46,7 +47,7 @@ void Scene::Initialize()
 void Scene::Update(float deltaTime)
 {
     mainCharacter->Update(deltaTime);
-    mainCharacter->UpdateBullets(deltaTime); 
+    mainCharacter->GetBulletPool().UpdateAllBullets(deltaTime);
 
     glm::vec3 playerPosition = mainCharacter->GetPosition();
     for (auto& enemy : enemies)
@@ -60,7 +61,7 @@ void Scene::Update(float deltaTime)
     {
         if (!enemy->IsActive()) continue; // 비활성화된 적은 무시
 
-        for (const auto& bullet : mainCharacter->GetBullets())
+        for (const auto& bullet : mainCharacter->GetBulletPool().GetAllBullets())
         {
             if (!bullet->IsActive()) continue; // 비활성화된 총알은 무시
 
@@ -79,45 +80,50 @@ void Scene::Update(float deltaTime)
             }
         }
     }
-    
+
     // 비활성화된 적 제거
     enemies.erase(
         std::remove_if(enemies.begin(), enemies.end(),
             [](const std::unique_ptr<Enemy>& enemy) { return !enemy->IsActive(); }),
         enemies.end());
 
-    // 비활성화된 총알 제거
-    mainCharacter->GetBullets().erase(
-        std::remove_if(mainCharacter->GetBullets().begin(), mainCharacter->GetBullets().end(),
-            [](const std::unique_ptr<Bullet>& bullet) { return !bullet->IsActive(); }),
-        mainCharacter->GetBullets().end());
+
+
+
+    // BulletPool 상태 출력
+    const auto& bulletPool = mainCharacter->GetBulletPool();
+    std::cout << "Total Bullets: " << bulletPool.GetAllBullets().size() << std::endl;
+    std::cout << "Available Bullets: " << bulletPool.GetAvailableBulletCount() << std::endl;
+
 }
 
 void Scene::Render()
 {
-    
 
 
 
-    
+
+
     mainLight->ApplyLighting(SceneShader, mainCamera->GetPosition());
 
-   
+
     mainCharacter->Render(SceneShader);
 
-   
-    const auto& bullets = mainCharacter->GetBullets();
-    for (const auto& bullet : bullets) {
-        if(bullet->IsActive()) bullet->Render(SceneShader);
+    // 총알
+    const auto& bullets = mainCharacter->GetBulletPool().GetAllBullets();
+    
+    for (const auto& bullet : bullets) 
+    {
+        if (bullet->IsActive()) bullet->Render(SceneShader);
     }
 
-  
+
     for (const auto& actor : actors) {
         actor->Render(SceneShader);
     }
 
 
-   
+
     for (const auto& enemy : enemies) {
         if (enemy->IsActive()) {
             enemy->Render(SceneShader);
@@ -149,10 +155,10 @@ void Scene::InitializeMaze()
             if (mazeMap[y][x] == 1) {
                 actors.push_back(make_unique<Actor>(
                     "Cube.obj",
-                    glm::vec3(x * blockSize.x, 0.0f, y * blockSize.z), 
-                    glm::vec3(blockSize),   
-                    glm::vec3(0),          
-                    glm::vec3(0, 0, 1)));   
+                    glm::vec3(x * blockSize.x, 0.0f, y * blockSize.z),
+                    glm::vec3(blockSize),
+                    glm::vec3(0),
+                    glm::vec3(0, 0, 1)));
             }
         }
     }
@@ -166,7 +172,7 @@ void Scene::InitializeEnemies()
     {
         for (int x = 0; x < mazeMap[y].size(); ++x)
         {
-            if (mazeMap[y][x] == 0) 
+            if (mazeMap[y][x] == 0)
             {
                 emptySpaces.push_back(glm::vec3(x * blockSize.x, 0.0f, y * blockSize.z));
             }
@@ -185,7 +191,7 @@ void Scene::InitializeEnemies()
         auto enemy = std::make_unique<Enemy>(enemyPosition);
 
         glm::vec3 patrolStart = enemyPosition;
-        glm::vec3 patrolEnd = enemyPosition + glm::vec3(10.f, 0.f, 0.f); 
+        glm::vec3 patrolEnd = enemyPosition + glm::vec3(10.f, 0.f, 0.f);
         enemy->SetPatrolPoints(patrolStart, patrolEnd);
 
         enemies.push_back(std::move(enemy));

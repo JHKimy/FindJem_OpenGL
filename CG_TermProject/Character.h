@@ -1,16 +1,19 @@
 #pragma once
 
 #include "Actor.h"
-//#include "Bullet.h"
+#include "Bullet.h"
 #include <vector>
 #include <memory> // 스마트 포인터 사용
 
+#include <iostream>
+
 class Bullet;
+class BulletPool;
 
 class Character : public Actor
 {
 private:
-    
+
     glm::vec3 forwardVector2;
     float yaw;
 
@@ -22,9 +25,11 @@ private:
     float gravity;
     //std::vector<Bullet*> bullets;
 
+    BulletPool bulletPool;
 
     // 총알 리스트
-    std::vector<std::unique_ptr<Bullet>> bullets; 
+    //std::vector<std::unique_ptr<Bullet>> bullets;
+
 
 public:
     Character(const glm::vec3& position);
@@ -42,11 +47,12 @@ public:
     void SetMoveSpeed(float speed);
 
 
-    void UpdateBullets(float deltaTime); // 총알 업데이트
+    BulletPool& GetBulletPool();
+    //void UpdateBullets(float deltaTime); // 총알 업데이트
     // 총알 리스트 반환
-    std::vector<std::unique_ptr<Bullet>>& GetBullets(); 
-    
-    
+    //std::vector<std::unique_ptr<Bullet>>& GetBullets();
+
+
     //void Stop();
     //void ResetSpeed();
     //const std::vector<Bullet*>& GetBullets() const;
@@ -63,5 +69,17 @@ public:
     // 렌더링 함수 (Actor의 Render를 오버라이드)
     void Render(GLuint shaderProgram) override;
 
-};
 
+
+
+
+    void CheckBulletPoolStatus() {
+        auto& bulletPool = GetBulletPool();
+
+        // 풀에 있는 전체 총알 수
+        std::cout << "Total Bullets in Pool: " << bulletPool.GetAllBullets().size() << std::endl;
+
+        // 사용 가능한 총알 수
+        std::cout << "Available Bullets: " << bulletPool.GetAvailableBulletCount() << std::endl;
+    }
+};

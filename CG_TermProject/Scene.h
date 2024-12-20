@@ -22,25 +22,25 @@ class Scene
 {
 private:
     // 셰이더 프로그램 ID
-    GLuint SceneShader;                     
-    
+    GLuint SceneShader;
+
     // 카메라
-    unique_ptr<Camera> mainCamera;       
+    unique_ptr<Camera> mainCamera;
     // 조명 
-    unique_ptr<Light> mainLight;         
+    unique_ptr<Light> mainLight;
     // 씬에 포함된 Actor 객체들
-    vector<unique_ptr<Actor>> actors; 
+    vector<unique_ptr<Actor>> actors;
     // 플레이어 캐릭터
-    unique_ptr<Character> mainCharacter; 
+    unique_ptr<Character> mainCharacter;
     // 미로 생성기
-    unique_ptr<MazeGenerator> mazeGenerator; 
-    
+    unique_ptr<MazeGenerator> mazeGenerator;
+
     vector<unique_ptr<Enemy>> enemies; // 적 객체들
 
     // 미로 데이터
-    vector<vector<int>> mazeMap;    
+    vector<vector<int>> mazeMap;
     // 미로데이터를 Actor로 변환
-    void InitializeMaze();      
+    void InitializeMaze();
 
     glm::vec3 blockSize; // 블록 크기
 
@@ -52,11 +52,11 @@ public:
     // 생성자 및 소멸자
     Scene(GLuint shaderProgram);
     // 유니크 포인터가 자동으로 메모리 정리
-    ~Scene() = default; 
+    ~Scene() = default;
 
-    void Initialize();   
+    void Initialize();
     void Update(float deltaTime);
-    void Render();       
+    void Render();
 
     Character* GetCharacter();
     Camera* GetCamera();

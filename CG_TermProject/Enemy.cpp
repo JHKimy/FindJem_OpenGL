@@ -21,9 +21,13 @@ Enemy::Enemy(const glm::vec3& position)
     boundingRadius = 2.f;
 }
 
+
+
 bool Enemy::IsActive() const {
     return isActive;
 }
+
+
 
 void Enemy::TakeDamage(int amount) {
     health -= amount;
