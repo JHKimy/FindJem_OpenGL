@@ -36,7 +36,6 @@ void Scene::Initialize()
     InitializeMaze();
 
 
-
     mainCharacter = make_unique<Character>
         (glm::vec3(-10.f, 0.f, 5.f));// Position 
 
@@ -75,14 +74,14 @@ void Scene::Update(float deltaTime)
         {
             if (!bullet->IsActive()) continue; // 비활성화된 총알은 무시
 
-            if (bullet->CheckCollision(enemy->GetPosition(), enemy->GetBoundingRadius()))
+            if (bullet->CheckCollision(static_cast<Actor*>(enemy.get())))
             {
                 // 총알 방향 계산
                 glm::vec3 bulletDirection = glm::normalize(bullet->GetDirection());
 
                 enemy->TakeDamage(1, bulletDirection);  // 체력 감소
               
-                bullet->Deactivate(); // 총알 비활성화
+                bullet->DeActivate(); // 총알 비활성화
 
                 printf("11111111\n"); // 충돌 확인 메시지
 
@@ -113,6 +112,9 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
+
+
+
     mainLight->ApplyLighting(SceneShader, mainCamera->GetPosition());
 
 

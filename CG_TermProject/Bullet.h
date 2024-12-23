@@ -15,8 +15,7 @@ public:
 
     void Update(float deltaTime);
     bool IsActive() const;
-    void Deactivate();
-    bool CheckCollision(const glm::vec3& targetPos, float targetRadius);
+    void DeActivate();
     void Activate(const glm::vec3& position, const glm::vec3& newDirection);
     glm::vec3 GetDirection() const
     {

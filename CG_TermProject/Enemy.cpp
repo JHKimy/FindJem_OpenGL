@@ -52,11 +52,6 @@ void Enemy::Move() {
     //}
 }
 
-
-
-
-
-
 void Enemy::SetPatrolPoints(const glm::vec3& start, const glm::vec3& end)
 {
     patrolStart = start;

@@ -1,7 +1,7 @@
 #include "Global.h"
 
 // 윈도우 사이즈
-GLfloat winWidth{ 1000 };
+GLfloat winWidth{ 700 };
 GLfloat winHeight{ 700 };
 
 // 캐릭터 Y축 회전 값

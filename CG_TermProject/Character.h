@@ -14,7 +14,7 @@ class Character : public Actor
 {
 private:
 
-    glm::vec3 forwardVector2;
+    glm::vec3 forwardVector;
     float yaw;
 
     int health;

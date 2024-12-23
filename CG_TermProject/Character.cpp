@@ -24,7 +24,7 @@ Character::Character(const glm::vec3& position)
 
 glm::vec3 Character::GetForwardVector() const
 {
-    return forwardVector2;
+    return forwardVector;
 }
 
 void Character::Move(const glm::vec3& dir)
@@ -42,10 +42,10 @@ void Character::Rotate(float deltaYaw)
     if (yaw < 0.0f) yaw += 360.0f;
 
     // 전방 벡터 업데이트 (Pitch는 항상 0)
-    forwardVector2.x = cos(glm::radians(yaw));
-    forwardVector2.y = 0.f; // 캐릭터는 수평 방향만 회전
-    forwardVector2.z = sin(glm::radians(yaw));
-    forwardVector2 = glm::normalize(forwardVector2);
+    forwardVector.x = cos(glm::radians(yaw));
+    forwardVector.y = 0.f; // 캐릭터는 수평 방향만 회전
+    forwardVector.z = sin(glm::radians(yaw));
+    forwardVector = glm::normalize(forwardVector);
 }
 
 void Character::Jump() {
@@ -108,11 +108,11 @@ BulletPool& Character::GetBulletPool()
 
 void Character::Shoot() 
 {
-    glm::vec3 bulletPos = position + forwardVector2 * 1.5f + glm::vec3(0.0f, 1.0f, 0.0f); // 총알 위치
+    glm::vec3 bulletPos = position + forwardVector * 1.5f + glm::vec3(0.0f, 1.0f, 0.0f); // 총알 위치
 
     auto bullet = bulletPool.GetBullet(); // 비활성화된 총알 가져오기
     if (bullet) {
-        bullet->Activate(bulletPos, forwardVector2); // 활성화 및 초기화
+        bullet->Activate(bulletPos, forwardVector); // 활성화 및 초기화
     }
 }
 
@@ -129,13 +129,10 @@ void Character::Shoot()
 //    //    bullets.end()
 //    //);
 //}
-
 //std::vector<std::unique_ptr<Bullet>>& Character::GetBullets()
 //{
 //    return bullets;
 //}
-
-
 //void Character::Stop()
 //{
 //    moveSpeed = 0.f;
@@ -145,16 +142,13 @@ void Character::Shoot()
 //{
 //    moveSpeed = 0.05f;
 //}
-
 //const std::vector<Bullet*>& Character::GetBullets() const {
 //    return bullets;
 //}
-
 //glm::vec3 Character::GetPosition()
 //{
 //    return glm::vec3();
 //}
-
 //void Character::SetDirection(const glm::vec3& dir) {
 //    direction = glm::normalize(dir);
 //}
@@ -168,21 +162,6 @@ float Character::GetYaw() const
     return yaw;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void Character::Render(GLuint shaderProgram)
 {
     glBindVertexArray(vao);
@@ -193,13 +172,13 @@ void Character::Render(GLuint shaderProgram)
 
     // forwardVector를 사용한 회전 변환
     glm::vec3 up(0.0f, 1.0f, 0.0f);                                  // 월드 업 벡터
-    glm::vec3 right = glm::normalize(glm::cross(up, forwardVector2)); // 오른쪽 벡터
-    glm::vec3 correctedUp = glm::normalize(glm::cross(forwardVector2, right)); // 수정된 위쪽 벡터
+    glm::vec3 right = glm::normalize(glm::cross(up, forwardVector)); // 오른쪽 벡터
+    glm::vec3 correctedUp = glm::normalize(glm::cross(forwardVector, right)); // 수정된 위쪽 벡터
 
     glm::mat4 rotate = glm::mat4(1.0f);
     rotate[0] = glm::vec4(right, 0.0f);        // 오른쪽 벡터
     rotate[1] = glm::vec4(correctedUp, 0.0f); // 위쪽 벡터
-    rotate[2] = glm::vec4(forwardVector2, 0.0f); // 전방 벡터
+    rotate[2] = glm::vec4(forwardVector, 0.0f); // 전방 벡터
 
     // 합성 변환 행렬
     glm::mat4 TRANS = translate * rotate * size;

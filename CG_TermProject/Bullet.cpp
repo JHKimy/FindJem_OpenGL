@@ -25,7 +25,7 @@ bool Bullet::IsActive() const {
     return isActive;
 }
 
-void Bullet::Deactivate() {
+void Bullet::DeActivate() {
     isActive = false;
 }
 
@@ -34,12 +34,6 @@ void Bullet::Activate(const glm::vec3& position, const glm::vec3& newDirection)
     isActive = true;
     SetPosition(position);
     direction = glm::normalize(newDirection);
-}
-
-bool Bullet::CheckCollision(const glm::vec3& targetPos, float targetRadius)
-{
-    float distance = glm::length(position - targetPos);
-    return distance < targetRadius;
 }
 
 
@@ -52,7 +46,7 @@ BulletPool::BulletPool(size_t size) : poolSize(size)
 {
 	for (size_t i{}; i < poolSize; ++i) {
 		pool.emplace_back(make_shared<Bullet>());
-        pool.back()->Deactivate(); // 비활성화 된 상태로 초기화
+        pool.back()->DeActivate(); // 비활성화 된 상태로 초기화
 	}
 }
 
@@ -76,7 +70,7 @@ void BulletPool::UpdateAllBullets(float deltaTime, glm::vec3 startPos)
 
             // 거리가 30을 초과하면 비활성화
             if (distance > 30.0f) {
-                bullet->Deactivate();
+                bullet->DeActivate();
             }
         }
     }
