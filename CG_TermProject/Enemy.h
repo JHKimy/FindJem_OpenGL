@@ -46,4 +46,15 @@ public:
         const std::vector<std::unique_ptr<Actor>>& actors,
         glm::vec3 blockSize);
     glm::vec3 GetDirection();
+
+
+    void Patrol(const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, int mazeX, int mazeZ, float deltaTime);
+    void Chase(const glm::vec3& playerPosition, const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, int mazeX, int mazeZ, float deltaTime);
+    bool isValid(int x, int z, const std::vector<std::vector<int>>& mazeMap);
+
+
+
+    glm::vec3 FindAlternativeDirection(const glm::vec3& blockPosition, const glm::vec3& blockSize);
+    void ChangeDirectionRandomly(int currentMazeX, int currentMazeZ, const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize);
+
 };

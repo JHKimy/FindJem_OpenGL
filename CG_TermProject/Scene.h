@@ -65,5 +65,7 @@ public:
     const std::vector<std::vector<int>>& GetMazeMap() const
     {return mazeMap;}
     
+    //vector<Actor*> GetNearbyActors(const Actor* target) const;
+
 
 };

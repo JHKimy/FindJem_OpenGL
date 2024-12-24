@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include <random>
 
 Enemy::Enemy(const glm::vec3& position)
     : Actor("Cube.obj",
@@ -18,7 +19,7 @@ Enemy::Enemy(const glm::vec3& position)
 {
     // 초기 위치와 기본 상태 설정
     patrolStart = position;
-    patrolEnd = position + glm::vec3(3.0f, 0.0f, 0.0f); // 5단위 거리에서 패트롤
+    patrolEnd = position + glm::vec3(50.0f, 0.0f, 50.0f); // 5단위 거리에서 패트롤
     direction = glm::normalize(patrolEnd - patrolStart);
     boundingRadius = 2.f;
 }
@@ -82,6 +83,71 @@ glm::vec3 Enemy::GetDirection()
     return direction;
 }
 
+void Enemy::Patrol(
+    const std::vector<std::vector<int>>& mazeMap,
+    const glm::vec3& blockSize,
+    int mazeX, int mazeZ,
+    float deltaTime)
+{
+    glm::vec3 nextPosition = position + direction * moveSpeed * deltaTime;
+
+    // 다음 위치를 미로 셀 기준으로 변환
+    int nextMazeX = static_cast<int>(nextPosition.x / blockSize.x);
+    int nextMazeZ = static_cast<int>(nextPosition.z / blockSize.z);
+
+
+    // 현재 위치를 미로 셀 기준으로 변환
+    int currentMazeX = static_cast<int>(position.x / blockSize.x);
+    int currentMazeZ = static_cast<int>(position.z / blockSize.z);
+
+    // 이동 가능 여부 확인
+    if (isValid(nextMazeX, nextMazeZ, mazeMap)) {
+        position = nextPosition;
+
+        //// 패트롤 경로 끝에 도달했는지 확인
+        //if (glm::length(position - patrolEnd) < 0.1f) {
+        //    std::swap(patrolStart, patrolEnd);
+        //    direction = glm::normalize(patrolEnd - patrolStart);
+        //}
+    }
+    else {
+        // 이동 불가능하면 방향 반대로 변경
+        ChangeDirectionRandomly(currentMazeX, currentMazeZ, mazeMap, blockSize);
+    }
+}
+
+void Enemy::Chase(
+    const glm::vec3& playerPosition,
+    const std::vector<std::vector<int>>& mazeMap,
+    const glm::vec3& blockSize,
+    int mazeX, int mazeZ,
+    float deltaTime)
+{
+    // 플레이어와의 방향 계산
+    glm::vec3 targetDirection = glm::normalize(playerPosition - position);
+
+    // 다음 위치 계산
+    glm::vec3 nextPosition = position + targetDirection * moveSpeed * deltaTime;
+
+    // 다음 위치를 미로 셀 기준으로 변환
+    int nextMazeX = static_cast<int>(nextPosition.x / blockSize.x);
+    int nextMazeZ = static_cast<int>(nextPosition.z / blockSize.z);
+
+    // 이동 가능 여부 확인
+    if (isValid(nextMazeX, nextMazeZ, mazeMap)) {
+        position = nextPosition;
+    }
+    else {
+        // 이동 불가능하면 다시 패트롤 상태로
+        currentState = EnemyState::Patrol;
+        direction = glm::normalize(patrolEnd - patrolStart);
+    }
+}
+
+bool Enemy::isValid(int x, int z, const std::vector<std::vector<int>>& mazeMap) {
+    return x >= 0 && z >= 0 && x < mazeMap[0].size() && z < mazeMap.size() && mazeMap[z][x] == 0;
+}
+
 
 void Enemy::Update(float deltaTime, 
     const glm::vec3& playerPosition, 
@@ -90,6 +156,11 @@ void Enemy::Update(float deltaTime,
 {
     if (!isActive) return;
 
+
+
+    // 현재 위치를 미로 셀 기준으로 변환
+    int mazeX = static_cast<int>(position.x / blockSize.x);
+    int mazeZ = static_cast<int>(position.z / blockSize.z);
 
     // 중력 및 점프 처리
     if (isJumping) {
@@ -111,62 +182,73 @@ void Enemy::Update(float deltaTime,
     switch (currentState)
     {
     case EnemyState::Patrol:
-        // 캐릭터가 탐지 반경 안에 들어오면 추적 상태로 전환
-        if (distanceToPlayer < detectionRadius)
-        {
+        if (distanceToPlayer < detectionRadius) {
             currentState = EnemyState::Chase;
         }
-        else
-        {
-            // 이동 예정 위치 계산
-            glm::vec3 nextPosition = position + direction * moveSpeed * deltaTime;
-
-            // 미로의 빈 공간 여부 확인
-            int mazeX = static_cast<int>(nextPosition.x / blockSize.x);
-            int mazeZ = static_cast<int>(nextPosition.z / blockSize.z);
-
-            if (mazeX >= 0 && mazeZ >= 0 && mazeX < mazeMap[0].size() && mazeZ < mazeMap.size() && mazeMap[mazeZ][mazeX] == 0)
-            {
-                // 이동 가능하면 위치 업데이트
-                position = nextPosition;
-
-                // 패트롤 경로 끝에 도달했는지 확인
-                if (glm::length(position - patrolEnd) < 0.1f)
-                {
-                    // 경로 끝에 도달하면 방향 반대로 설정
-                    glm::vec3 temp = patrolStart;
-                    patrolStart = patrolEnd;
-                    patrolEnd = temp;
-                    direction = glm::normalize(patrolEnd - patrolStart);
-                }
-            }
-            else
-            {
-                // 이동 불가능하면 방향 반대로 변경
-                direction = -direction;
-            }
+        else {
+            Patrol(mazeMap, blockSize, mazeX, mazeZ, deltaTime);
         }
         break;
 
     case EnemyState::Chase:
-        // 플레이어를 향해 이동
-        direction = glm::normalize(playerPosition - position);
-        glm::vec3 nextPosition = position + direction * moveSpeed * 1.5f * deltaTime;
-
-        // 미로의 빈 공간 여부 확인
-        int mazeX = static_cast<int>(nextPosition.x / blockSize.x);
-        int mazeZ = static_cast<int>(nextPosition.z / blockSize.z);
-
-        if (mazeX >= 0 && mazeZ >= 0 && mazeX < mazeMap[0].size() && mazeZ < mazeMap.size() && mazeMap[mazeZ][mazeX] == 0)
-        {
-            position = nextPosition;
-        }
-        else
-        {
-            // 벽에 부딪힌 경우 다시 패트롤로 복귀
-            currentState = EnemyState::Patrol;
-            direction = glm::normalize(patrolEnd - patrolStart);
-        }
+        Chase(playerPosition, mazeMap, blockSize, mazeX, mazeZ, deltaTime);
         break;
+    }
+}
+
+
+glm::vec3 Enemy::FindAlternativeDirection(const glm::vec3& blockPosition, const glm::vec3& blockSize) {
+    // 상하좌우 방향
+    const std::vector<glm::vec3> directions = {
+        glm::vec3(1.0f, 0.0f, 0.0f),
+        glm::vec3(-1.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 1.0f),
+        glm::vec3(0.0f, 0.0f, -1.0f)
+    };
+
+    for (const auto& dir : directions) {
+        glm::vec3 potentialPosition = position + dir * blockSize;
+        if (glm::distance(potentialPosition, blockPosition) > blockSize.x) {
+            return dir;
+        }
+    }
+
+    return -direction; // 대체 방향이 없으면 반대 방향으로
+}
+
+
+
+
+void Enemy::ChangeDirectionRandomly(int currentMazeX, int currentMazeZ, const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize) {
+    // 상하좌우 방향
+    const std::vector<glm::vec3> directions = {
+        glm::vec3(1.0f, 0.0f, 0.0f),  // 오른쪽
+        glm::vec3(-1.0f, 0.0f, 0.0f), // 왼쪽
+        glm::vec3(0.0f, 0.0f, 1.0f),  // 위쪽
+        glm::vec3(0.0f, 0.0f, -1.0f)  // 아래쪽
+    };
+
+    std::vector<glm::vec3> validDirections;
+
+    // 유효한 방향 필터링
+    for (const auto& dir : directions) {
+        int nextX = currentMazeX + static_cast<int>(dir.x);
+        int nextZ = currentMazeZ + static_cast<int>(dir.z);
+
+        if (isValid(nextX, nextZ, mazeMap)) {
+            validDirections.push_back(dir);
+        }
+    }
+
+    // 랜덤으로 방향 변경
+    if (!validDirections.empty()) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, validDirections.size() - 1);
+
+        direction = validDirections[dis(gen)];
+    }
+    else {
+        direction = -direction; // 유효한 방향이 없으면 반대 방향으로
     }
 }

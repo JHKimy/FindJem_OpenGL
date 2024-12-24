@@ -41,6 +41,8 @@ void Controller::Update(float deltaTime)
 	if (Command[A]) moveDirection -= glm::cross(character->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f));
 	if (Command[D]) moveDirection += glm::cross(character->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f));
 
+
+
 	// 이동 수행 (임시로 이동)
 	if (glm::length(moveDirection) > 0.0f) {
 		moveDirection = glm::normalize(moveDirection);
@@ -64,8 +66,15 @@ void Controller::Update(float deltaTime)
 		character->SetPosition(prevCharacterPosition);
 	}
 
+
+
+
+
 	// 점프 처리
 	if (Command[SpaceBar]) character->Jump();
+
+
+
 
 	// 카메라 설정
 	if (Command[Num1]) {

@@ -37,6 +37,7 @@ void Scene::Initialize()
 
 
     mainCharacter = make_unique<Character>
+        //(glm::vec3(-10.f, 0.f, 5.f));// Position 
         (glm::vec3(-10.f, 0.f, 5.f));// Position 
 
 
@@ -55,14 +56,14 @@ void Scene::Update(float deltaTime)
         if (!enemy->IsActive()) continue; // 비활성화된 적은 업데이트하지 않음
 
         // 기존 위치 저장
-        glm::vec3 prevPosition = enemy->GetPosition();
+        //glm::vec3 prevPosition = enemy->GetPosition();
 
         enemy->Update(deltaTime, playerPosition, mazeMap, blockSize);
 
-        // 적과 벽돌(Actor) 충돌 감지
-        if (enemy->CheckCollisionWithActors(actors, blockSize - 0.3f)) {
-            enemy->SetPosition(prevPosition); // 충돌 시 이전 위치로 복구
-        }
+        //// 적과 벽돌(Actor) 충돌 감지
+        //if (enemy->CheckCollisionWithActors(actors, blockSize - 0.3f)) {
+        //    enemy->SetPosition(prevPosition); // 충돌 시 이전 위치로 복구
+        //}
     }
 
     // 적과 총알 간 충돌 처리
@@ -157,16 +158,17 @@ const std::vector<std::unique_ptr<Actor>>& Scene::GetActors() const
     return actors;
 }
 
+
 void Scene::InitializeMaze()
 {
-    for (int y = 0; y < mazeMap.size(); ++y)
+    for (int z = 0; z < mazeMap.size(); ++z)
     {
-        for (int x = 0; x < mazeMap[y].size(); ++x)
+        for (int x = 0; x < mazeMap[z].size(); ++x)
         {
-            if (mazeMap[y][x] == 1) {
+            if (mazeMap[z][x] == 1) {
                 actors.push_back(make_unique<Actor>(
                     "Cube.obj",
-                    glm::vec3(x * blockSize.x, 0.0f, y * blockSize.z),
+                    glm::vec3(x * blockSize.x, 0.0f, z * blockSize.z),
                     glm::vec3(blockSize),
                     glm::vec3(0),
                     glm::vec3(0, 0, 1)));
@@ -202,11 +204,27 @@ void Scene::InitializeEnemies()
         auto enemy = std::make_unique<Enemy>(enemyPosition);
 
         glm::vec3 patrolStart = enemyPosition;
-        glm::vec3 patrolEnd = enemyPosition + glm::vec3(10.f, 0.f, 0.f);
+        glm::vec3 patrolEnd = enemyPosition + glm::vec3(blockSize.x, 0.f, 0.f); // 패트롤 경로 설정        enemy->SetPatrolPoints(patrolStart, patrolEnd);
         enemy->SetPatrolPoints(patrolStart, patrolEnd);
-
         enemies.push_back(std::move(enemy));
 
         emptySpaces.erase(emptySpaces.begin() + randomIndex);
     }
 }
+
+
+//vector<Actor*> Scene::GetNearbyActors(const Actor* target) const {
+//    std::vector<Actor*> nearbyActors;
+//
+//    // 그리드 기반으로 인근 액터만 검색
+//    glm::vec3 targetPosition = target->GetPosition();
+//    for (const auto& actor : actors) {
+//        glm::vec3 actorPosition = actor->GetPosition();
+//
+//        if (glm::distance(targetPosition, actorPosition) < 5.0f) { // 충돌 감지 거리
+//            nearbyActors.push_back(actor.get());
+//        }
+//    }
+//
+//    return nearbyActors;
+//}
