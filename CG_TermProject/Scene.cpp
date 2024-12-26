@@ -19,7 +19,7 @@ Scene::Scene(GLuint shaderProgram)
         glm::vec3(0.0f, 10.0f, 10.0f),  // pos
         glm::vec3(1.0f));               // color
 
-    mazeGenerator = make_unique<MazeGenerator>(15, 15);
+    mazeGenerator = make_unique<MazeGenerator>(5, 5);
 
     blockSize = glm::vec3(5.f, 3.f, 5.f);
 
@@ -104,10 +104,10 @@ void Scene::Update(float deltaTime)
 
 
 
-    // BulletPool 상태 출력
-    const auto& bulletPool = mainCharacter->GetBulletPool();
-    std::cout << "Total Bullets: " << bulletPool.GetAllBullets().size() << std::endl;
-    std::cout << "Available Bullets: " << bulletPool.GetAvailableBulletCount() << std::endl;
+    //// BulletPool 상태 출력
+    //const auto& bulletPool = mainCharacter->GetBulletPool();
+    //std::cout << "Total Bullets: " << bulletPool.GetAllBullets().size() << std::endl;
+    //std::cout << "Available Bullets: " << bulletPool.GetAvailableBulletCount() << std::endl;
 
 }
 
@@ -179,6 +179,7 @@ void Scene::InitializeMaze()
 
 void Scene::InitializeEnemies()
 {
+    // 빈 공간 찾기
     std::vector<glm::vec3> emptySpaces;
 
     for (int y = 0; y < mazeMap.size(); ++y)
@@ -192,20 +193,25 @@ void Scene::InitializeEnemies()
         }
     }
 
+
+    // 빈 공간에 랜덤으로 적 생성
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(0, emptySpaces.size() - 1);
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 1; ++i)
     {
         int randomIndex = dist(gen);
         glm::vec3 enemyPosition = emptySpaces[randomIndex];
 
         auto enemy = std::make_unique<Enemy>(enemyPosition);
+        
+        //enemy->InitializePatrolPath(mazeMap, blockSize);
+        
+        //glm::vec3 patrolStart = enemyPosition;
+        //glm::vec3 patrolEnd = enemyPosition + glm::vec3(blockSize.x, 0.f, 0.f); // 패트롤 경로 설정
+        //enemy->SetPatrolPoints(patrolStart, patrolEnd);
 
-        glm::vec3 patrolStart = enemyPosition;
-        glm::vec3 patrolEnd = enemyPosition + glm::vec3(blockSize.x, 0.f, 0.f); // 패트롤 경로 설정        enemy->SetPatrolPoints(patrolStart, patrolEnd);
-        enemy->SetPatrolPoints(patrolStart, patrolEnd);
         enemies.push_back(std::move(enemy));
 
         emptySpaces.erase(emptySpaces.begin() + randomIndex);
