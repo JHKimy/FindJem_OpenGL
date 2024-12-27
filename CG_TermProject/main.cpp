@@ -14,6 +14,7 @@
 #include "Scene.h"
 #include "Controller.h"
 #include <unordered_map>
+#include <chrono> // 시간 측정을 위한 헤더
 using namespace std;
 
 
@@ -234,9 +235,31 @@ GLvoid TimerFunction(int value)
 	// 다음 프레임 요청
 	glutTimerFunc(16, TimerFunction, 1);
 	glutPostRedisplay();
-}
 
-// GLvoid Motion(int x, int y)
-//{
-//	return GLvoid();
-//}
+
+
+
+
+	// FPS
+	static auto lastTime = std::chrono::high_resolution_clock::now(); // 이전 프레임 시간
+	static int frameCount = 0;                                       // 프레임 수
+	static float elapsedTime = 0.0f;                                 // 경과 시간
+
+	// 현재 시간 계산
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<float> deltaTime2 = currentTime - lastTime;
+	lastTime = currentTime;
+
+	// FPS 계산
+	frameCount++;
+	elapsedTime += deltaTime2.count();
+
+	if (elapsedTime >= 1.0f) {
+		float fps = frameCount / elapsedTime;
+		std::cout << "FPS: " << fps << std::endl;
+
+		// 초기화
+		frameCount = 0;
+		elapsedTime = 0.0f;
+	}
+}

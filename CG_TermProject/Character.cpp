@@ -105,6 +105,13 @@ BulletPool& Character::GetBulletPool()
     return bulletPool;
 }
 
+int Character::GetDefeatedEnemies() const {
+    return defeatedEnemies;
+}
+
+void Character::IncrementDefeatedEnemies() {
+    defeatedEnemies++;
+}
 
 void Character::Shoot() 
 {

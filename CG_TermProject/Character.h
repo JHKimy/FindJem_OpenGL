@@ -31,6 +31,9 @@ private:
     //std::vector<std::unique_ptr<Bullet>> bullets;
 
 
+    int defeatedEnemies = 0; // 적 제거 카운트
+
+
 public:
     Character(const glm::vec3& position);
 
@@ -48,6 +51,11 @@ public:
 
 
     BulletPool& GetBulletPool();
+
+    int GetDefeatedEnemies() const; // 적 제거 카운트 반환
+    void IncrementDefeatedEnemies(); // 적 제거 카운트 증가
+
+
     //void UpdateBullets(float deltaTime); // 총알 업데이트
     // 총알 리스트 반환
     //std::vector<std::unique_ptr<Bullet>>& GetBullets();

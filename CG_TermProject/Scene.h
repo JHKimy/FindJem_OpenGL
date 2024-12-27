@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <memory> // 스마트 포인터 사용
-#include "MazeGenerator.h" // Scene.h에 직접 포함 (덜 권장됨)
 #include <GL/glew.h> // OpenGL의 GLuint 및 관련 타입 정의
+#include "MazeGenerator.h" // 미로 생성기
 #include "Enemy.h"
 
 using std::vector;
@@ -18,54 +18,49 @@ class Character;
 class Enemy;
 class MazeGenerator;
 
-class Scene
+class Scene 
 {
 private:
-    // 셰이더 프로그램 ID
-    GLuint SceneShader;
 
-    // 카메라
-    unique_ptr<Camera> mainCamera;
-    // 조명 
-    unique_ptr<Light> mainLight;
-    // 씬에 포함된 Actor 객체들
-    vector<unique_ptr<Actor>> actors;
-    // 플레이어 캐릭터
-    unique_ptr<Character> mainCharacter;
-    // 미로 생성기
-    unique_ptr<MazeGenerator> mazeGenerator;
+    // ===== 멤버 변수 =====
+    GLuint SceneShader; // 셰이더 프로그램 ID
 
-    vector<unique_ptr<Enemy>> enemies; // 적 객체들
+    // 주요 게임 객체
+    std::unique_ptr<Camera> mainCamera;         // 메인 카메라
+    std::unique_ptr<Light> mainLight;           // 메인 조명
+    std::unique_ptr<Character> mainCharacter;   // 플레이어 캐릭터
+    std::unique_ptr<MazeGenerator> mazeGenerator; // 미로 생성기
 
-    // 미로 데이터
-    vector<vector<int>> mazeMap;
-    // 미로데이터를 Actor로 변환
-    void InitializeMaze();
+    // 액터와 적 관리
+    std::vector<std::unique_ptr<Actor>> actors; // 씬에 포함된 액터들
+    std::vector<std::unique_ptr<Enemy>> enemies; // 적들
+
+    std::vector<std::vector<int>> mazeMap; // 미로 데이터
 
     glm::vec3 blockSize; // 블록 크기
 
 
-    // 적 소환
-    void InitializeEnemies();
+    // ===== 내부 유틸리티 함수 =====
+    void InitializeMaze();       // 미로 초기화
+    void InitializeEnemies();    // 적 초기화
+    void HandleBulletEnemyCollisions(); // 적과 총알 충돌 처리
+    void RemoveInactiveEnemies();   // 비활성화 된 적 지우기
 
 public:
-    // 생성자 및 소멸자
-    Scene(GLuint shaderProgram);
-    // 유니크 포인터가 자동으로 메모리 정리
-    ~Scene() = default;
-
-    void Initialize();
-    void Update(float deltaTime);
-    void Render();
-
-    Character* GetCharacter();
-    Camera* GetCamera();
-    const std::vector<std::unique_ptr<Actor>>& GetActors() const;
-
-    const std::vector<std::vector<int>>& GetMazeMap() const
-    {return mazeMap;}
-    
-    //vector<Actor*> GetNearbyActors(const Actor* target) const;
+    // ===== 생성자 및 소멸자 =====
+    explicit Scene(GLuint shaderProgram); // 생성자
+    ~Scene() = default; // 소멸자
 
 
+    // ===== 주요 멤버 함수 =====
+    void Initialize();           // 초기화
+    void Update(float deltaTime); // 업데이트
+    void Render();               // 렌더링
+
+
+    // ===== 접근자 함수 =====
+    Character* GetCharacter() { return mainCharacter.get(); }
+    Camera* GetCamera() { return mainCamera.get(); }
+    const std::vector<std::unique_ptr<Actor>>& GetActors() const { return actors; };
+    const std::vector<std::vector<int>>& GetMazeMap() const { return mazeMap; } 
 };

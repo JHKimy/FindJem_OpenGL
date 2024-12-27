@@ -3,161 +3,103 @@
 #include "Light.h"
 #include "Actor.h"
 #include "Character.h"
-#include"Bullet.h"
+#include "Bullet.h"
 #include "Enemy.h"
-
 #include "MazeGenerator.h"
 #include "Controller.h"
 #include <random>
 #include <iostream>
 
 Scene::Scene(GLuint shaderProgram)
-    : SceneShader(shaderProgram)
+    : SceneShader(shaderProgram),
+    blockSize(5.f, 3.f, 5.f) // 블록 크기 초기화
 {
     mainCamera = make_unique<Camera>(shaderProgram);
     mainLight = make_unique<Light>(
-        glm::vec3(0.0f, 10.0f, 10.0f),  // pos
-        glm::vec3(1.0f));               // color
+        glm::vec3(0.0f, 10.0f, 10.0f),  // 조명 위치
+        glm::vec3(1.0f));               // 조명 색상
 
-    mazeGenerator = make_unique<MazeGenerator>(5, 5);
-
-    blockSize = glm::vec3(5.f, 3.f, 5.f);
-
+    mazeGenerator = make_unique<MazeGenerator>(15, 15);
 }
 
 void Scene::Initialize()
 {
+    // 맵 생성 및 변환
     mazeGenerator->GeneratePrimMaze();
     mazeGenerator->addEntrances();
     mazeMap = mazeGenerator->GetMaze();
-
-
-
     InitializeMaze();
 
-
-    mainCharacter = make_unique<Character>
-        //(glm::vec3(-10.f, 0.f, 5.f));// Position 
-        (glm::vec3(-10.f, 0.f, 5.f));// Position 
-
-
+    // 캐릭터 초기화
+    mainCharacter = make_unique<Character>(glm::vec3(-10.f, 0.f, 5.f));
     mainCamera->TopView();
 
+    // 적 초기화
     InitializeEnemies();
 }
 
 void Scene::Update(float deltaTime)
 {
+    // 플레이어 업데이트
     mainCharacter->Update(deltaTime);
 
+    // 적 상태 관리 및 충돌 처리
     glm::vec3 playerPosition = mainCharacter->GetPosition();
+
     for (auto& enemy : enemies)
     {
-        if (!enemy->IsActive()) continue; // 비활성화된 적은 업데이트하지 않음
+        if (!enemy->IsActive()) continue;
 
-        // 기존 위치 저장
-        //glm::vec3 prevPosition = enemy->GetPosition();
+        // 이전 위치 저장
+        glm::vec3 prevPosition = enemy->GetPosition() - enemy->GetDirection() * 0.1f;
 
+        // 적 업데이트
         enemy->Update(deltaTime, playerPosition, mazeMap, blockSize);
 
-        //// 적과 벽돌(Actor) 충돌 감지
-        //if (enemy->CheckCollisionWithActors(actors, blockSize - 0.3f)) {
-        //    enemy->SetPosition(prevPosition); // 충돌 시 이전 위치로 복구
-        //}
-    }
-
-    // 적과 총알 간 충돌 처리
-    for (auto& enemy : enemies)
-    {
-        if (!enemy->IsActive()) continue; // 비활성화된 적은 무시
-
-        for (const auto& bullet : mainCharacter->GetBulletPool().GetAllBullets())
+        // 적과 벽돌 충돌 감지
+        if (enemy->CheckCollisionWithActors(actors, blockSize - 0.4f))
         {
-            if (!bullet->IsActive()) continue; // 비활성화된 총알은 무시
-
-            if (bullet->CheckCollision(static_cast<Actor*>(enemy.get())))
-            {
-                // 총알 방향 계산
-                glm::vec3 bulletDirection = glm::normalize(bullet->GetDirection());
-
-                enemy->TakeDamage(1, bulletDirection);  // 체력 감소
-              
-                bullet->DeActivate(); // 총알 비활성화
-
-                printf("11111111\n"); // 충돌 확인 메시지
-
-                if (!enemy->IsActive())
-                {
-                    printf("Enemy defeated!\n");
-                    break; // 적이 죽으면 다른 총알과의 충돌 검사 중단
-                }
-            }
+            enemy->SetPosition(prevPosition); // 충돌 시 이전 위치로 복구
         }
     }
 
+    // 적과 총알 충돌 처리
+    HandleBulletEnemyCollisions();
+
     // 비활성화된 적 제거
-    enemies.erase(
-        std::remove_if(enemies.begin(), enemies.end(),
-            [](const std::unique_ptr<Enemy>& enemy) { return !enemy->IsActive(); }),
-        enemies.end());
+    RemoveInactiveEnemies();
 
-
-
-
-    //// BulletPool 상태 출력
-    //const auto& bulletPool = mainCharacter->GetBulletPool();
-    //std::cout << "Total Bullets: " << bulletPool.GetAllBullets().size() << std::endl;
-    //std::cout << "Available Bullets: " << bulletPool.GetAvailableBulletCount() << std::endl;
-
+    // 적 제거 카운트 출력
+    std::cout << "Defeated Enemies: " << mainCharacter->GetDefeatedEnemies() << std::endl;
 }
 
 void Scene::Render()
 {
-
-
-
     mainLight->ApplyLighting(SceneShader, mainCamera->GetPosition());
-
-
     mainCharacter->Render(SceneShader);
 
-    // 총알
+    // 총알 렌더링
     const auto& bullets = mainCharacter->GetBulletPool().GetAllBullets();
-    
-    for (const auto& bullet : bullets) 
+    for (const auto& bullet : bullets)
     {
         if (bullet->IsActive()) bullet->Render(SceneShader);
     }
 
-
-    for (const auto& actor : actors) {
+    // 액터 렌더링
+    for (const auto& actor : actors)
+    {
         actor->Render(SceneShader);
     }
 
-
-
-    for (const auto& enemy : enemies) {
-        if (enemy->IsActive()) {
+    // 적 렌더링
+    for (const auto& enemy : enemies)
+    {
+        if (enemy->IsActive())
+        {
             enemy->Render(SceneShader);
         }
     }
 }
-
-Character* Scene::GetCharacter()
-{
-    return mainCharacter.get();
-}
-
-Camera* Scene::GetCamera()
-{
-    return mainCamera.get();
-}
-
-const std::vector<std::unique_ptr<Actor>>& Scene::GetActors() const
-{
-    return actors;
-}
-
 
 void Scene::InitializeMaze()
 {
@@ -165,11 +107,12 @@ void Scene::InitializeMaze()
     {
         for (int x = 0; x < mazeMap[z].size(); ++x)
         {
-            if (mazeMap[z][x] == 1) {
+            if (mazeMap[z][x] == 1)
+            {
                 actors.push_back(make_unique<Actor>(
                     "Cube.obj",
                     glm::vec3(x * blockSize.x, 0.0f, z * blockSize.z),
-                    glm::vec3(blockSize),
+                    blockSize,
                     glm::vec3(0),
                     glm::vec3(0, 0, 1)));
             }
@@ -179,58 +122,67 @@ void Scene::InitializeMaze()
 
 void Scene::InitializeEnemies()
 {
-    // 빈 공간 찾기
     std::vector<glm::vec3> emptySpaces;
 
-    for (int y = 0; y < mazeMap.size(); ++y)
+    // 빈 공간 찾기
+    for (int z = 0; z < mazeMap.size(); ++z)
     {
-        for (int x = 0; x < mazeMap[y].size(); ++x)
+        for (int x = 0; x < mazeMap[z].size(); ++x)
         {
-            if (mazeMap[y][x] == 0)
+            if (mazeMap[z][x] == 0)
             {
-                emptySpaces.push_back(glm::vec3(x * blockSize.x, 0.0f, y * blockSize.z));
+                emptySpaces.push_back(glm::vec3(x * blockSize.x, 0.0f, z * blockSize.z));
             }
         }
     }
 
-
-    // 빈 공간에 랜덤으로 적 생성
+    // 랜덤으로 적 생성
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(0, emptySpaces.size() - 1);
 
-    for (int i = 0; i < 1; ++i)
+    for (int i = 0; i < 5; ++i)
     {
         int randomIndex = dist(gen);
         glm::vec3 enemyPosition = emptySpaces[randomIndex];
-
-        auto enemy = std::make_unique<Enemy>(enemyPosition);
-        
-        //enemy->InitializePatrolPath(mazeMap, blockSize);
-        
-        //glm::vec3 patrolStart = enemyPosition;
-        //glm::vec3 patrolEnd = enemyPosition + glm::vec3(blockSize.x, 0.f, 0.f); // 패트롤 경로 설정
-        //enemy->SetPatrolPoints(patrolStart, patrolEnd);
-
-        enemies.push_back(std::move(enemy));
-
+        enemies.push_back(std::make_unique<Enemy>(enemyPosition));
         emptySpaces.erase(emptySpaces.begin() + randomIndex);
     }
 }
 
+void Scene::HandleBulletEnemyCollisions()
+{
+    for (auto& enemy : enemies)
+    {
+        if (!enemy->IsActive()) continue;
 
-//vector<Actor*> Scene::GetNearbyActors(const Actor* target) const {
-//    std::vector<Actor*> nearbyActors;
-//
-//    // 그리드 기반으로 인근 액터만 검색
-//    glm::vec3 targetPosition = target->GetPosition();
-//    for (const auto& actor : actors) {
-//        glm::vec3 actorPosition = actor->GetPosition();
-//
-//        if (glm::distance(targetPosition, actorPosition) < 5.0f) { // 충돌 감지 거리
-//            nearbyActors.push_back(actor.get());
-//        }
-//    }
-//
-//    return nearbyActors;
-//}
+        for (const auto& bullet : mainCharacter->GetBulletPool().GetAllBullets())
+        {
+            if (!bullet->IsActive()) continue;
+
+            if (bullet->CheckCollision(static_cast<Actor*>(enemy.get())))
+            {
+                glm::vec3 bulletDirection = glm::normalize(bullet->GetDirection());
+                enemy->TakeDamage(1, bulletDirection); // 적 체력 감소
+                bullet->DeActivate();                 // 총알 비활성화
+
+                printf("Enemy hit\n");
+
+                if (!enemy->IsActive())
+                {
+                    printf("Enemy defeated\n");
+                    mainCharacter->IncrementDefeatedEnemies(); // 적 제거 카운트 증가
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Scene::RemoveInactiveEnemies()
+{
+    enemies.erase(
+        std::remove_if(enemies.begin(), enemies.end(),
+            [](const std::unique_ptr<Enemy>& enemy) { return !enemy->IsActive(); }),
+        enemies.end());
+}
