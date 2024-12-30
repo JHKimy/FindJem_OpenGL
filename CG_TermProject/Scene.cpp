@@ -51,16 +51,16 @@ void Scene::Update(float deltaTime)
         if (!enemy->IsActive()) continue;
 
         // 이전 위치 저장
-        glm::vec3 prevPosition = enemy->GetPosition() - enemy->GetDirection() * 0.1f;
+        //glm::vec3 prevPosition = enemy->GetPosition() - enemy->GetDirection() * 0.1f;
 
         // 적 업데이트
         enemy->Update(deltaTime, playerPosition, mazeMap, blockSize);
 
-        // 적과 벽돌 충돌 감지
-        if (enemy->CheckCollisionWithActors(actors, blockSize - 0.4f))
-        {
-            enemy->SetPosition(prevPosition); // 충돌 시 이전 위치로 복구
-        }
+        //// 적과 벽돌 충돌 감지
+        //if (enemy->CheckCollisionWithActors(actors, blockSize - 0.4f))
+        //{
+        //    enemy->SetPosition(prevPosition); // 충돌 시 이전 위치로 복구
+        //}
     }
 
     // 적과 총알 충돌 처리
@@ -70,7 +70,7 @@ void Scene::Update(float deltaTime)
     RemoveInactiveEnemies();
 
     // 적 제거 카운트 출력
-    std::cout << "Defeated Enemies: " << mainCharacter->GetDefeatedEnemies() << std::endl;
+    // std::cout << "Defeated Enemies: " << mainCharacter->GetDefeatedEnemies() << std::endl;
 }
 
 void Scene::Render()
@@ -141,7 +141,7 @@ void Scene::InitializeEnemies()
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(0, emptySpaces.size() - 1);
 
-    for (int i = 0; i < 5; ++i)
+    for (int i = 0; i < 1; ++i)
     {
         int randomIndex = dist(gen);
         glm::vec3 enemyPosition = emptySpaces[randomIndex];

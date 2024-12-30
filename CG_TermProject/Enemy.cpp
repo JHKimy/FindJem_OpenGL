@@ -1,3 +1,4 @@
+#include "Astar.h"
 #include "Enemy.h"
 #include <iostream>
 
@@ -11,10 +12,10 @@ Enemy::Enemy(const glm::vec3& position)
         glm::vec3(1.0f, 0.0f, 0.0f)),
     health(3),
     isActive(true),
-    moveSpeed(5.f),
+    moveSpeed(10.f),
     currentState(EnemyState::Patrol),
-    detectionRadius(10.0f),
-    chaseRadius(20.0f),
+    detectionRadius(100.0f),
+    chaseRadius(100.0f),
     isJumping(false),
     jumpSpeed(0.0f),
     currentDir({ 1, 0 }),
@@ -51,6 +52,8 @@ void Enemy::Update(float deltaTime, const glm::vec3& playerPosition, const std::
 
 // ===== 순찰 동작 =====
 void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, float deltaTime) {
+    
+    // 미로 좌표 변환
     int mazeX = static_cast<int>(position.x / blockSize.x);
     int mazeZ = static_cast<int>(position.z / blockSize.z);
 
@@ -88,8 +91,24 @@ void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap, const glm::vec3
 
 // ===== 추적 동작 =====
 void Enemy::Chase(const glm::vec3& playerPosition, const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, float deltaTime) {
-    direction = glm::normalize(playerPosition - position);
-    position += direction * moveSpeed * deltaTime;
+    
+    glm::ivec2 startTile = { static_cast<int>(position.x / blockSize.x), static_cast<int>(position.z / blockSize.z) };
+    glm::ivec2 goalTile = { static_cast<int>(playerPosition.x / blockSize.x), static_cast<int>(playerPosition.z / blockSize.z) };
+
+    path = Astar::FindPath(startTile, goalTile, mazeMap);
+
+    if (!path.empty()) {
+        glm::ivec2 nextTile = path[1]; // 다음 타일 (시작 타일 제외)
+        glm::vec3 nextPosition = glm::vec3(nextTile.x * blockSize.x, position.y, nextTile.y * blockSize.z);
+
+        glm::vec3 directionToTarget = glm::normalize(nextPosition - position);
+        position += directionToTarget * moveSpeed * deltaTime;
+
+        if (glm::length(nextPosition - position) < 0.1f) {
+            position = nextPosition;
+
+        }
+    }
 }
 
 // ===== 충돌 감지 =====

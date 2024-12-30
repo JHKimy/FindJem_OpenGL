@@ -21,6 +21,8 @@ public:
     bool CheckCollisionWithActors(const std::vector<std::unique_ptr<Actor>>& actors, glm::vec3 blockSize);
     glm::vec3 GetDirection() const { return direction; } // 이동 방향 반환
 
+
+
 private:
     // ===== 내부 유틸리티 함수 =====
     void Patrol(const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, float deltaTime);
@@ -47,4 +49,10 @@ private:
     bool isJumping;              // 점프 여부
     float jumpSpeed;             // 점프 속도
     const float gravity = 20.0f; // 중력 가속도
+
+
+
+    std::vector<glm::ivec2> path;       // 현재 경로
+    size_t currentPathIndex = 0;               // 현재 경로의 인덱스
+    glm::ivec2 lastGoalTile;                   // 이전 경로 계산 시 목표 타일
 };
