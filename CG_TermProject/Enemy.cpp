@@ -19,8 +19,11 @@ Enemy::Enemy(const glm::vec3& position)
     isJumping(false),
     jumpSpeed(0.0f),
     currentDir({ 1, 0 }),
-    targetTile({ static_cast<int>(position.x / 5.0f), static_cast<int>(position.z / 5.0f) }) {
+    targetTile({ static_cast<int>(position.x / 5.0f), static_cast<int>(position.z / 5.0f) }) 
+{
     targetPosition = glm::vec3(targetTile.x * 5.0f, 0.0f, targetTile.y * 5.0f);
+
+
 }
 
 // ===== 상태 업데이트 =====
@@ -44,6 +47,14 @@ void Enemy::Update(float deltaTime, const glm::vec3& playerPosition, const std::
             currentState = EnemyState::Patrol;
         }
         else {
+            if (!detectPath) {  // 경로가 업데이트되지 않았다면 경로를 새로 계산
+                glm::ivec2 startTile = { static_cast<int>(position.x / blockSize.x), static_cast<int>(position.z / blockSize.z) };
+                glm::ivec2 goalTile = { static_cast<int>(playerPosition.x / blockSize.x), static_cast<int>(playerPosition.z / blockSize.z) };
+
+                path = Astar::FindPath(startTile, goalTile, mazeMap);
+                currentPathIndex = 0;
+                detectPath = true;  // 경로가 업데이트되었음을 표시
+            }
             Chase(playerPosition, mazeMap, blockSize, deltaTime);
         }
         break;
@@ -52,7 +63,8 @@ void Enemy::Update(float deltaTime, const glm::vec3& playerPosition, const std::
 
 // ===== 순찰 동작 =====
 void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, float deltaTime) {
-    
+    position.y = 3.f;
+
     // 미로 좌표 변환
     int mazeX = static_cast<int>(position.x / blockSize.x);
     int mazeZ = static_cast<int>(position.z / blockSize.z);
@@ -92,22 +104,22 @@ void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap, const glm::vec3
 // ===== 추적 동작 =====
 void Enemy::Chase(const glm::vec3& playerPosition, const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, float deltaTime) {
     
-    glm::ivec2 startTile = { static_cast<int>(position.x / blockSize.x), static_cast<int>(position.z / blockSize.z) };
-    glm::ivec2 goalTile = { static_cast<int>(playerPosition.x / blockSize.x), static_cast<int>(playerPosition.z / blockSize.z) };
+    if (currentPathIndex >= path.size()) {
+        detectPath = false;  // 경로가 끝났다면 경로 업데이트 필요
+        return;
+    }
 
-    path = Astar::FindPath(startTile, goalTile, mazeMap);
+    float nextX = path[currentPathIndex].x * blockSize.x;
+    float nextZ = path[currentPathIndex].y * blockSize.z;
 
-    if (!path.empty()) {
-        glm::ivec2 nextTile = path[1]; // 다음 타일 (시작 타일 제외)
-        glm::vec3 nextPosition = glm::vec3(nextTile.x * blockSize.x, position.y, nextTile.y * blockSize.z);
+    glm::vec3 nextPos = { nextX, 0, nextZ };
+    glm::vec3 moveDir = glm::normalize(nextPos - position);
 
-        glm::vec3 directionToTarget = glm::normalize(nextPosition - position);
-        position += directionToTarget * moveSpeed * deltaTime;
+    position += moveDir * moveSpeed * deltaTime;
 
-        if (glm::length(nextPosition - position) < 0.1f) {
-            position = nextPosition;
 
-        }
+    if (glm::distance(position, nextPos) < 0.1f) {
+        currentPathIndex++;
     }
 }
 

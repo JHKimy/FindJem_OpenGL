@@ -55,4 +55,7 @@ private:
     std::vector<glm::ivec2> path;       // 현재 경로
     size_t currentPathIndex = 0;               // 현재 경로의 인덱스
     glm::ivec2 lastGoalTile;                   // 이전 경로 계산 시 목표 타일
+    glm::ivec2 startTile;                   // 이전 경로 계산 시 목표 타일
+    glm::ivec2 goalTile;                   // 이전 경로 계산 시 목표 타일
+    bool detectPath = false;
 };
