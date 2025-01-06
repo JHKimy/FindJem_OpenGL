@@ -11,6 +11,8 @@ MazeGenerator::MazeGenerator(int width, int height)
 {
 	srand(static_cast<unsigned int>(time(0)));
 	InitializeMaze();
+
+
 }
 
 void MazeGenerator::InitializeMaze()

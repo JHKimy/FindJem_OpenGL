@@ -29,7 +29,7 @@ private:
     std::unique_ptr<Camera> mainCamera;         // 메인 카메라
     std::unique_ptr<Light> mainLight;           // 메인 조명
     std::unique_ptr<Character> mainCharacter;   // 플레이어 캐릭터
-    std::unique_ptr<MazeGenerator> mazeGenerator; // 미로 생성기
+    //std::unique_ptr<MazeGenerator> mazeGenerator; // 미로 생성기
 
     // 액터와 적 관리
     std::vector<std::unique_ptr<Actor>> actors; // 씬에 포함된 액터들
@@ -63,4 +63,9 @@ public:
     Camera* GetCamera() { return mainCamera.get(); }
     const std::vector<std::unique_ptr<Actor>>& GetActors() const { return actors; };
     const std::vector<std::vector<int>>& GetMazeMap() const { return mazeMap; } 
+
+
+
+    // 서버 미로좌표 받아오기
+    void SetMaze(int mazeMapData[15][15]);
 };

@@ -20,7 +20,7 @@ std::unordered_map<CommandKey, bool> Command = {
 
 
 Controller::Controller
-(Scene* scene, Camera* camera)
+(std::shared_ptr<Scene> scene, Camera* camera)
 	: scene(scene), camera(camera)
 {
 }

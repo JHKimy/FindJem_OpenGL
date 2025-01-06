@@ -19,7 +19,7 @@ using enum CommandKey;  // CommandKey 멤버를 전역으로 사용 가능
 class Controller
 {
 private:
-	Scene* scene = nullptr;                // Scene 참조
+	std::shared_ptr<Scene> scene = nullptr;                // Scene 참조
 	Camera* camera;
 	Character* character;
 	bool isFirstPersonView; // 현재 카메라 모드
@@ -28,7 +28,7 @@ private:
 public:
 
 	// 참조형 변수는 반드시 생성자에서 초기화
-	Controller(Scene* scene, Camera* camera);
+	Controller(std::shared_ptr<Scene> scene, Camera* camera);
 
     ~Controller() {}
 

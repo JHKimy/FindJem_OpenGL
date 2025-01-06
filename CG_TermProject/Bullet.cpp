@@ -12,7 +12,7 @@ Bullet::Bullet() : Actor
     direction(glm::vec3(0.f)),
     moveSpeed(30.f)
 {
-	std::cout << "Bullet object created!" << std::endl;
+	//std::cout << "Bullet object created!" << std::endl;
 }
 
 void Bullet::Update(float deltaTime) {

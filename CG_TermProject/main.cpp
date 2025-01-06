@@ -14,6 +14,7 @@
 #include "Scene.h"
 #include "Controller.h"
 #include <unordered_map>
+#include <memory>
 #include "NetworkManager.h"
 #include <chrono> // 시간 측정을 위한 헤더
 using namespace std;
@@ -117,22 +118,26 @@ GLuint make_shaderProgram()
 // ========================= 
 
 
-
-Scene* mainScene = nullptr;
+std::shared_ptr<Scene> mainScene = nullptr;
 Controller* mainController = nullptr;
 
 
 
 void main(int argc, char** argv)
 {
-	const char* SERVERIP;
-	if (argc > 1) SERVERIP = argv[1];
-	else
-		SERVERIP = "127.0.0.1";
-	if (!networkmanager.Connect(SERVERIP)) {
+
+
+
+	if (!networkmanager.Connect())
+	{
 		cout << "Failed to connect to the server" << endl;
 		return;
 	}
+
+
+
+
+
 	// 윈도우 생성하기
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -151,14 +156,33 @@ void main(int argc, char** argv)
 
 // ===============================================================
 
-	// 셰이더 프로그램 생성
+
+		// 셰이더 프로그램 생성
 	shaderProgram = make_shaderProgram();
 
 
 
 	// 씬 생성
-	mainScene = new Scene(shaderProgram);
+	mainScene = std::make_shared<Scene>(shaderProgram);
+
+	// NetworkManager에 Scene 연결
+	networkmanager.SetScene(mainScene);
+	networkmanager.UdateMaze();
+
+	thread networkThread([&]()
+		{
+			while (true)
+			{
+				networkmanager.RecvThread();
+			}
+		});
+
+
+	networkThread.detach();
+
+
 	mainScene->Initialize();
+
 
 
 	// 컨트롤러 생성
@@ -207,7 +231,7 @@ void main(int argc, char** argv)
 	glutMainLoop();
 //=========================
 
-	delete mainScene;
+	// delete mainScene;
 	delete mainController;
 }
 
@@ -266,7 +290,7 @@ GLvoid TimerFunction(int value)
 
 	if (elapsedTime >= 1.0f) {
 		float fps = frameCount / elapsedTime;
-		std::cout << "FPS: " << fps << std::endl;
+		//std::cout << "FPS: " << fps << std::endl;
 
 		// 초기화
 		frameCount = 0;

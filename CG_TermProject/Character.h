@@ -85,9 +85,9 @@ public:
         auto& bulletPool = GetBulletPool();
 
         // 풀에 있는 전체 총알 수
-        std::cout << "Total Bullets in Pool: " << bulletPool.GetAllBullets().size() << std::endl;
+       // std::cout << "Total Bullets in Pool: " << bulletPool.GetAllBullets().size() << std::endl;
 
         // 사용 가능한 총알 수
-        std::cout << "Available Bullets: " << bulletPool.GetAvailableBulletCount() << std::endl;
+       // std::cout << "Available Bullets: " << bulletPool.GetAvailableBulletCount() << std::endl;
     }
 };

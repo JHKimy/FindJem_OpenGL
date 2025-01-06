@@ -5,7 +5,7 @@
 #include "Character.h"
 #include "Bullet.h"
 #include "Enemy.h"
-#include "MazeGenerator.h"
+//#include "MazeGenerator.h"
 #include "Controller.h"
 #include <random>
 #include <iostream>
@@ -19,15 +19,17 @@ Scene::Scene(GLuint shaderProgram)
         glm::vec3(0.0f, 10.0f, 10.0f),  // 조명 위치
         glm::vec3(1.0f));               // 조명 색상
 
-    mazeGenerator = make_unique<MazeGenerator>(15, 15);
+    // mazeGenerator = make_unique<MazeGenerator>(15, 15);
 }
 
 void Scene::Initialize()
 {
-    // 맵 생성 및 변환
-    mazeGenerator->GeneratePrimMaze();
-    mazeGenerator->addEntrances();
-    mazeMap = mazeGenerator->GetMaze();
+    //// 맵 생성 및 변환
+    //mazeGenerator->GeneratePrimMaze();
+    //mazeGenerator->addEntrances();
+    //mazeMap = mazeGenerator->GetMaze();
+    
+    
     InitializeMaze();
 
     // 캐릭터 초기화
@@ -97,6 +99,16 @@ void Scene::Render()
         if (enemy->IsActive())
         {
             enemy->Render(SceneShader);
+        }
+    }
+}
+
+void Scene::SetMaze(int mazeMapData[15][15])
+{
+    for (int i{}; i < 15; ++i) {
+        for (int j{}; j < 15; ++j)
+        {
+            mazeMap[i][j] = mazeMapData[i][j];
         }
     }
 }

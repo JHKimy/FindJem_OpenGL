@@ -1,15 +1,37 @@
 #include "pch.h"
 
+void Send_Maze_Data(int clientid)
+{
+	SC_MAZE_INFO p;
+	p.packet_size = sizeof(p);
+	p.packet_type = SC_MAZE_DATA;
+
+	for (int i{}; i < g_mazeMap.size(); ++i) {
+		for (int j{}; j < g_mazeMap[i].size(); ++j) {
+			p.mazeMap[i][j] = g_mazeMap[i][j];
+		}
+	}
+		
+	if (g_is_accept[clientid]) {
+		int retval = send(g_clientSocketes[clientid],
+			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+		if (retval == SOCKET_ERROR) {
+			cout << "fail ! " << clientid << ": " << WSAGetLastError() << endl;
+		}
+		else {
+			cout << "Send to client " << clientid << endl;
+		}
+	}
+}
+
 void HandleThread(int id)
 {
-
+	Send_Maze_Data(id);
 }
 
 
 int main()
 {
-	// 미로 데이터
-	std::vector<std::vector<int>> mazeMap;
 
 	// 미로 생성기
 	std::unique_ptr<MazeGenerator> mazeGenerator;
@@ -18,11 +40,11 @@ int main()
 	// 맵 생성 및 변환
 	mazeGenerator->GeneratePrimMaze();
 	mazeGenerator->addEntrances();
-	mazeMap = mazeGenerator->GetMaze();
+	g_mazeMap = mazeGenerator->GetMaze();
 
-	for (int i = 0; i < mazeMap.size(); ++i) {
-		for (int j = 0; j < mazeMap[i].size(); ++j) {
-			cout << mazeMap[i][j] << " ";  // 데이터 값 출력
+	for (int i = 0; i < g_mazeMap.size(); ++i) {
+		for (int j = 0; j < g_mazeMap[i].size(); ++j) {
+			cout << g_mazeMap[i][j] << " ";  // 데이터 값 출력
 		}
 		cout << endl;  // 각 행 끝에 줄 바꿈
 	}
@@ -58,10 +80,13 @@ int main()
 		{
 			return 0;
 		}
+
 		int client_id = get_id();
+		
+		g_is_accept[client_id] = true;
 
 		g_clientSocketes[client_id] = clientSocket;
-
+		
 		cout << "클라이언트 접속" << endl;
 		cout << client_id << endl;
 		g_threads[client_id] = thread{ HandleThread, client_id };

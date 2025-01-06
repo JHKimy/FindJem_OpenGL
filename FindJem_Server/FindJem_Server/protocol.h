@@ -13,7 +13,7 @@ constexpr char CS_MOVE = 3;
 constexpr char CS_BULLET = 4;
 
 // 맵 정보
-constexpr char SC_MAP_DATA = 1;
+constexpr char SC_MAZE_DATA = 1;
 
 // 상대 플레이어 정보
 constexpr char SC_ADD_PLAYER = 2;
@@ -27,7 +27,8 @@ constexpr char SC_ADD_PLAYER = 2;
 
 struct CS_PLAYER_PACKET
 {
-	int packet_type;	// 패킷 종류
+	char packet_size;	// 패킷 크기
+	char packet_type;	// 패킷 종류
 	int player_id;		// 플레이어 id
 	int player_hp;		// hp
 	bool status = true;	// 상태
@@ -43,10 +44,11 @@ struct CS_PLAYER_PACKET
 
 };
 
-struct SC_MAP_INFO
+struct SC_MAZE_INFO
 {
-	int packet_type;	// 패킷 종류
-	std::vector<std::vector<int>> mazeMap;	// 맵 정보
+	char packet_size;	// 패킷 크기
+	char packet_type;	// 패킷 종류
+	int mazeMap[15][15];	// 맵 정보
 	
 };
 
