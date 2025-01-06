@@ -140,6 +140,7 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MazeGenerator.cpp" />
+    <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
@@ -154,6 +155,7 @@
     <ClInclude Include="Global.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MazeGenerator.h" />
+    <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

@@ -21,8 +21,7 @@ public:
 
     bool Connect(const char* ipaddress);
 
-   
+
 private:
     SOCKET clientSocket;
 };
-

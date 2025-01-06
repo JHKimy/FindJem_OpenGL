@@ -14,6 +14,7 @@
 #include "Scene.h"
 #include "Controller.h"
 #include <unordered_map>
+#include "NetworkManager.h"
 #include <chrono> // 시간 측정을 위한 헤더
 using namespace std;
 
@@ -28,7 +29,8 @@ GLvoid TimerFunction(int value);
 GLuint vertexShader;
 GLuint fragmentShader;
 
-
+// 클라이언트<->서버 통신 용 변수
+NetworkManager networkmanager;
 // ===== 셰이더 만들기 ===== 
 
 char* filetobuf(string file)
@@ -123,6 +125,14 @@ Controller* mainController = nullptr;
 
 void main(int argc, char** argv)
 {
+	const char* SERVERIP;
+	if (argc > 1) SERVERIP = argv[1];
+	else
+		SERVERIP = "127.0.0.1";
+	if (!networkmanager.Connect(SERVERIP)) {
+		cout << "Failed to connect to the server" << endl;
+		return;
+	}
 	// 윈도우 생성하기
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);

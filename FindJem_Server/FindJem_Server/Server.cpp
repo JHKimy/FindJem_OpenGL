@@ -58,7 +58,7 @@ int main()
 		g_clientSocketes[client_id] = clientSocket;
 
 		cout << "클라이언트 접속" << endl;
-
+		cout << client_id << endl;
 	}
 
 	SocketUtils::Close(listenSocket);
