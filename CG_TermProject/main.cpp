@@ -163,11 +163,43 @@ void main(int argc, char** argv)
 
 
 	// 씬 생성
-	mainScene = std::make_shared<Scene>(shaderProgram);
+	//mainScene = std::make_shared<Scene>(shaderProgram);
+	char buf[1024];
+	int bytesReceived = recv(networkmanager.GetSocket(), buf, sizeof(buf), 0);
+
+	if (bytesReceived <= 0) {
+		if (bytesReceived == 0) {
+			std::cout << "Server closed the connection." << std::endl;
+		}
+		else {
+			std::cout << "Recv error: " << WSAGetLastError() << std::endl;
+		}
+		return;
+	}
+
+	char packetType = static_cast<char>(buf[1]);
+	if (packetType == SC_MAZE_DATA) {
+		SC_MAZE_INFO* p = reinterpret_cast<SC_MAZE_INFO*>(buf);
+
+		// 미로 데이터 출력
+		for (int i = 0; i < 15; ++i) {
+			for (int j = 0; j < 15; ++j) {
+				cout << p->mazeMap[i][j];
+			}
+			cout << endl;
+		}
+
+		// 씬에 미로 데이터 설정
+		mainScene = std::make_shared<Scene>(shaderProgram);
+		mainScene->SetMaze(p->mazeMap);
+	}
+	else {
+		std::cout << "Unknown packet type: " << packetType << std::endl;
+	}
+
 
 	// NetworkManager에 Scene 연결
 	networkmanager.SetScene(mainScene);
-	networkmanager.UdateMaze();
 
 	thread networkThread([&]()
 		{

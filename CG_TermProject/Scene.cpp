@@ -105,6 +105,7 @@ void Scene::Render()
 
 void Scene::SetMaze(int mazeMapData[15][15])
 {
+    mazeMap.resize(15, std::vector<int>(15));
     for (int i{}; i < 15; ++i) {
         for (int j{}; j < 15; ++j)
         {
