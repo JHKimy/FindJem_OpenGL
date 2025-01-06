@@ -2,6 +2,7 @@
 
 std::array<SOCKET, 3>   g_clientSocketes;
 std::array<bool, 3>      g_is_accept;
+std::array<thread, 3>      g_threads;
 mutex               g_mutex;
 int get_id()
 {

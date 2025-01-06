@@ -18,6 +18,7 @@
 using namespace std;
 extern std::array<SOCKET, 3>   g_clientSocketes;
 extern std::array<bool, 3>      g_is_accept;
+extern std::array<thread, 3>      g_threads;
 extern mutex               g_mutex;
 extern int get_id();
 

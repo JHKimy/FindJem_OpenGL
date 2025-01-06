@@ -1,5 +1,10 @@
 #include "pch.h"
 
+void HandleThread(int id)
+{
+
+}
+
 
 int main()
 {
@@ -59,8 +64,10 @@ int main()
 
 		cout << "클라이언트 접속" << endl;
 		cout << client_id << endl;
+		g_threads[client_id] = thread{ HandleThread, client_id };
 	}
-
+	for (auto& t : g_threads)
+		t.join();
 	SocketUtils::Close(listenSocket);
 	SocketUtils::Clear();
 }
