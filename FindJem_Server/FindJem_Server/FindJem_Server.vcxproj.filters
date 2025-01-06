@@ -16,6 +16,9 @@
     <Filter Include="NetWork">
       <UniqueIdentifier>{bba853e2-cc46-4845-bf6b-494af0863ab9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Map">
+      <UniqueIdentifier>{4908180b-d3ae-4e80-bac7-7c2fc0896829}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Server.cpp">
@@ -23,6 +26,12 @@
     </ClCompile>
     <ClCompile Include="SocketUtils.cpp">
       <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="MazeGenerator.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>헤더 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +43,9 @@
     </ClInclude>
     <ClInclude Include="SocketUtils.h">
       <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MazeGenerator.h">
+      <Filter>Map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

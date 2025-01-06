@@ -127,10 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MazeGenerator.cpp" />
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="SocketUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MazeGenerator.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="SocketUtils.h" />

@@ -14,8 +14,8 @@ Enemy::Enemy(const glm::vec3& position)
     isActive(true),
     moveSpeed(10.f),
     currentState(EnemyState::Patrol),
-    detectionRadius(100.0f),
-    chaseRadius(100.0f),
+    detectionRadius(20.0f),
+    chaseRadius(30.0f),
     isJumping(false),
     jumpSpeed(0.0f),
     currentDir({ 1, 0 }),
@@ -59,11 +59,16 @@ void Enemy::Update(float deltaTime, const glm::vec3& playerPosition, const std::
         }
         break;
     }
+
+
 }
 
 // ===== 순찰 동작 =====
 void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, float deltaTime) {
-    position.y = 3.f;
+    
+    // printf("dklfjsjf0");
+
+    //position.y = 3.f;
 
     // 미로 좌표 변환
     int mazeX = static_cast<int>(position.x / blockSize.x);
