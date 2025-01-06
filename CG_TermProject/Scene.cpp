@@ -19,6 +19,10 @@ Scene::Scene(GLuint shaderProgram)
         glm::vec3(0.0f, 10.0f, 10.0f),  // 조명 위치
         glm::vec3(1.0f));               // 조명 색상
 
+    // 사이즈 정해주기**
+    mazeMap.resize(15, std::vector<int>(15));
+
+
     // mazeGenerator = make_unique<MazeGenerator>(15, 15);
 }
 
@@ -105,7 +109,7 @@ void Scene::Render()
 
 void Scene::SetMaze(int mazeMapData[15][15])
 {
-    mazeMap.resize(15, std::vector<int>(15));
+
     for (int i{}; i < 15; ++i) {
         for (int j{}; j < 15; ++j)
         {

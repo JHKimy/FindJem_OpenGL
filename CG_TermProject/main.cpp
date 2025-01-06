@@ -198,6 +198,11 @@ void main(int argc, char** argv)
 
 	mainScene->Initialize();
 
+
+
+
+
+
 	thread networkThread([&]()
 		{
 			while (true)
