@@ -181,13 +181,6 @@ void main(int argc, char** argv)
 	if (packetType == SC_MAZE_DATA) {
 		SC_MAZE_INFO* p = reinterpret_cast<SC_MAZE_INFO*>(buf);
 
-		// 미로 데이터 출력
-		for (int i = 0; i < 15; ++i) {
-			for (int j = 0; j < 15; ++j) {
-				cout << p->mazeMap[i][j];
-			}
-			cout << endl;
-		}
 
 		// 씬에 미로 데이터 설정
 		mainScene = std::make_shared<Scene>(shaderProgram);
@@ -199,7 +192,11 @@ void main(int argc, char** argv)
 
 
 	// NetworkManager에 Scene 연결
-	networkmanager.SetScene(mainScene);
+	//networkmanager.SetScene(mainScene);
+
+
+
+	mainScene->Initialize();
 
 	thread networkThread([&]()
 		{
@@ -211,10 +208,6 @@ void main(int argc, char** argv)
 
 
 	networkThread.detach();
-
-
-	mainScene->Initialize();
-
 
 
 	// 컨트롤러 생성

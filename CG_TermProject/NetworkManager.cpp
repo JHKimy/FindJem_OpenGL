@@ -38,12 +38,6 @@ bool NetworkManager::Connect() {
 
 bool NetworkManager::RecvThread() {
 
-
-    //if (!m_Scene) {
-    //    std::cout << "Error: Scene is not set in NetworkManager." << std::endl;
-    //    return false; // m_Scene이 설정되지 않은 경우 처리
-    //}
-
     char buf[1024];
     // 패킷 전체 데이터 수신
     int bytesReceived = recv(clientSocket, buf, sizeof(buf), 0);
@@ -63,18 +57,6 @@ bool NetworkManager::RecvThread() {
     
     // 패킷 처리
     switch (packetType) {
-    case SC_MAZE_DATA: {
-        SC_MAZE_INFO* p = reinterpret_cast<SC_MAZE_INFO*>(buf);
-       // m_Scene->SetMaze(p->mazeMap);
-        for (int i{}; i < 15; ++i) {
-            for (int j{}; j < 15; ++j)
-            {
-                cout << p->mazeMap[i][j];
-            }
-        }
-        printf("erer");
-        break;
-    }
     default:
         std::cout << "Unknown packet type: " << packetType << std::endl;
         break;
@@ -88,9 +70,3 @@ void NetworkManager::SetScene(std::shared_ptr<Scene> scene)
     m_Scene = scene;
     printf("qwqw");
 }
-
-//void NetworkManager::UdateMaze()
-//{
-//    m_Scene->SetMaze(p->mazeMap);
-//
-//}
