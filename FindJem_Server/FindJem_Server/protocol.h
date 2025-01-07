@@ -16,10 +16,8 @@ constexpr char CS_BULLET = 4;
 constexpr char SC_MAZE_DATA = 1;
 
 // 초기 플레이어 정보 
-constexpr char SC_INIT_CHARACTER = 2;
-
 // 상대 플레이어 정보
-constexpr char SC_ADD_CHARACTER = 3;
+constexpr char SC_ADD_CHARACTER = 2;
 // 오브젝트 정보 
 
 // 총알 정보
@@ -53,12 +51,6 @@ struct SC_MAZE_INFO
 	char packet_type;		// 패킷 종류
 	int mazeMap[15][15];	// 맵 정보
 	int player_id;			// 플레이어 id
-};
-struct SC_MY_CHARACTER
-{
-	char packet_size;		// 패킷 크기
-	char packet_type;		// 패킷 종류
 	float x, y, z;			// 초기 플레이어 위치 정보 패킷
 };
-
 #pragma pack(pop) 
