@@ -1,18 +1,51 @@
 #include "Character.h"
 #include <cmath>
 
-void Character::Move(float dirX, float dirY, float dirZ)
+void Character::Move(char key)
 {
-    // 방향 벡터 계산
-    float magnitude = std::sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ);
-    float normX = dirX / magnitude;
-    float normY = dirY / magnitude;
-    float normZ = dirZ / magnitude;
+    struct moveDir
+    {
+        float x, y, z;
+    }moveDir;
 
-    // 위치 업데이트
-    position.x += normX * moveSpeed;
-    position.y += normY * moveSpeed;
-    position.z += normZ * moveSpeed;
+    
+    if (key == 0/* W */)
+    {
+        moveDir.x += forwardVector.x;
+        moveDir.y += forwardVector.y;
+        moveDir.z += forwardVector.z;
+        
+    }
+    if (key == 1/* S */)
+    {
+        moveDir.x -= forwardVector.x;
+        moveDir.y -= forwardVector.y;
+        moveDir.z -= forwardVector.z;
+
+    }
+    if (key == 2/* A */)
+    {
+        // 외적 계산 (Y축 기준으로 왼쪽 벡터)
+        float crossX = forwardVector.y * 0.0f - forwardVector.z * 1.0f; // a_y * b_z - a_z * b_y
+        float crossY = forwardVector.z * 0.0f - forwardVector.x * 0.0f; // a_z * b_x - a_x * b_z
+        float crossZ = forwardVector.x * 1.0f - forwardVector.y * 0.0f; // a_x * b_y - a_y * b_x
+
+        moveDir.x -= crossX;
+        moveDir.y -= crossY;
+        moveDir.z -= crossZ;
+    }
+
+    if (key == 3/* D */)
+    {
+        // 외적 계산 (Y축 기준으로 오른쪽 벡터)
+        float crossX = forwardVector.y * 0.0f - forwardVector.z * 1.0f; // a_y * b_z - a_z * b_y
+        float crossY = forwardVector.z * 0.0f - forwardVector.x * 0.0f; // a_z * b_x - a_x * b_z
+        float crossZ = forwardVector.x * 1.0f - forwardVector.y * 0.0f; // a_x * b_y - a_y * b_x
+
+        moveDir.x += crossX;
+        moveDir.y += crossY;
+        moveDir.z += crossZ;
+    }
 }
 
 void Character::Rotate(float deltaYaw)

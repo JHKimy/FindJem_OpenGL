@@ -10,7 +10,7 @@ public:
     struct Position
     {
         float x, y, z;
-    }positon;
+    }position;
 
     // Å©±â
     struct Rotation
@@ -43,7 +43,7 @@ public:
     //BulletPool bulletPool;
 
 
-    void Move(float dirX, float dirY, float dirZ);
+    void Move(char key);
     void Rotate(float deltaYaw);
     void Jump();
     void Update(float deltaTime);
