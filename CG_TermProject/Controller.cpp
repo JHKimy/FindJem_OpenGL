@@ -4,6 +4,7 @@
 
 #include "Character.h"
 #include "Scene.h"
+#include "../FindJem_Server/FindJem_Server/protocol.h"
 
 
 
@@ -12,6 +13,7 @@ std::unordered_map<CommandKey, bool> Command = {
 	{CommandKey::A,				false},
 	{CommandKey::S,				false},
 	{CommandKey::D,				false},
+	{CommandKey::R,				false},
 	{CommandKey::SpaceBar,		false},
 	{CommandKey::Num1,			false},
 	{CommandKey::Num2,			false},
@@ -36,18 +38,44 @@ void Controller::Update(float deltaTime)
 	// 이동 방향 계산
 	glm::vec3 moveDirection(0.0f);
 
-	if (Command[W]) moveDirection += character->GetForwardVector();
-	if (Command[S]) moveDirection -= character->GetForwardVector();
-	if (Command[A]) moveDirection -= glm::cross(character->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f));
-	if (Command[D]) moveDirection += glm::cross(character->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f));
-
+	CS_PLAYER_PACKET p;
+	p.player_id = g_id;
+	if (Command[W]) {
+		p.direction = 0;
+		p.dirX = character->GetForwardVector().x;
+		p.dirY = character->GetForwardVector().y;
+		p.dirZ = character->GetForwardVector().z;
+	}
+	if (Command[S]) {
+		p.direction = 1;
+		p.dirX = character->GetForwardVector().x;
+		p.dirY = character->GetForwardVector().y;
+		p.dirZ = character->GetForwardVector().z;
+	}
+	if (Command[A]) { 
+		p.direction = 2;
+		p.dirX = character->GetForwardVector().x;
+		p.dirY = character->GetForwardVector().y;
+		p.dirZ = character->GetForwardVector().z;
+	}
+	if (Command[D]) { 	
+		p.direction = 3;
+		p.dirX = character->GetForwardVector().x;
+		p.dirY = character->GetForwardVector().y;
+		p.dirZ = character->GetForwardVector().z;
+	}
+	networkmanager.SendPlayerMove(p);
+	/*moveDirection += character->GetForwardVector();
+	moveDirection -= character->GetForwardVector();
+	moveDirection -= glm::cross(character->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f));
+	moveDirection += glm::cross(character->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f));*/
 
 
 	// 이동 수행 (임시로 이동)
-	if (glm::length(moveDirection) > 0.0f) {
-		moveDirection = glm::normalize(moveDirection);
-		character->Move(moveDirection);
-	}
+	//if (glm::length(moveDirection) > 0.0f) {
+	//	moveDirection = glm::normalize(moveDirection);
+	//	character->Move(moveDirection);
+	//}
 
 	// 충돌 감지
 	bool collisionDetected = false;
@@ -101,7 +129,9 @@ GLvoid Controller::Keyboard(unsigned char key, int x, int y)
 	case 's': Command[S] = true; break;		// 뒤로 이동
 	case 'a': Command[A] = true; break;		// 왼쪽으로 이동
 	case 'd': Command[D] = true; break;		// 오른쪽으로 이동
-
+	case 'r': Command[R] = true;
+		networkmanager.SendReady();
+		break;		// 준비 상태 
 	case 32/*SpaceBar*/: Command[SpaceBar] = true; 
 		
 		break; // 캐릭터 점프	

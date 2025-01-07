@@ -1,6 +1,7 @@
 #include "NetworkManager.h"
 #include "Scene.h"
 #include "Global.h"
+#include "Character.h"
 
 NetworkManager::NetworkManager()
 {
@@ -65,11 +66,44 @@ bool NetworkManager::RecvThread() {
     // 패킷 처리
     switch (packetType) {
     default:
+    case SC_ADD_CHARACTER: {
+        SC_ADD_CHARACTER_PACKET* p = reinterpret_cast<SC_ADD_CHARACTER_PACKET*>(buf);
+        position.x = p->PosX;
+        position.y = p->PosY;
+        position.z = p->PosZ;
+
+        cout << "id : " << p->player_id<<endl;
+        cout << p->PosX<<endl;
+
+        /*otherCharacter1 = make_unique<Character>(glm::vec3(position.x, position.y, position.z));
+        otherCharacter1->Render(shaderProgram);*/
+        break;
+    }
         std::cout << "Unknown packet type: " << packetType << std::endl;
         break;
     }
 
     return true;
+}
+
+void NetworkManager::SendReady()
+{
+    CS_READY_PACKET p;
+    p.packet_size = sizeof(p);
+    p.packet_type = CS_READY;
+    p.player_id = g_id;
+    int retval = send(clientSocket,
+        reinterpret_cast<const char*>(&p), sizeof(p), 0);
+}
+
+void NetworkManager::SendPlayerMove(CS_PLAYER_PACKET& p)
+{
+    p.packet_size = sizeof(p);
+    p.packet_type = CS_PLAYER;
+    p.player_id = g_id;
+    int retval = send(clientSocket,
+        reinterpret_cast<const char*>(&p), sizeof(p), 0);
+    
 }
 
 void NetworkManager::SetScene(std::shared_ptr<Scene> scene)

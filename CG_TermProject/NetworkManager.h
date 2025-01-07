@@ -26,7 +26,8 @@ public:
     bool Connect();
 
     bool RecvThread();
-
+    void SendReady();
+    void SendPlayerMove(CS_PLAYER_PACKET& p);
     SOCKET GetSocket() { return clientSocket; }
 
     void SetScene(std::shared_ptr<Scene> Scene);
@@ -36,5 +37,8 @@ private:
     SOCKET clientSocket;
 
     std::shared_ptr<Scene> m_Scene;
+
+    
+
 
 };

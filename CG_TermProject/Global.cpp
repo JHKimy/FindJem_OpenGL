@@ -14,6 +14,15 @@ float rotateY{ 0.0f };
 
 GLuint shaderProgram = 0.f;
 
+// 클라이언트<->서버 통신 용 변수
+NetworkManager networkmanager;
+
 int g_id;
 
 StartPos startPos;
+
+// 서버 캐릭터 방향 
+Direction direction;
+
+// 서버 캐릭터 위치
+ Position position;

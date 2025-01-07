@@ -37,6 +37,7 @@ void HandleThread(int id)
 	{
 		lock_guard<mutex> lock(g_character_mutex);
 		g_characters[id] = character;
+		g_characters[id].playerID = id;
 	}
 	Send_Maze_Data(id);
 	while (true)
@@ -59,12 +60,45 @@ void HandleThread(int id)
 
 		// 패킷 처리
 		switch (packetType) {
-		default:
+		case CS_READY: {
+			CS_READY_PACKET* p = reinterpret_cast<CS_READY_PACKET*>(buf);
+			g_characters[p->player_id].isReady = true;
+
+			for (auto& other : g_characters) {
+				if (other.playerID == p->player_id) continue;
+				{
+					lock_guard<mutex> lock(g_character_mutex);
+					if (!other.isReady) continue;
+					if (!g_is_accept[other.playerID]) continue;
+				}
+				SC_ADD_CHARACTER_PACKET packet;
+				packet.player_id = p->player_id;
+
+				packet.packet_size = sizeof(packet);
+				packet.packet_type = SC_ADD_CHARACTER;
+				packet.PosX = g_characters[p->player_id].GetPostionX();
+				packet.PosY = g_characters[p->player_id].GetPostionY();
+				packet.PosZ = g_characters[p->player_id].GetPostionZ();
+				int retval = send(g_clientSocketes[other.playerID],
+					reinterpret_cast<const char*>(&packet), sizeof(packet), 0);
+				cout << "누구에게 감 ? : " << other.playerID << endl;
+				cout << "posx : " << packet.PosX << endl;
+				cout << "posy : " << packet.PosY << endl;
+				cout << "id : " << packet.player_id;
+		
+			}
+			break;
+		}
 		case CS_PLAYER: {
 			CS_PLAYER_PACKET* p = reinterpret_cast<CS_PLAYER_PACKET*>(buf);
 			g_characters[p->player_id].Move(p->direction);
+			
+			//for ()
+			//{
+
+			//}
 			break;
-		}
+		}default:
 			std::cout << "Unknown packet type: " << packetType << std::endl;
 			break;
 		}

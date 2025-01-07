@@ -29,6 +29,12 @@ private:
     std::unique_ptr<Camera> mainCamera;         // 메인 카메라
     std::unique_ptr<Light> mainLight;           // 메인 조명
     std::unique_ptr<Character> mainCharacter;   // 플레이어 캐릭터
+    
+    
+    std::unique_ptr<Character> otherCharacter1;   // 플레이어 캐릭터
+    std::unique_ptr<Actor> otherCharacter2;   // 플레이어 캐릭터
+
+    
     //std::unique_ptr<MazeGenerator> mazeGenerator; // 미로 생성기
 
     // 액터와 적 관리

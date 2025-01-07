@@ -6,6 +6,8 @@
 #include "OpenGL/glm/ext.hpp"
 #include "OpenGL/glm/gtc/matrix_transform.hpp"
 
+#include "NetworkManager.h"
+
 // 윈도우 사이즈
 extern GLfloat winWidth;
 extern GLfloat winHeight;
@@ -18,9 +20,23 @@ extern glm::vec3 forwardVector;
 
 extern GLuint shaderProgram;
 
+// 클라이언트<->서버 통신 용 변수
+extern NetworkManager networkmanager;
+
 // 클라이언트 식별 id
 extern int g_id;
 
+// 서버 캐릭터 시작 위치
 extern struct StartPos {
 	float x, y, z;
 }startPos;
+
+// 서버 캐릭터 방향
+extern struct Direction {
+	float x, y, z;
+}direction;
+
+// 서버 캐릭터 위치
+extern struct Position {
+	float x, y, z;
+}position;

@@ -39,6 +39,15 @@ void Scene::Initialize()
 
     // 캐릭터 초기화
     mainCharacter = make_unique<Character>(glm::vec3(startPos.x, startPos.y, startPos.z));
+    
+    otherCharacter1 = make_unique<Character>(glm::vec3(15.f, 10.f, 15.f));
+   
+    otherCharacter2 = make_unique<Actor>("Cube.obj",
+        glm::vec3(15.f, 5.f, 15.f),
+        blockSize,
+        glm::vec3(0),
+        glm::vec3(0, 0, 1));
+
     mainCamera->TopView();
 
     // 적 초기화
@@ -49,6 +58,7 @@ void Scene::Update(float deltaTime)
 {
     // 플레이어 업데이트
     mainCharacter->Update(deltaTime);
+    // otherCharacter1->Update(deltaTime);
 
     // 적 상태 관리 및 충돌 처리
     glm::vec3 playerPosition = mainCharacter->GetPosition();
@@ -84,6 +94,12 @@ void Scene::Render()
 {
     mainLight->ApplyLighting(SceneShader, mainCamera->GetPosition());
     mainCharacter->Render(SceneShader);
+
+    otherCharacter1->Render(SceneShader);
+    
+    
+    
+    otherCharacter2->Render(SceneShader);
 
     // 총알 렌더링
     const auto& bullets = mainCharacter->GetBulletPool().GetAllBullets();

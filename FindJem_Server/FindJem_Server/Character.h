@@ -46,6 +46,7 @@ public:
     float   mass;
     float   moveSpeed;
     bool    isJumping;
+    bool    isReady;
     float   jumpSpeed;
     float   gravity;
 

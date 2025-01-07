@@ -9,7 +9,7 @@ Character::Character(int id)
         position.z = 5.f;
     }
     else if (id == 1) {
-        position.x = -8.f;
+        position.x = -15.f;
         position.y = 0.f;
         position.z = 5.f;
     }
@@ -23,8 +23,11 @@ Character::Character(int id)
     health = 100;        // 체력
     moveSpeed = 0.5f;    // 스피드
     isJumping = false;   // 점프 상태
+    isReady = false;
     boundingRadius = 1.5f;  // 충돌 범위
-
+    forwardVector.x = 1.f;
+    forwardVector.y = 0.f;
+    forwardVector.z = 0.f;
     // mass = 2.f;          // 질량
     // gravity(9.8f),       // 중력 영향
     //    bulletPool(30)

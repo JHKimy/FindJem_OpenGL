@@ -26,6 +26,7 @@ constexpr char SC_ADD_CHARACTER = 2;
 
 #pragma pack(push, 1)
 
+// 클라->서버 패킷
 struct CS_PLAYER_PACKET
 {
 	char packet_size;	// 패킷 크기
@@ -44,7 +45,14 @@ struct CS_PLAYER_PACKET
 	float camera_angleY;
 
 };
+struct CS_READY_PACKET
+{
+	char packet_size;		// 패킷 크기
+	char packet_type;		// 패킷 종류
+	int player_id;			// 플레이어 id
+};
 
+// 서버->클라 패킷
 struct SC_MAZE_INFO
 {
 	char packet_size;		// 패킷 크기
@@ -52,5 +60,21 @@ struct SC_MAZE_INFO
 	int mazeMap[15][15];	// 맵 정보
 	int player_id;			// 플레이어 id
 	float x, y, z;			// 초기 플레이어 위치 정보 패킷
+};
+
+struct SC_ADD_CHARACTER_PACKET
+{
+	char packet_size;	// 패킷 크기
+	char packet_type;	// 패킷 종류
+	int player_id;		// 플레이어 id
+	int player_hp;		// hp
+
+	float PosX;
+	float PosY;
+	float PosZ;
+
+	float camera_angleX;
+	float camera_angleY;
+
 };
 #pragma pack(pop) 

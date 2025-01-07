@@ -5,6 +5,7 @@
 
 enum CommandKey {
 	W, A, S, D,
+	R,
 	SpaceBar,
 	Num1, Num2,
 	MouseLeftClick

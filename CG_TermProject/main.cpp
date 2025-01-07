@@ -30,8 +30,7 @@ GLvoid TimerFunction(int value);
 GLuint vertexShader;
 GLuint fragmentShader;
 
-// 클라이언트<->서버 통신 용 변수
-NetworkManager networkmanager;
+
 // ===== 셰이더 만들기 ===== 
 
 char* filetobuf(string file)
