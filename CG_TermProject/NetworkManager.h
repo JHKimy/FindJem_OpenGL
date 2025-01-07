@@ -24,6 +24,7 @@ public:
     ~NetworkManager();
 
     bool Connect();
+    bool RecvCharacterInfo();
 
     bool RecvThread();
 

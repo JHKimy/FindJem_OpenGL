@@ -27,10 +27,68 @@ void Send_Maze_Data(int clientid)
 		}
 	}
 }
+void Send_Character_Init_Data(int clientid)
+{
+	// 미로 정보 담는 패킷 구조체
+	SC_MY_CHARACTER p;
+	p.packet_size = sizeof(p);
+	p.packet_type = SC_INIT_CHARACTER;
+	p.x = g_characters[clientid].GetPostionX();
+	p.y = g_characters[clientid].GetPostionY();
+	p.z = g_characters[clientid].GetPostionZ();
 
+	
+	if (g_is_accept[clientid]) {
+		// 데이터를 클라이언트 소켓으로 전송
+		int retval = send(g_clientSocketes[clientid],
+			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+		if (retval == SOCKET_ERROR) {
+			cout << "fail ! " << clientid << ": " << WSAGetLastError() << endl;
+		}
+		else {
+			cout << "Send to client " << clientid << endl;
+		}
+	}
+}
 void HandleThread(int id)
 {
 	Send_Maze_Data(id);
+	Character character{ id };
+	{
+		lock_guard<mutex> lock(g_character_mutex);
+		g_characters[id] = character;
+	}
+	Send_Character_Init_Data(id);
+	while (true)
+	{
+		char buf[1024];
+		// 패킷 전체 데이터 수신
+		int retval = recv(g_clientSocketes[id], buf, sizeof(buf), 0);
+
+		if (retval <= 0) {
+			// 연결 종료 또는 오류 처리
+			if (retval == 0) {
+				std::cout << "Client disconnected." << std::endl;
+			}
+			else {
+				std::cout << "Recv error: " << WSAGetLastError() << std::endl;
+			}
+		}
+
+		char packetType = static_cast<char>(buf[1]);
+
+		// 패킷 처리
+		switch (packetType) {
+		default:
+		case CS_PLAYER: {
+			CS_PLAYER_PACKET* p = reinterpret_cast<CS_PLAYER_PACKET*>(buf);
+			g_characters[p->player_id].Move(p->direction);
+			break;
+		}
+			std::cout << "Unknown packet type: " << packetType << std::endl;
+			break;
+		}
+	}
 }
 
 

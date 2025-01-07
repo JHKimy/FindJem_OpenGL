@@ -6,7 +6,7 @@ class Character
 
 
 public:
-
+    Character() = default;       // 기본 생성자 추가
     Character(int id);
 
     int     playerID;       // 플레이어 ID

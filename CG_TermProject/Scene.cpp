@@ -7,6 +7,7 @@
 #include "Enemy.h"
 //#include "MazeGenerator.h"
 #include "Controller.h"
+#include "Global.h"
 #include <random>
 #include <iostream>
 
@@ -37,7 +38,7 @@ void Scene::Initialize()
     InitializeMaze();
 
     // 캐릭터 초기화
-    mainCharacter = make_unique<Character>(glm::vec3(-10.f, 0.f, 5.f));
+    mainCharacter = make_unique<Character>(glm::vec3(startPos.x, startPos.y, startPos.z));
     mainCamera->TopView();
 
     // 적 초기화

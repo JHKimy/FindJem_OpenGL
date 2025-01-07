@@ -20,3 +20,7 @@ extern GLuint shaderProgram;
 
 // 클라이언트 식별 id
 extern int g_id;
+
+extern struct StartPos {
+	float x, y, z;
+}startPos;

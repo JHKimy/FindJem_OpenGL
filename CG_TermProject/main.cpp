@@ -188,6 +188,8 @@ void main(int argc, char** argv)
 		std::cout << "Unknown packet type: " << packetType << std::endl;
 	}
 
+	// 초기 위치 정보 패킷 수신
+	networkmanager.RecvCharacterInfo();
 
 	// NetworkManager에 Scene 연결
 	//networkmanager.SetScene(mainScene);

@@ -3,11 +3,12 @@
 std::array<SOCKET, 3>   g_clientSocketes;
 std::array<bool, 3>      g_is_accept;
 std::array<thread, 3>      g_threads;
+std::array<Character, 3>	g_characters;
 // 미로 데이터
 std::vector<std::vector<int>> g_mazeMap;
-
 // 멀티스레드 환경에서 동기화를 위한 mutex
-mutex               g_mutex;
+mutex						g_character_mutex;
+mutex                       g_mutex;
 
 // 빈 슬롯의 클라이언트 ID 반환 함수
 int get_id()
