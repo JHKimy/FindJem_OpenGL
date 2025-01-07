@@ -3,7 +3,12 @@
 
 class Character
 {
+
+
 public:
+
+    Character(int id);
+
     int     playerID;       // 플레이어 ID
 
     // 위치
@@ -17,6 +22,12 @@ public:
     {
         float pitch, yaw, roll;
     }rotation;
+
+    struct moveDir
+    {
+        float x, y, z;
+    }moveDir;
+
 
     // float   scale;          // 크기
     

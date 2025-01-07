@@ -1,14 +1,38 @@
 #include "Character.h"
 #include <cmath>
 
+Character::Character(int id)
+{
+    if (id == 0) {
+        position.x = -10.f;
+        position.y = 0.f;
+        position.z = 5.f;
+    }
+    else if (id == 1) {
+        position.x = -8.f;
+        position.y = 0.f;
+        position.z = 5.f;
+    }
+    else if (id == 2) {
+        position.x = -12.f;
+        position.y = 0.f;
+        position.z = 5.f;
+    }
+
+
+    health = 100;        // 체력
+    moveSpeed = 0.5f;    // 스피드
+    isJumping = false;   // 점프 상태
+    boundingRadius = 1.5f;  // 충돌 범위
+
+    // mass = 2.f;          // 질량
+    // gravity(9.8f),       // 중력 영향
+    //    bulletPool(30)
+    
+}
+
 void Character::Move(char key)
 {
-    struct moveDir
-    {
-        float x, y, z;
-    }moveDir;
-
-    
     if (key == 0/* W */)
     {
         moveDir.x += forwardVector.x;
@@ -105,12 +129,12 @@ void Character::Shoot()
 
 float Character::GetPostionX()
 {
-    return positon.x;
+    return position.x;
 }
 
 float Character::GetPostionY()
 {
-    return positon.y;
+    return position.y;
 }
 
 float Character::GetPostionZ()
