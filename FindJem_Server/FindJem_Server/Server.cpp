@@ -6,7 +6,7 @@ void Send_Maze_Data(int clientid)
 	SC_MAZE_INFO p;
 	p.packet_size = sizeof(p);
 	p.packet_type = SC_MAZE_DATA;
-
+	p.player_id = clientid;
 	// 미로 데이터 패킷 구조체에 복사
 	for (int i{}; i < g_mazeMap.size(); ++i) {
 		for (int j{}; j < g_mazeMap[i].size(); ++j) {

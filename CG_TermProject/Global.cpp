@@ -13,3 +13,5 @@ float rotateY{ 0.0f };
 
 
 GLuint shaderProgram = 0.f;
+
+int g_id;

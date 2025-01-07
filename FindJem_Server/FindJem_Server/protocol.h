@@ -49,7 +49,7 @@ struct SC_MAZE_INFO
 	char packet_size;		// 패킷 크기
 	char packet_type;		// 패킷 종류
 	int mazeMap[15][15];	// 맵 정보
-	
+	int player_id;			// 플레이어 id
 };
 
 #pragma pack(pop) 

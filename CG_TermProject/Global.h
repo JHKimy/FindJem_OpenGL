@@ -17,3 +17,6 @@ extern float rotateY;
 extern glm::vec3 forwardVector;
 
 extern GLuint shaderProgram;
+
+// 클라이언트 식별 id
+extern int g_id;
