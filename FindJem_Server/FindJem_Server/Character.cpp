@@ -46,6 +46,11 @@ void Character::Move(char key)
         moveDir.y += crossY;
         moveDir.z += crossZ;
     }
+
+    position.x += moveDir.x * moveSpeed;
+    position.y += moveDir.y * moveSpeed;
+    position.z += moveDir.z * moveSpeed;
+
 }
 
 void Character::Rotate(float deltaYaw)
