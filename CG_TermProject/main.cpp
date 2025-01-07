@@ -179,7 +179,7 @@ void main(int argc, char** argv)
 	if (packetType == SC_MAZE_DATA) {
 		SC_MAZE_INFO* p = reinterpret_cast<SC_MAZE_INFO*>(buf);
 		// 클라이언트 별 id 설정(패킷 send시 id 식별 용도)
-		g_id = p->id;
+		g_id = p->player_id;
 		// 4. 씬에 미로 데이터 설정
 		mainScene = std::make_shared<Scene>(shaderProgram);
 		mainScene->SetMaze(p->mazeMap);
