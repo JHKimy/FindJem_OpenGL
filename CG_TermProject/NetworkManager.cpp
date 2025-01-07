@@ -14,7 +14,6 @@ NetworkManager::NetworkManager()
         exit(1);
     }
 
-
 }
 
 NetworkManager::~NetworkManager() {
@@ -22,17 +21,23 @@ NetworkManager::~NetworkManager() {
     WSACleanup();
 }
 
-bool NetworkManager::Connect() {
+bool NetworkManager::Connect() 
+{
+    // 서버 주소 정보 구조체
     sockaddr_in serverAddr;
+    // IPv4 설정 
     serverAddr.sin_family = AF_INET;
+    // 서버 포트를 네트워크 바이트 순서로 변환 후 설정
     serverAddr.sin_port = htons(SERVER_PORT);
+    // 서버 IP 주소를 네트워크 바이트 순서로 변환 후 설정
     inet_pton(AF_INET, SERVER_IP, &serverAddr.sin_addr);
 
+    // 서버에 연결 시도
     if (connect(clientSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
         std::cout << "Failed to connect to the server" << std::endl;
         return false;
     }
-
+    // 연결 성공 처리
     return true;
 }
 

@@ -6,16 +6,19 @@ std::array<thread, 3>      g_threads;
 // 미로 데이터
 std::vector<std::vector<int>> g_mazeMap;
 
+// 멀티스레드 환경에서 동기화를 위한 mutex
 mutex               g_mutex;
+
+// 빈 슬롯의 클라이언트 ID 반환 함수
 int get_id()
 {
-    g_mutex.lock();
+    g_mutex.lock(); // mutex 잠금
     for (int i = 0; i < 3; ++i) {
-        if (!g_is_accept[i]) {
-            g_mutex.unlock();
+        if (!g_is_accept[i]) {  // 비어 있으면
+            g_mutex.unlock();   // mutex 해제
             return i;
         }
     }
-    g_mutex.unlock();
+    g_mutex.unlock();   // 모두 차 있으면 mutex 해제
     return -1;
 }

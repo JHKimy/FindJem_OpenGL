@@ -126,17 +126,12 @@ Controller* mainController = nullptr;
 void main(int argc, char** argv)
 {
 
-
-
+	// 1. 서버와 연결
 	if (!networkmanager.Connect())
 	{
 		cout << "Failed to connect to the server" << endl;
 		return;
 	}
-
-
-
-
 
 	// 윈도우 생성하기
 	glutInit(&argc, argv);
@@ -157,13 +152,15 @@ void main(int argc, char** argv)
 // ===============================================================
 
 
-		// 셰이더 프로그램 생성
+	// 셰이더 프로그램 생성
 	shaderProgram = make_shaderProgram();
 
 
 
 	// 씬 생성
 	//mainScene = std::make_shared<Scene>(shaderProgram);
+	
+	// 2. 서버로부터 데이터 수신
 	char buf[1024];
 	int bytesReceived = recv(networkmanager.GetSocket(), buf, sizeof(buf), 0);
 
@@ -177,12 +174,13 @@ void main(int argc, char** argv)
 		return;
 	}
 
+	// 3. 패킷 타입 처리
 	char packetType = static_cast<char>(buf[1]);
 	if (packetType == SC_MAZE_DATA) {
 		SC_MAZE_INFO* p = reinterpret_cast<SC_MAZE_INFO*>(buf);
 
 
-		// 씬에 미로 데이터 설정
+		// 4. 씬에 미로 데이터 설정
 		mainScene = std::make_shared<Scene>(shaderProgram);
 		mainScene->SetMaze(p->mazeMap);
 	}
@@ -194,16 +192,11 @@ void main(int argc, char** argv)
 	// NetworkManager에 Scene 연결
 	//networkmanager.SetScene(mainScene);
 
-
-
 	mainScene->Initialize();
 
-
-
-
-
-
-	thread networkThread([&]()
+	// 5. 데이터 수신 스레드 시작
+	thread networkThread(
+		[ & ] ( )
 		{
 			while (true)
 			{

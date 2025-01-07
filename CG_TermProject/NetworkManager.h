@@ -28,9 +28,9 @@ public:
     bool RecvThread();
 
     SOCKET GetSocket() { return clientSocket; }
+
     void SetScene(std::shared_ptr<Scene> Scene);
         
-    void UdateMaze();
 
 private:
     SOCKET clientSocket;
