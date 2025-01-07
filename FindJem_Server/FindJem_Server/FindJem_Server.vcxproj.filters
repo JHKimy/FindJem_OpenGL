@@ -19,6 +19,9 @@
     <Filter Include="Map">
       <UniqueIdentifier>{4908180b-d3ae-4e80-bac7-7c2fc0896829}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameData">
+      <UniqueIdentifier>{a8261fde-8d44-4cbb-9852-b649aa78b73f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Server.cpp">
@@ -33,6 +36,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>헤더 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>GameData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="protocol.h">
@@ -46,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="MazeGenerator.h">
       <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>GameData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
