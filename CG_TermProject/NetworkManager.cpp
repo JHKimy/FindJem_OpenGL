@@ -73,7 +73,7 @@ bool NetworkManager::RecvThread() {
         position.z = p->PosZ;
 
         cout << "id : " << p->player_id<<endl;
-        cout << p->PosX<<endl;
+        cout << p->PosX <<"     "<< position.x << endl;
 
         /*otherCharacter1 = make_unique<Character>(glm::vec3(position.x, position.y, position.z));
         otherCharacter1->Render(shaderProgram);*/

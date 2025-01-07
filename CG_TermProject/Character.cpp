@@ -171,6 +171,19 @@ float Character::GetYaw() const
 
 void Character::Render(GLuint shaderProgram)
 {
+    //std::cout << "Rendering Character..." << std::endl;
+
+    //// VAO 바인딩 상태 출력
+    //std::cout << "VAO ID: " << vao << std::endl;
+
+    //// vertices 크기 출력
+    //std::cout << "Vertices Count: " << vertices.size() << std::endl;
+
+    //// Position 출력
+    //std::cout << "Character Position: " << position.x << ", " << position.y << ", " << position.z << std::endl;
+
+    //// Forward Vector 출력
+    //std::cout << "Forward Vector: " << forwardVector.x << ", " << forwardVector.y << ", " << forwardVector.z << std::endl;
     glBindVertexArray(vao);
 
     // 모델 변환 행렬 계산
@@ -199,9 +212,15 @@ void Character::Render(GLuint shaderProgram)
 
     glDrawArrays(GL_TRIANGLES, 0, vertices.size() * 3);
 
+
     //// 총알 렌더링
     //for (const auto& bullet : bullets) {
     //    bullet->Render(shaderProgram);
     //}
 
+}
+
+void Character::SetForwardVector(glm::vec3 forwardVec)
+{
+    forwardVector = forwardVec;
 }

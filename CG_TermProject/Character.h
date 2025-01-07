@@ -13,7 +13,6 @@ class BulletPool;
 class Character : public Actor
 {
 private:
-
     glm::vec3 forwardVector;
     float yaw;
 
@@ -78,7 +77,7 @@ public:
     void Render(GLuint shaderProgram) override;
 
 
-
+    void SetForwardVector(glm::vec3 forwardVector);
 
 
     void CheckBulletPoolStatus() {

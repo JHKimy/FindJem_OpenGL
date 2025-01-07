@@ -40,10 +40,12 @@ void Scene::Initialize()
     // 캐릭터 초기화
     mainCharacter = make_unique<Character>(glm::vec3(startPos.x, startPos.y, startPos.z));
     
-    otherCharacter1 = make_unique<Character>(glm::vec3(15.f, 10.f, 15.f));
-   
+    otherCharacter1 = make_unique<Character>(glm::vec3(position.x, 5.f, position.z));
+
+    cout << "Initialize : " << position.x << endl;
+
     otherCharacter2 = make_unique<Actor>("Cube.obj",
-        glm::vec3(15.f, 5.f, 15.f),
+        glm::vec3(15.f, 0.f, 15.f),
         blockSize,
         glm::vec3(0),
         glm::vec3(0, 0, 1));
@@ -59,6 +61,7 @@ void Scene::Update(float deltaTime)
     // 플레이어 업데이트
     mainCharacter->Update(deltaTime);
     // otherCharacter1->Update(deltaTime);
+    otherCharacter1->SetForwardVector(glm::vec3(0.5f, 0.f, 0.5f));
 
     // 적 상태 관리 및 충돌 처리
     glm::vec3 playerPosition = mainCharacter->GetPosition();
@@ -96,7 +99,6 @@ void Scene::Render()
     mainCharacter->Render(SceneShader);
 
     otherCharacter1->Render(SceneShader);
-    
     
     
     otherCharacter2->Render(SceneShader);
