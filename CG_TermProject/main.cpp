@@ -193,7 +193,6 @@ void main(int argc, char** argv)
 
 	// NetworkManager에 Scene 연결
 	//networkmanager.SetScene(mainScene);
-
 	mainScene->Initialize();
 
 	// 5. 데이터 수신 스레드 시작
@@ -220,7 +219,6 @@ void main(int argc, char** argv)
 
 //=========================
 	glutDisplayFunc(drawScene);
-	
 	// 일반 함수는 특정 객체에 의존하지 않고 독립적으로 호출
 	// glutKeyboardFunc가 원하는건 독립적인 함수
 	// 일반 함수는 하나의 고유한 메모리 주소 가짐

@@ -75,6 +75,8 @@ bool NetworkManager::RecvThread() {
         cout << "id : " << p->player_id<<endl;
         cout << p->PosX <<"     "<< position.x << endl;
 
+        g_bReady = true;
+
         /*otherCharacter1 = make_unique<Character>(glm::vec3(position.x, position.y, position.z));
         otherCharacter1->Render(shaderProgram);*/
         break;

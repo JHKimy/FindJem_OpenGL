@@ -8,6 +8,7 @@
 
 #include "NetworkManager.h"
 
+
 // 윈도우 사이즈
 extern GLfloat winWidth;
 extern GLfloat winHeight;
@@ -40,3 +41,8 @@ extern struct Direction {
 extern struct Position {
 	float x, y, z;
 }position;
+
+// 데이터 수신 완료 플래그
+extern bool g_bReady;
+
+extern bool g_isOtherCharacter;
