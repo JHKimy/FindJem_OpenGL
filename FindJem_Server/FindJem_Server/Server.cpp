@@ -7,9 +7,11 @@ void Send_Maze_Data(int clientid)
 	p.packet_size = sizeof(p);
 	p.packet_type = SC_MAZE_DATA;
 	p.player_id = clientid;
+
 	p.x = g_characters[clientid].GetPostionX();
 	p.y = g_characters[clientid].GetPostionY();
 	p.z = g_characters[clientid].GetPostionZ();
+	
 	// 미로 데이터 패킷 구조체에 복사
 	for (int i{}; i < g_mazeMap.size(); ++i) {
 		for (int j{}; j < g_mazeMap[i].size(); ++j) {
@@ -22,6 +24,7 @@ void Send_Maze_Data(int clientid)
 		// 데이터를 클라이언트 소켓으로 전송
 		int retval = send(g_clientSocketes[clientid],
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+
 		if (retval == SOCKET_ERROR) {
 			cout << "fail ! " << clientid << ": " << WSAGetLastError() << endl;
 		}
@@ -54,27 +57,30 @@ void Send_My_Character_Data(int clientid)
 		// 데이터를 클라이언트 소켓으로 전송
 		int retval = send(g_clientSocketes[clientid],
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
-		if (retval == SOCKET_ERROR) {
-			cout << "fail ! " << clientid << ": " << WSAGetLastError() << endl;
-		}
-		else {
-			cout << "Send to client " << clientid << endl;
-		}
+		
 	}
 }
 
+
+// 클라 요청 처리하는 서버 스레드 함수
 void HandleThread(int id)
 {
+	// 서버 캐릭터 생성
 	Character character{ id };
 	{
 		lock_guard<mutex> lock(g_character_mutex);
 		g_characters[id] = character;
 		g_characters[id].playerID = id;
 	}
+
+	// 미로 데이터 보내기
 	Send_Maze_Data(id);
+
+
 	while (true)
 	{
 		char buf[1024];
+
 		// 패킷 전체 데이터 수신
 		int retval = recv(g_clientSocketes[id], buf, sizeof(buf), 0);
 
@@ -90,7 +96,7 @@ void HandleThread(int id)
 
 		char packetType = static_cast<char>(buf[1]);
 
-		// 패킷 처리
+		// 클라에서 받은 패킷 처리
 		switch (packetType) {
 		case CS_READY: {
 			CS_READY_PACKET* p = reinterpret_cast<CS_READY_PACKET*>(buf);
@@ -107,6 +113,8 @@ void HandleThread(int id)
 
 				packet.packet_size = sizeof(packet);
 				packet.packet_type = SC_ADD_CHARACTER;
+
+
 				packet.PosX = g_characters[id].GetPostionX();
 				packet.PosY = g_characters[id].GetPostionY();
 				packet.PosZ = g_characters[id].GetPostionZ();
@@ -121,6 +129,7 @@ void HandleThread(int id)
 			break;
 		}
 		case CS_PLAYER: {
+			// 받고 계산하고 보내기
 			CS_PLAYER_PACKET* p = reinterpret_cast<CS_PLAYER_PACKET*>(buf);
 			g_characters[p->player_id].Move(p->direction);
 			g_characters[p->player_id].Rotate(p->dirY);
@@ -192,10 +201,13 @@ int main()
 			return 0;
 		}
 
+		// 고유 클라이언트 ID 생성
 		int client_id = get_id();
 		
+		// 연결 상태 설정
 		g_is_accept[client_id] = true;
 
+		// 소텟 저장
 		g_clientSocketes[client_id] = clientSocket;
 		
 		cout << "클라이언트 접속" << endl;

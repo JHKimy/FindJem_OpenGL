@@ -39,7 +39,6 @@ void Scene::Initialize()
 
     // 캐릭터 초기화
     mainCharacter = make_unique<Character>(glm::vec3(startPos.x, startPos.y, startPos.z));
-    cout <<"startPos : "<< startPos.x << endl;
 
 
     otherCharacter2 = make_unique<Actor>("Cube.obj",
@@ -62,7 +61,6 @@ void Scene::Update(float deltaTime)
     
     if (g_bReady) {
         otherCharacter1 = make_unique<Character>(glm::vec3(position.x, position.y, position.z));
-        cout << "Initialize : " << position.x << endl;
 
         otherCharacter1->SetForwardVector(glm::vec3(0.5f, 0.f, 0.5f));
         g_isOtherCharacter = true;

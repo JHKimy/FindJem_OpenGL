@@ -46,6 +46,7 @@ struct CS_PLAYER_PACKET
 	float camera_angleY;
 
 };
+
 struct CS_READY_PACKET
 {
 	char packet_size;		// 패킷 크기
@@ -78,6 +79,7 @@ struct SC_ADD_CHARACTER_PACKET
 	float camera_angleY;
 
 };
+
 struct SC_CHARACTER_MOVE_PACKET
 {
 	char packet_size;	// 패킷 크기

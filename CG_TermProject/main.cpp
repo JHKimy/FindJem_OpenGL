@@ -154,8 +154,6 @@ void main(int argc, char** argv)
 	// 셰이더 프로그램 생성
 	shaderProgram = make_shaderProgram();
 
-
-
 	// 씬 생성
 	//mainScene = std::make_shared<Scene>(shaderProgram);
 	
@@ -200,7 +198,10 @@ void main(int argc, char** argv)
 
 	mainScene->Initialize();
 
+
+
 	// 5. 데이터 수신 스레드 시작
+	// 별도 스레드 생성
 	thread networkThread(
 		[ & ] ( )
 		{

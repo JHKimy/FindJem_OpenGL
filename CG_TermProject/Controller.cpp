@@ -38,13 +38,14 @@ void Controller::Update(float deltaTime)
 	// 이동 방향 계산
 	glm::vec3 moveDirection(0.0f);
 
+
+	// === 클라에서 서버 보내는 패킷 ======================== 
+
 	CS_PLAYER_PACKET p;
 	p.dirY = g_yaw;
 
-
-	cout << "yaw : " << character->GetYaw() << endl;
-
-	// 나중에 변수 처리
+	// 나중에 변수 처리??
+	// 카메라 1인칭 시점 설정
 	camera->FirstPersonView(
 		character->GetPosition(), 
 		character->GetYaw(), 
@@ -52,37 +53,25 @@ void Controller::Update(float deltaTime)
 
 	if(g_keyPressed)
 	{
-		
 		p.player_id = g_id;
 		if (Command[W]) {
 			p.direction = 0;
-			//p.dirX = character->GetForwardVector().x;
-			//
-			//p.dirZ = character->GetForwardVector().z;
 		}
 		if (Command[S]) {
 			p.direction = 1;
-			//p.dirX = character->GetForwardVector().x;
-			////p.dirY = g_yaw;
-			//p.dirZ = character->GetForwardVector().z;
 		}
 		if (Command[A]) {
 			p.direction = 2;
-			//p.dirX = character->GetForwardVector().x;
-			////p.dirY = g_yaw;
-			//p.dirZ = character->GetForwardVector().z;
 		}
 		if (Command[D]) {
 			p.direction = 3;
-			//p.dirX = character->GetForwardVector().x;
-			////p.dirY = g_yaw;
-			//p.dirZ = character->GetForwardVector().z;
 		}
 
 	}
-
-	cout << "forward : " << character->GetForwardVector().x << endl;
+	// 서버에 보내기
 	networkmanager.SendPlayerMove(p);
+	
+	// =========================================
 
 	/*moveDirection += character->GetForwardVector();
 	moveDirection -= character->GetForwardVector();
