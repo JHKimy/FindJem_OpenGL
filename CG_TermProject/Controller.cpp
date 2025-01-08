@@ -38,33 +38,36 @@ void Controller::Update(float deltaTime)
 	// 이동 방향 계산
 	glm::vec3 moveDirection(0.0f);
 
-	CS_PLAYER_PACKET p;
-	p.player_id = g_id;
-	if (Command[W]) {
-		p.direction = 0;
-		p.dirX = character->GetForwardVector().x;
-		p.dirY = character->GetForwardVector().y;
-		p.dirZ = character->GetForwardVector().z;
+	if(g_keyPressed)
+	{
+		CS_PLAYER_PACKET p;
+		p.player_id = g_id;
+		if (Command[W]) {
+			p.direction = 0;
+			p.dirX = character->GetForwardVector().x;
+			p.dirY = character->GetForwardVector().y;
+			p.dirZ = character->GetForwardVector().z;
+		}
+		if (Command[S]) {
+			p.direction = 1;
+			p.dirX = character->GetForwardVector().x;
+			p.dirY = character->GetForwardVector().y;
+			p.dirZ = character->GetForwardVector().z;
+		}
+		if (Command[A]) {
+			p.direction = 2;
+			p.dirX = character->GetForwardVector().x;
+			p.dirY = character->GetForwardVector().y;
+			p.dirZ = character->GetForwardVector().z;
+		}
+		if (Command[D]) {
+			p.direction = 3;
+			p.dirX = character->GetForwardVector().x;
+			p.dirY = character->GetForwardVector().y;
+			p.dirZ = character->GetForwardVector().z;
+		}
+		networkmanager.SendPlayerMove(p);
 	}
-	if (Command[S]) {
-		p.direction = 1;
-		p.dirX = character->GetForwardVector().x;
-		p.dirY = character->GetForwardVector().y;
-		p.dirZ = character->GetForwardVector().z;
-	}
-	if (Command[A]) { 
-		p.direction = 2;
-		p.dirX = character->GetForwardVector().x;
-		p.dirY = character->GetForwardVector().y;
-		p.dirZ = character->GetForwardVector().z;
-	}
-	if (Command[D]) { 	
-		p.direction = 3;
-		p.dirX = character->GetForwardVector().x;
-		p.dirY = character->GetForwardVector().y;
-		p.dirZ = character->GetForwardVector().z;
-	}
-	networkmanager.SendPlayerMove(p);
 	/*moveDirection += character->GetForwardVector();
 	moveDirection -= character->GetForwardVector();
 	moveDirection -= glm::cross(character->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -125,15 +128,26 @@ GLvoid Controller::Keyboard(unsigned char key, int x, int y)
 
 	switch (key)
 	{
-	case 'w': Command[W] = true; break;		// 앞으로 이동
-	case 's': Command[S] = true; break;		// 뒤로 이동
-	case 'a': Command[A] = true; break;		// 왼쪽으로 이동
-	case 'd': Command[D] = true; break;		// 오른쪽으로 이동
+	case 'w': Command[W] = true; 
+		g_keyPressed = true;
+		break;		// 앞으로 이동
+
+	case 's': Command[S] = true; 
+		g_keyPressed = true;
+		break;		// 뒤로 이동
+	case 'a': Command[A] = true; 
+		g_keyPressed = true;
+		break;		// 왼쪽으로 이동
+	case 'd': Command[D] = true; 
+		g_keyPressed = true;
+		break;		// 오른쪽으로 이동
 	case 'r': Command[R] = true;
+		g_keyPressed = true;
 		networkmanager.SendReady();
 		break;		// 준비 상태 
 	case 32/*SpaceBar*/: Command[SpaceBar] = true; 
-		
+		// g_keyPressed = true;??
+
 		break; // 캐릭터 점프	
 
 		 
@@ -165,10 +179,19 @@ GLvoid Controller::KeyboardUp(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	case 'w':Command[W] = false; break;
-	case 's':Command[S] = false; break;
-	case 'a':Command[A] = false; break;
-	case 'd':Command[D] = false; break;
+	case 'w':Command[W] = false; 
+		g_keyPressed = false;
+
+		break;
+	case 's':Command[S] = false; 
+		g_keyPressed = false;
+		break;
+	case 'a':Command[A] = false; 
+		g_keyPressed = false;
+		break;
+	case 'd':Command[D] = false; 
+		g_keyPressed = false;
+		break;
 
 	case 32: Command[SpaceBar] = false; return;
 

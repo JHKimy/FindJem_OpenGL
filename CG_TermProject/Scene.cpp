@@ -39,7 +39,7 @@ void Scene::Initialize()
 
     // 캐릭터 초기화
     mainCharacter = make_unique<Character>(glm::vec3(startPos.x, startPos.y, startPos.z));
-    
+    cout <<"startPos : "<< startPos.x << endl;
 
 
     otherCharacter2 = make_unique<Actor>("Cube.obj",

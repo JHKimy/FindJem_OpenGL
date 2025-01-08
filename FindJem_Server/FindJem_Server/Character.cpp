@@ -25,9 +25,12 @@ Character::Character(int id)
     isJumping = false;   // 점프 상태
     isReady = false;
     boundingRadius = 1.5f;  // 충돌 범위
-    forwardVector.x = 1.f;
+    forwardVector.x = 0.f;
     forwardVector.y = 0.f;
     forwardVector.z = 0.f;
+    moveDir.x = 0.f;
+    moveDir.y = 0.f;
+    moveDir.z = 0.f;
     // mass = 2.f;          // 질량
     // gravity(9.8f),       // 중력 영향
     //    bulletPool(30)

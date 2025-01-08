@@ -35,7 +35,7 @@ struct CS_PLAYER_PACKET
 	int player_hp;		// hp
 	bool status = true;	// 상태
 	bool ready = false;	// 레디 상태
-	char direction;		// 0 : forward  / 1 : back / 2 : left / 3 : right / 4 : jump
+	char direction = -1;		// 0 : forward  / 1 : back / 2 : left / 3 : right / 4 : jump
 	
 	float dirX;
 	float dirY;

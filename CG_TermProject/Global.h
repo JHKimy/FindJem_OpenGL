@@ -46,3 +46,5 @@ extern struct Position {
 extern bool g_bReady;
 
 extern bool g_isOtherCharacter;
+
+extern bool g_keyPressed;
