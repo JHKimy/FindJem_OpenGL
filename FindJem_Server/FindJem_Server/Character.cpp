@@ -147,3 +147,13 @@ float Character::GetPostionZ()
 {
     return position.z;
 }
+
+float Character::GetForwordVecX()
+{
+    return forwardVector.x;
+}
+
+float Character::GetForwordVecZ()
+{
+    return forwardVector.z;
+}

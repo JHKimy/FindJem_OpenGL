@@ -65,7 +65,7 @@ bool NetworkManager::RecvThread() {
     
     // 패킷 처리
     switch (packetType) {
-    default:
+
     case SC_ADD_CHARACTER: {
         SC_ADD_CHARACTER_PACKET* p = reinterpret_cast<SC_ADD_CHARACTER_PACKET*>(buf);
         position.x = p->PosX;
@@ -81,10 +81,18 @@ bool NetworkManager::RecvThread() {
         otherCharacter1->Render(shaderProgram);*/
         break;
     }
+    case SC_CHARACTER_MOVE: {
+        SC_CHARACTER_MOVE_PACKET* p = reinterpret_cast<SC_CHARACTER_MOVE_PACKET*>(buf);
+        p->PosX;
+        p->PosY;
+        p->PosZ;
+        p->DirX;
+        p->DirZ;
+    }
+    default:
         std::cout << "Unknown packet type: " << packetType << std::endl;
         break;
     }
-
     return true;
 }
 

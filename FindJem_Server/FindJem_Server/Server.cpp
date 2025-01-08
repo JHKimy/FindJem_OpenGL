@@ -31,6 +31,33 @@ void Send_Maze_Data(int clientid)
 	}
 }
 
+void Send_My_Character_Data(int clientid)
+{
+	// 미로 정보 담는 패킷 구조체
+	SC_CHARACTER_MOVE_PACKET p;
+	p.packet_size = sizeof(p);
+	p.packet_type = SC_CHARACTER_MOVE;
+	p.player_id = clientid;
+	p.PosX = g_characters[clientid].GetPostionX();
+	p.PosY = g_characters[clientid].GetPostionY();
+	p.PosZ = g_characters[clientid].GetPostionZ();
+
+	p.DirX = g_characters[clientid].GetForwordVecX();
+	p.DirZ = g_characters[clientid].GetForwordVecZ();
+
+	if (g_is_accept[clientid]) {
+		// 데이터를 클라이언트 소켓으로 전송
+		int retval = send(g_clientSocketes[clientid],
+			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+		if (retval == SOCKET_ERROR) {
+			cout << "fail ! " << clientid << ": " << WSAGetLastError() << endl;
+		}
+		else {
+			cout << "Send to client " << clientid << endl;
+		}
+	}
+}
+
 void HandleThread(int id)
 {
 	Character character{ id };
@@ -62,7 +89,7 @@ void HandleThread(int id)
 		switch (packetType) {
 		case CS_READY: {
 			CS_READY_PACKET* p = reinterpret_cast<CS_READY_PACKET*>(buf);
-			g_characters[p->player_id].isReady = true;
+			g_characters[id].isReady = true;
 
 			for (auto& other : g_characters) {
 				if (other.playerID == p->player_id) continue;
@@ -71,13 +98,13 @@ void HandleThread(int id)
 					if (!g_is_accept[other.playerID]) continue;
 				}
 				SC_ADD_CHARACTER_PACKET packet;
-				packet.player_id = p->player_id;
+				packet.player_id = id;
 
 				packet.packet_size = sizeof(packet);
 				packet.packet_type = SC_ADD_CHARACTER;
-				packet.PosX = g_characters[p->player_id].GetPostionX();
-				packet.PosY = g_characters[p->player_id].GetPostionY();
-				packet.PosZ = g_characters[p->player_id].GetPostionZ();
+				packet.PosX = g_characters[id].GetPostionX();
+				packet.PosY = g_characters[id].GetPostionY();
+				packet.PosZ = g_characters[id].GetPostionZ();
 				int retval = send(g_clientSocketes[other.playerID],
 					reinterpret_cast<const char*>(&packet), sizeof(packet), 0);
 				cout << "누구에게 감 ? : " << other.playerID << endl;
@@ -91,8 +118,10 @@ void HandleThread(int id)
 		case CS_PLAYER: {
 			CS_PLAYER_PACKET* p = reinterpret_cast<CS_PLAYER_PACKET*>(buf);
 			g_characters[p->player_id].Move(p->direction);
-			
-			//for ()
+			g_characters[p->player_id].Rotate(p->dirY);
+			Send_My_Character_Data(p->player_id);
+
+			//for (auto& other : g_characters)
 			//{
 
 			//}

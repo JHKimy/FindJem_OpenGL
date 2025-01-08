@@ -75,5 +75,8 @@ public:
     float GetPostionX();
     float GetPostionY();
     float GetPostionZ();
+    float GetForwordVecX();
+    float GetForwordVecZ();
+
 
 };

@@ -18,6 +18,7 @@ constexpr char SC_MAZE_DATA = 1;
 // 초기 플레이어 정보 
 // 상대 플레이어 정보
 constexpr char SC_ADD_CHARACTER = 2;
+constexpr char SC_CHARACTER_MOVE = 3;
 // 오브젝트 정보 
 
 // 총알 정보
@@ -76,5 +77,18 @@ struct SC_ADD_CHARACTER_PACKET
 	float camera_angleX;
 	float camera_angleY;
 
+};
+struct SC_CHARACTER_MOVE_PACKET
+{
+	char packet_size;	// 패킷 크기
+	char packet_type;	// 패킷 종류
+	int player_id;		// 플레이어 id
+	
+	float PosX;
+	float PosY;
+	float PosZ;
+	
+	float DirX;
+	float DirZ;
 };
 #pragma pack(pop) 
