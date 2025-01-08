@@ -68,7 +68,6 @@ void HandleThread(int id)
 				if (other.playerID == p->player_id) continue;
 				{
 					lock_guard<mutex> lock(g_character_mutex);
-					if (!other.isReady) continue;
 					if (!g_is_accept[other.playerID]) continue;
 				}
 				SC_ADD_CHARACTER_PACKET packet;
@@ -84,7 +83,7 @@ void HandleThread(int id)
 				cout << "누구에게 감 ? : " << other.playerID << endl;
 				cout << "posx : " << packet.PosX << endl;
 				cout << "posy : " << packet.PosY << endl;
-				cout << "id : " << packet.player_id;
+				cout << "id : " << packet.player_id << endl;
 		
 			}
 			break;
