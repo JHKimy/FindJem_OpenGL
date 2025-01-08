@@ -61,7 +61,7 @@ void Scene::Update(float deltaTime)
     // otherCharacter1->Update(deltaTime);
     
     if (g_bReady) {
-        otherCharacter1 = make_unique<Character>(glm::vec3(position.x, 5.f, position.z));
+        otherCharacter1 = make_unique<Character>(glm::vec3(position.x, position.y, position.z));
         cout << "Initialize : " << position.x << endl;
 
         otherCharacter1->SetForwardVector(glm::vec3(0.5f, 0.f, 0.5f));
