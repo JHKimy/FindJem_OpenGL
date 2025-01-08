@@ -192,7 +192,12 @@ void main(int argc, char** argv)
 
 
 	// NetworkManager에 Scene 연결
-	//networkmanager.SetScene(mainScene);
+	networkmanager.SetScene(mainScene);
+
+
+
+
+
 	mainScene->Initialize();
 
 	// 5. 데이터 수신 스레드 시작
@@ -290,7 +295,6 @@ GLvoid TimerFunction(int value)
 	// 다음 프레임 요청
 	glutTimerFunc(16, TimerFunction, 1);
 	glutPostRedisplay();
-
 
 
 

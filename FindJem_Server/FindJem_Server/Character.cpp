@@ -42,45 +42,59 @@ void Character::Move(char key)
     if (key == 0/* W */)
     {
         moveDir.x += forwardVector.x;
-        moveDir.y += forwardVector.y;
+        //moveDir.y += forwardVector.y;
         moveDir.z += forwardVector.z;
         
     }
     if (key == 1/* S */)
     {
         moveDir.x -= forwardVector.x;
-        moveDir.y -= forwardVector.y;
+        //moveDir.y -= forwardVector.y;
         moveDir.z -= forwardVector.z;
 
     }
     if (key == 2/* A */)
     {
         // 외적 계산 (Y축 기준으로 왼쪽 벡터)
-        float crossX = forwardVector.y * 0.0f - forwardVector.z * 1.0f; // a_y * b_z - a_z * b_y
-        float crossY = forwardVector.z * 0.0f - forwardVector.x * 0.0f; // a_z * b_x - a_x * b_z
-        float crossZ = forwardVector.x * 1.0f - forwardVector.y * 0.0f; // a_x * b_y - a_y * b_x
+        float crossX = - forwardVector.z; // a_y * b_z - a_z * b_y
+        float crossY = 0; // a_z * b_x - a_x * b_z
+        float crossZ = forwardVector.x; // a_x * b_y - a_y * b_x
 
         moveDir.x -= crossX;
-        moveDir.y -= crossY;
+        // moveDir.y -= crossY;
         moveDir.z -= crossZ;
     }
 
     if (key == 3/* D */)
     {
         // 외적 계산 (Y축 기준으로 오른쪽 벡터)
-        float crossX = forwardVector.y * 0.0f - forwardVector.z * 1.0f; // a_y * b_z - a_z * b_y
-        float crossY = forwardVector.z * 0.0f - forwardVector.x * 0.0f; // a_z * b_x - a_x * b_z
-        float crossZ = forwardVector.x * 1.0f - forwardVector.y * 0.0f; // a_x * b_y - a_y * b_x
+        float crossX = -forwardVector.z; // a_y * b_z - a_z * b_y
+        float crossY = 0.f; // a_z * b_x - a_x * b_z
+        float crossZ = forwardVector.x; // a_x * b_y - a_y * b_x
 
         moveDir.x += crossX;
-        moveDir.y += crossY;
+        // moveDir.y += crossY;
         moveDir.z += crossZ;
+    }
+
+    // === moveDir 정규화 ===
+    float length = sqrt(moveDir.x * moveDir.x + moveDir.y * moveDir.y + moveDir.z * moveDir.z);
+    if (length > 0.0f) // 길이가 0이 아닐 때만 정규화
+    {
+        moveDir.x /= length;
+        moveDir.y /= length;
+        moveDir.z /= length;
     }
 
     position.x += moveDir.x * moveSpeed;
     position.y += moveDir.y * moveSpeed;
     position.z += moveDir.z * moveSpeed;
 
+
+    // moveDir 초기화 (옵션, 다음 이동 계산에서 누적 방지)
+    moveDir.x = 0.0f;
+    moveDir.y = 0.0f;
+    moveDir.z = 0.0f;
 }
 
 void Character::Rotate(float deltaYaw)

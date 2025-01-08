@@ -83,11 +83,10 @@ bool NetworkManager::RecvThread() {
     }
     case SC_CHARACTER_MOVE: {
         SC_CHARACTER_MOVE_PACKET* p = reinterpret_cast<SC_CHARACTER_MOVE_PACKET*>(buf);
-        p->PosX;
-        p->PosY;
-        p->PosZ;
-        p->DirX;
-        p->DirZ;
+        m_Scene->GetCharacter()->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+        m_Scene->GetCharacter()->SetForwardVector(glm::vec3(p->DirX, 0.f, p->DirZ));
+
+        break;
     }
     default:
         std::cout << "Unknown packet type: " << packetType << std::endl;
