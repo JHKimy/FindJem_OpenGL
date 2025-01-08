@@ -33,3 +33,6 @@ bool g_bReady = false;
 bool g_isOtherCharacter = false;
 
 bool g_keyPressed = false;
+
+float g_yaw;
+float g_pitch;

@@ -48,3 +48,9 @@ extern bool g_bReady;
 extern bool g_isOtherCharacter;
 
 extern bool g_keyPressed;
+
+
+// 캐릭터 회전 yaw
+extern float g_yaw;
+
+extern float g_pitch;

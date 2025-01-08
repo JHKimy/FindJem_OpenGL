@@ -77,6 +77,6 @@ public:
     float GetPostionZ();
     float GetForwordVecX();
     float GetForwordVecZ();
-
+    float GetYaw();
 
 };

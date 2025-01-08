@@ -42,6 +42,11 @@ void Send_My_Character_Data(int clientid)
 	p.PosY = g_characters[clientid].GetPostionY();
 	p.PosZ = g_characters[clientid].GetPostionZ();
 
+	p.yaw = g_characters[clientid].GetYaw();
+	//p.forwardVectorX = g_characters[clientid].GetForwordVecX();
+	//p.forwardVectorX = g_characters[clientid].GetForwordVecZ();
+
+
 	p.DirX = g_characters[clientid].GetForwordVecX();
 	p.DirZ = g_characters[clientid].GetForwordVecZ();
 
@@ -119,6 +124,7 @@ void HandleThread(int id)
 			CS_PLAYER_PACKET* p = reinterpret_cast<CS_PLAYER_PACKET*>(buf);
 			g_characters[p->player_id].Move(p->direction);
 			g_characters[p->player_id].Rotate(p->dirY);
+			//cout << g_characters[p->player_id].forwardVector.x << endl;
 			Send_My_Character_Data(p->player_id);
 
 			//for (auto& other : g_characters)

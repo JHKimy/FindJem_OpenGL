@@ -85,7 +85,7 @@ bool NetworkManager::RecvThread() {
         SC_CHARACTER_MOVE_PACKET* p = reinterpret_cast<SC_CHARACTER_MOVE_PACKET*>(buf);
         m_Scene->GetCharacter()->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
         m_Scene->GetCharacter()->SetForwardVector(glm::vec3(p->DirX, 0.f, p->DirZ));
-
+        m_Scene->GetCharacter()->SetYaw(p->yaw);
         break;
     }
     default:

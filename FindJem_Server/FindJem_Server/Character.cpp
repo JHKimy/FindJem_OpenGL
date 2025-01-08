@@ -171,3 +171,8 @@ float Character::GetForwordVecZ()
 {
     return forwardVector.z;
 }
+
+float Character::GetYaw()
+{
+    return yaw;
+}

@@ -90,5 +90,11 @@ struct SC_CHARACTER_MOVE_PACKET
 	
 	float DirX;
 	float DirZ;
+
+	float yaw;
+
+	//float forwardVectorX;
+	//float forwardVectorY;
+	//float forwardVectorZ;
 };
 #pragma pack(pop) 

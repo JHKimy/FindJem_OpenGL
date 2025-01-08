@@ -71,7 +71,7 @@ public:
 
     // 캐릭터 y축 회전값
     float GetYaw() const;
-
+    void SetYaw(float _yaw);
 
     // 렌더링 함수 (Actor의 Render를 오버라이드)
     void Render(GLuint shaderProgram) override;

@@ -38,36 +38,52 @@ void Controller::Update(float deltaTime)
 	// 이동 방향 계산
 	glm::vec3 moveDirection(0.0f);
 
+	CS_PLAYER_PACKET p;
+	p.dirY = g_yaw;
+
+
+	cout << "yaw : " << character->GetYaw() << endl;
+
+	// 나중에 변수 처리
+	camera->FirstPersonView(
+		character->GetPosition(), 
+		character->GetYaw(), 
+		g_pitch * 0.1f);
+
 	if(g_keyPressed)
 	{
-		CS_PLAYER_PACKET p;
+		
 		p.player_id = g_id;
 		if (Command[W]) {
 			p.direction = 0;
-			p.dirX = character->GetForwardVector().x;
-			p.dirY = character->GetForwardVector().y;
-			p.dirZ = character->GetForwardVector().z;
+			//p.dirX = character->GetForwardVector().x;
+			//
+			//p.dirZ = character->GetForwardVector().z;
 		}
 		if (Command[S]) {
 			p.direction = 1;
-			p.dirX = character->GetForwardVector().x;
-			p.dirY = character->GetForwardVector().y;
-			p.dirZ = character->GetForwardVector().z;
+			//p.dirX = character->GetForwardVector().x;
+			////p.dirY = g_yaw;
+			//p.dirZ = character->GetForwardVector().z;
 		}
 		if (Command[A]) {
 			p.direction = 2;
-			p.dirX = character->GetForwardVector().x;
-			p.dirY = character->GetForwardVector().y;
-			p.dirZ = character->GetForwardVector().z;
+			//p.dirX = character->GetForwardVector().x;
+			////p.dirY = g_yaw;
+			//p.dirZ = character->GetForwardVector().z;
 		}
 		if (Command[D]) {
 			p.direction = 3;
-			p.dirX = character->GetForwardVector().x;
-			p.dirY = character->GetForwardVector().y;
-			p.dirZ = character->GetForwardVector().z;
+			//p.dirX = character->GetForwardVector().x;
+			////p.dirY = g_yaw;
+			//p.dirZ = character->GetForwardVector().z;
 		}
-		networkmanager.SendPlayerMove(p);
+
 	}
+
+	cout << "forward : " << character->GetForwardVector().x << endl;
+	networkmanager.SendPlayerMove(p);
+
 	/*moveDirection += character->GetForwardVector();
 	moveDirection -= character->GetForwardVector();
 	moveDirection -= glm::cross(character->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -222,13 +238,15 @@ GLvoid Controller::PassiveMotion(int x, int y)
 	if (isFirstPersonView) { // 1인칭 모드일 때만 처리
 		// 마우스 이동 변화에 따라 시점을 업데이트
 		float deltaX = x - winWidth / 2;
-		float deltaY = y - winHeight / 2;
+		g_yaw = deltaX;
 
+		float deltaY = y - winHeight / 2;
+		g_pitch = deltaY;
 		// 캐릭터 회전 업데이트
-		character->Rotate(deltaX * sensitivity);
+		//character->Rotate(deltaX * sensitivity);
 
 		// 카메라의 pitch 업데이트
-		camera->FirstPersonView(character->GetPosition(), character->GetYaw(), deltaY * sensitivity);
+		//camera->FirstPersonView(character->GetPosition(), character->GetYaw(), deltaY * sensitivity);
 
 		glutWarpPointer(winWidth / 2, winHeight / 2); // 마우스를 중앙으로 되돌립니다.
 		

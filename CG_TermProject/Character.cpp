@@ -169,6 +169,11 @@ float Character::GetYaw() const
     return yaw;
 }
 
+void Character::SetYaw(float _yaw)
+{
+    yaw = _yaw;
+}
+
 void Character::Render(GLuint shaderProgram)
 {
     //std::cout << "Rendering Character..." << std::endl;
