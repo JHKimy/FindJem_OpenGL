@@ -17,7 +17,6 @@ class Scene;
 #pragma comment(lib, "ws2_32.lib")
 class NetworkManager
 {
-
 public:
     NetworkManager();
 
@@ -35,8 +34,9 @@ public:
 
     SOCKET GetSocket() { return clientSocket; }
 
-       
-    void RecvOnce();
+    void RecvMazeData();
+
+    void RecvEnemiesData();
 
 private:
     SOCKET clientSocket;

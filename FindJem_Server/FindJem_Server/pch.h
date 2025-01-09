@@ -22,7 +22,7 @@ extern std::array<SOCKET, 3>		g_clientSocketes;
 extern std::array<bool, 3>			g_is_accept;
 extern std::array<thread, 3>		g_threads;
 extern std::array<Character, 3>		g_characters;
-extern std::array<std::unique_ptr<Enemy>, 10> g_enemies;
+extern std::array<std::unique_ptr<Enemy>, 1> g_enemies;
 
 extern mutex						g_character_mutex;
 extern mutex						g_mutex;

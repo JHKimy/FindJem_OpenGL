@@ -35,7 +35,7 @@ public:
 
 
     // ===== »ý¼ºÀÚ =====
-    Enemy(float x, float y, float z);
+    Enemy(float x, float y, float z, int id);
 
     bool IsActive();
 
@@ -49,6 +49,10 @@ public:
     }
     float GetPostionZ() {
         return position.z;
+    }
+
+    int GetEnemyID() {
+        return enemyID;
     }
 
 

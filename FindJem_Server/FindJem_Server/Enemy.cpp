@@ -3,7 +3,7 @@
 #include <iostream>
 
 // ===== »ı¼ºÀÚ =====
-Enemy::Enemy(float x, float y, float z)
+Enemy::Enemy(float x, float y, float z, int id) : enemyID{id}
 {
     health = 3;
     moveSpeed = 0.5f;

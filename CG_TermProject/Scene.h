@@ -4,6 +4,7 @@
 #include <memory> // 스마트 포인터 사용
 #include <GL/glew.h> // OpenGL의 GLuint 및 관련 타입 정의
 #include "MazeGenerator.h" // 미로 생성기
+#include "array"
 #include "Enemy.h"
 
 using std::vector;
@@ -39,7 +40,19 @@ private:
 
     // 액터와 적 관리
     std::vector<std::unique_ptr<Actor>> actors; // 씬에 포함된 액터들
-    std::vector<std::unique_ptr<Enemy>> enemies; // 적들
+    
+    
+    
+    
+public:
+    std::array<std::shared_ptr<Enemy>,1> enemies; // 적들
+
+
+private:
+
+
+
+
 
     std::vector<std::vector<int>> mazeMap; // 미로 데이터
 
@@ -76,4 +89,7 @@ public:
 
     // 서버 미로좌표 받아오기
     void SetMaze(int mazeMapData[15][15]);
+
+
+    //void AddEnemy(float x, float y, float z);
 };

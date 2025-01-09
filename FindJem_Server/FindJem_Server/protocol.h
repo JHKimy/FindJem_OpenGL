@@ -11,6 +11,7 @@ constexpr char CS_LOGIN = 1;
 constexpr char CS_READY = 2;
 constexpr char CS_PLAYER = 3;
 constexpr char CS_BULLET = 4;
+constexpr char CS_MAP_OK = 5;
 
 
 
@@ -51,6 +52,12 @@ struct CS_PLAYER_PACKET
 	float camera_angleX;
 	float camera_angleY;
 
+};
+struct CS_MAP_OK_PACKET
+{
+	char packet_size;		// 패킷 크기
+	char packet_type;		// 패킷 종류
+	int player_id;			// 플레이어 id
 };
 
 struct CS_READY_PACKET
@@ -112,20 +119,20 @@ struct SC_0THER_CHARACTER_MOVE_PACKET
 	float PosY;
 	float PosZ;
 
-	float DirX;
-	float DirZ;
+	float	DirX;
+	float	DirZ;
 
-	float yaw;
+	float	yaw;
 };
 
 struct SC_ENEMY_PACKET {
-	char packet_size;	// 패킷 크기
-	char packet_type;	// 패킷 종류
-	int player_id;		// 플레이어 id
+	char	packet_size;	// 패킷 크기
+	char	packet_type;	// 패킷 종류
+	int		enemy_id;		// 적 id
 
-	float PosX;
-	float PosY;
-	float PosZ;
+	float	PosX;
+	float	PosY;
+	float	PosZ;
 
 };
 

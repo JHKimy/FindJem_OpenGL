@@ -50,7 +50,7 @@ void Scene::Initialize()
     mainCamera->TopView();
 
     // 적 초기화
-    InitializeEnemies();
+    // InitializeEnemies();
 }
 
 void Scene::Update(float deltaTime)
@@ -143,6 +143,13 @@ void Scene::SetMaze(int mazeMapData[15][15])
     }
 }
 
+//void Scene::AddEnemy(float x, float y, float z)
+//{
+//
+//    enemies.push_back(make_shared<Enemy>(x,y,z));
+//
+//}
+
 void Scene::InitializeMaze()
 {
     for (int z = 0; z < mazeMap.size(); ++z)
@@ -164,32 +171,32 @@ void Scene::InitializeMaze()
 
 void Scene::InitializeEnemies()
 {
-    std::vector<glm::vec3> emptySpaces;
+    //std::vector<glm::vec3> emptySpaces;
 
-    // 빈 공간 찾기
-    for (int z = 0; z < mazeMap.size(); ++z)
-    {
-        for (int x = 0; x < mazeMap[z].size(); ++x)
-        {
-            if (mazeMap[z][x] == 0)
-            {
-                emptySpaces.push_back(glm::vec3(x * blockSize.x, 0.0f, z * blockSize.z));
-            }
-        }
-    }
+    //// 빈 공간 찾기
+    //for (int z = 0; z < mazeMap.size(); ++z)
+    //{
+    //    for (int x = 0; x < mazeMap[z].size(); ++x)
+    //    {
+    //        if (mazeMap[z][x] == 0)
+    //        {
+    //            emptySpaces.push_back(glm::vec3(x * blockSize.x, 0.0f, z * blockSize.z));
+    //        }
+    //    }
+    //}
 
-    // 랜덤으로 적 생성
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, emptySpaces.size() - 1);
+    //// 랜덤으로 적 생성
+    //std::random_device rd;
+    //std::mt19937 gen(rd());
+    //std::uniform_int_distribution<> dist(0, emptySpaces.size() - 1);
 
-    for (int i = 0; i < 1; ++i)
-    {
-        int randomIndex = dist(gen);
-        glm::vec3 enemyPosition = emptySpaces[randomIndex];
-        enemies.push_back(std::make_unique<Enemy>(enemyPosition));
-        emptySpaces.erase(emptySpaces.begin() + randomIndex);
-    }
+    //for (int i = 0; i < 1; ++i)
+    //{
+    //    int randomIndex = dist(gen);
+    //    glm::vec3 enemyPosition = emptySpaces[randomIndex];
+    //    enemies[i] = (std::make_unique<Enemy>(enemyPosition));
+    //    emptySpaces.erase(emptySpaces.begin() + randomIndex);
+    //}
 }
 
 void Scene::HandleBulletEnemyCollisions()
@@ -223,8 +230,12 @@ void Scene::HandleBulletEnemyCollisions()
 
 void Scene::RemoveInactiveEnemies()
 {
-    enemies.erase(
-        std::remove_if(enemies.begin(), enemies.end(),
-            [](const std::unique_ptr<Enemy>& enemy) { return !enemy->IsActive(); }),
-        enemies.end());
+    for (auto& enemy : enemies)
+    {
+        if (enemy && !enemy->IsActive())
+        {
+            enemy.reset();  // 적 제거 (슬롯을 비움)
+        }
+    }
+
 }

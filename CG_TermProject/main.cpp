@@ -150,19 +150,29 @@ void main(int argc, char** argv)
 
 // ===============================================================
 
-
 	// 셰이더 프로그램 생성
 	shaderProgram = make_shaderProgram();
 
 	// 씬 생성
-	//mainScene = std::make_shared<Scene>(shaderProgram);
+	mainScene = std::make_shared<Scene>(shaderProgram);
 	
-	// 2. 서버로부터 데이터 수신
-	networkmanager.RecvOnce();
-
-
 	// NetworkManager에 Scene 연결
 	networkmanager.SetScene(mainScene);
+
+
+	// 2. 서버로부터 데이터 수신
+	networkmanager.RecvMazeData();
+
+	{
+		CS_MAP_OK_PACKET p;
+		p.packet_size = sizeof(p);
+		p.packet_type = CS_MAP_OK;
+		p.player_id = g_id;
+
+		int retval = send(networkmanager.GetSocket(),
+			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+	}
+	networkmanager.RecvEnemiesData();
 
 
 

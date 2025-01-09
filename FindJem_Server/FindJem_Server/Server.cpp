@@ -1,5 +1,10 @@
 #include "pch.h"
 
+bool SetNonBlockingMode(SOCKET socket) {
+	u_long mode = 1;  // 1이면 논 블로킹 모드
+	return ioctlsocket(socket, FIONBIO, &mode) == NO_ERROR;
+}
+
 void Send_Maze_Data(int clientid)
 {
 	// 미로 정보 담는 패킷 구조체
@@ -25,11 +30,8 @@ void Send_Maze_Data(int clientid)
 		int retval = send(g_clientSocketes[clientid],
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
 
-		if (retval == SOCKET_ERROR) {
-			cout << "fail ! " << clientid << ": " << WSAGetLastError() << endl;
-		}
-		else {
-			cout << "Send to client " << clientid << endl;
+		if (retval == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
+			cout << "Send failed for client " << clientid << ": " << WSAGetLastError() << endl;
 		}
 	}
 }
@@ -53,6 +55,9 @@ void Send_My_Character_Data(int clientid)
 		// 데이터를 클라이언트 소켓으로 전송
 		int retval = send(g_clientSocketes[clientid],
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+		if (retval == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
+			cout << "Send failed for client " << clientid << ": " << WSAGetLastError() << endl;
+		}
 		
 	}
 }
@@ -63,12 +68,14 @@ void Send_Enemy_Data(int clientid)
 	SC_ENEMY_PACKET p;
 	p.packet_size = sizeof(p);
 	p.packet_type = SC_ENEMY;
-	p.player_id = clientid;
+	
 
-	//for (int i{}; i < g_enemies.size(); ++i) {
-		p.PosX = g_enemies[0]->GetPostionX();
-		p.PosY = g_enemies[0]->GetPostionY();
-		p.PosZ = g_enemies[0]->GetPostionZ();
+	for (int i{}; i < g_enemies.size(); ++i) {
+		p.PosX = g_enemies[i]->GetPostionX();
+		p.PosY = g_enemies[i]->GetPostionY();
+		p.PosZ = g_enemies[i]->GetPostionZ();
+		p.enemy_id = g_enemies[i]->GetEnemyID();
+	}
 	//}
 	
 
@@ -76,6 +83,9 @@ void Send_Enemy_Data(int clientid)
 		// 데이터를 클라이언트 소켓으로 전송
 		int retval = send(g_clientSocketes[clientid],
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+		if (retval == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
+			cout << "Send failed for client " << clientid << ": " << WSAGetLastError() << endl;
+		}
 	}
 }
 
@@ -92,11 +102,10 @@ void HandleThread(int id)
 		g_characters[id].playerID = id;
 	}
 
-	// 미로 데이터 보내기
-	Send_Maze_Data(id);
+
 	
 	// 적 데이터 보내기
-	Send_Enemy_Data(id);
+	//Send_Enemy_Data(id);
 
 	while (true)
 	{
@@ -105,15 +114,22 @@ void HandleThread(int id)
 		// 패킷 전체 데이터 수신
 		int retval = recv(g_clientSocketes[id], buf, sizeof(buf), 0);
 
-		if (retval <= 0) {
-			// 연결 종료 또는 오류 처리
-			if (retval == 0) {
-				std::cout << "Client disconnected." << std::endl;
+		if (retval == SOCKET_ERROR) {
+			int err = WSAGetLastError();
+			if (err == WSAEWOULDBLOCK) {
+				// 논 블로킹 상태에서 읽을 데이터가 없는 경우
+				continue;
 			}
 			else {
-				std::cout << "Recv error: " << WSAGetLastError() << std::endl;
+				cout << "Recv error for client " << id << ": " << err << endl;
+				break;
 			}
 		}
+		else if (retval == 0) {
+			cout << "Client disconnected: " << id << endl;
+			break;
+		}
+
 
 		char packetType = static_cast<char>(buf[1]);
 
@@ -141,6 +157,10 @@ void HandleThread(int id)
 				packet.PosZ = g_characters[id].GetPostionZ();
 				int retval = send(g_clientSocketes[other.playerID],
 					reinterpret_cast<const char*>(&packet), sizeof(packet), 0);
+				if (retval == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
+					cout << "Send failed to client " << other.playerID << ": " << WSAGetLastError() << endl;
+				}
+
 				cout << "누구에게 감 ? : " << other.playerID << endl;
 				cout << "posx : " << packet.PosX << endl;
 				cout << "posy : " << packet.PosY << endl;
@@ -178,9 +198,19 @@ void HandleThread(int id)
 				packet.yaw = g_characters[id].GetYaw();
 				int retval = send(g_clientSocketes[other.playerID],
 					reinterpret_cast<const char*>(&packet), sizeof(packet), 0);
+				if (retval == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
+					cout << "Send failed to client " << other.playerID << ": " << WSAGetLastError() << endl;
+				}
+
 			}
 			break;
-		}default:
+		}
+		case CS_MAP_OK: {
+			CS_MAP_OK_PACKET* p = reinterpret_cast<CS_MAP_OK_PACKET*>(buf);
+			Send_Enemy_Data(id);
+		}
+			break;
+		default:
 			std::cout << "Unknown packet type: " << packetType << std::endl;
 			break;
 		}
@@ -206,10 +236,11 @@ int main()
 		cout << endl;  // 각 행 끝에 줄 바꿈
 	}
 
-	// 적 생성
-	std::unique_ptr<Enemy> enemy = make_unique<Enemy>(15.f, 5.f, 15.f);
-	g_enemies[0] = std::move(enemy);
-
+	// 적 생성 
+	for (int i = 0; i < g_enemies.size(); ++i)
+	{
+		g_enemies[i] = make_unique<Enemy>(15.f, 5.f, 15.f, i);
+	}
 
 
 	std::unique_ptr<Character> character = make_unique<Character>();
@@ -223,6 +254,12 @@ int main()
 	SOCKET listenSocket = SocketUtils::CreateSocket();
 	if (listenSocket == INVALID_SOCKET)
 		return 0;
+
+	if (!SetNonBlockingMode(listenSocket)) {
+		cout << "Failed to set non-blocking mode" << endl;
+		return 0;
+	}
+
 
 	// 3. 소켓 옵션
 	SocketUtils::SetReuseAddress(listenSocket, true);
@@ -245,8 +282,20 @@ int main()
 	{
 		// 7. 클라이언트 접속 요청 수락
 		SOCKET clientSocket = ::accept(listenSocket, (SOCKADDR*)&clientAddr, &addrLen);
-		if (clientSocket == INVALID_SOCKET)
-		{
+		if (clientSocket == INVALID_SOCKET) {
+			int err = WSAGetLastError();
+			if (err == WSAEWOULDBLOCK) {
+				Sleep(10);  // 잠시 대기 후 다시 시도
+				continue;
+			}
+			else {
+				cout << "Accept error: " << err << endl;
+				return 0;
+			}
+		}
+
+		if (!SetNonBlockingMode(clientSocket)) {
+			cout << "Failed to set non-blocking mode for client" << endl;
 			return 0;
 		}
 
@@ -261,7 +310,8 @@ int main()
 		
 		cout << "클라이언트 접속" << endl;
 		cout << client_id << endl;
-
+		// 미로 데이터 보내기
+		Send_Maze_Data(client_id);
 		// 8. 새로운 스레드 생성하여 클라이언트 요청 처리
 		g_threads[client_id] = thread{ HandleThread, client_id };
 	}

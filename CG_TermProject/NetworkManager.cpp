@@ -146,7 +146,7 @@ void NetworkManager::SetScene(std::shared_ptr<Scene> scene)
     m_Scene = scene;
 }
 
-void NetworkManager::RecvOnce()
+void NetworkManager::RecvMazeData()
 {
     char buf[1024];
     int bytesReceived = recv(clientSocket, buf, sizeof(buf), 0);
@@ -171,8 +171,45 @@ void NetworkManager::RecvOnce()
         startPos.y = p->y;
         startPos.z = p->z;
         // 4. 씬에 미로 데이터 설정
-        m_Scene = std::make_shared<Scene>(shaderProgram);
         m_Scene->SetMaze(p->mazeMap);
+    }
+
+
+    else {
+        std::cout << "Unknown packet type: " << packetType << std::endl;
+    }
+}
+
+void NetworkManager::RecvEnemiesData()
+{
+    char buf[1024];
+    int bytesReceived = recv(clientSocket, buf, sizeof(buf), 0);
+
+    if (bytesReceived <= 0) {
+        if (bytesReceived == 0) {
+            std::cout << "Server closed the connection." << std::endl;
+        }
+        else {
+            std::cout << "Recv error: " << WSAGetLastError() << std::endl;
+        }
+        return;
+    }
+
+    // 3. 패킷 타입 처리
+    char packetType = static_cast<char>(buf[1]);
+    if (packetType == SC_ENEMY) {
+        SC_ENEMY_PACKET* p = reinterpret_cast<SC_ENEMY_PACKET*>(buf);
+        //g_id = p->enemy_id;
+
+        // 여기 안에 패킷으로 enemy 생성 ㄱㄱ 
+        m_Scene->enemies[p->enemy_id] = make_shared<Enemy>(glm::vec3(p->PosX, p->PosY, p->PosZ));
+
+        // enemys[p->enemy_id].함수() --- 이런식으로 되게 ㄱㄱ
+        // 이 패킷은 걍 오브젝트 생성인거고 
+        // ---------------------------   
+        // 오브젝트 이동패킷 올때 
+        // enemys[p->enemy_id].update() 이런식으로 되게 좀 해주셈
+        //m_Scene->enemies[p->enemy_id]->SetPosition(1, 1, 10);
     }
 
 
