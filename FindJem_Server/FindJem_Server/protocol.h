@@ -98,6 +98,7 @@ struct SC_CHARACTER_MOVE_PACKET
 
 	float yaw;
 };
+
 struct SC_0THER_CHARACTER_MOVE_PACKET
 {
 	char packet_size;	// 패킷 크기

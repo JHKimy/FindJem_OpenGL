@@ -66,6 +66,8 @@ public:
 
     // ===== 접근자 함수 =====
     Character* GetCharacter() { return mainCharacter.get(); }
+    Character* GetOtherCharacter1() { return otherCharacter1.get(); }
+
     Camera* GetCamera() { return mainCamera.get(); }
     const std::vector<std::unique_ptr<Actor>>& GetActors() const { return actors; };
     const std::vector<std::vector<int>>& GetMazeMap() const { return mazeMap; } 

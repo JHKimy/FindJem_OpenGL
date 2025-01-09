@@ -1,5 +1,8 @@
+#define NOMINMAX // Windows.h와의 충돌 방지
 #include "Character.h"
 #include <cmath>
+#include <algorithm> // std::max, std::min
+#include "pch.h"
 
 Character::Character(int id)
 {
@@ -24,7 +27,7 @@ Character::Character(int id)
     moveSpeed = 0.5f;    // 스피드
     isJumping = false;   // 점프 상태
     isReady = false;
-    boundingRadius = 1.5f;  // 충돌 범위
+    boundingRadius = 1.f;  // 충돌 범위
     forwardVector.x = 0.f;
     forwardVector.y = 0.f;
     forwardVector.z = 0.f;
@@ -39,62 +42,115 @@ Character::Character(int id)
 
 void Character::Move(char key)
 {
-    if (key == 0/* W */)
+    // g_mazeMap의 출력 상태를 추적하는 static 변수
+    static bool hasPrinted = false;
+
+    // 처음 한 번만 g_mazeMap 출력
+    if (!hasPrinted)
+    {
+        const float blockDiameter = 5.0f; // 블록의 지름
+        std::cout << "Current Maze Map:" << std::endl;
+
+        for (int z = 0; z < g_mazeMap.size(); ++z)
+        {
+            for (int x = 0; x < g_mazeMap[z].size(); ++x)
+            {
+                if (g_mazeMap[z][x] == 1) // 벽인 경우
+                {
+                    // 화면상의 좌표 (월드 좌표)
+                    float blockCenterX = x * blockDiameter;
+                    float blockCenterZ = z * blockDiameter;
+                    std::cout << "Wall at Maze Coordinates (" << z << ", " << x << ") -> "
+                        << "World Coordinates (" << blockCenterX << ", " << blockCenterZ << ")" << std::endl;
+                }
+            }
+        }
+        std::cout << "-------------------------" << std::endl;
+
+        // 출력 상태 업데이트
+        hasPrinted = true;
+    }
+    // 임시 이동 방향 계산
+    if (key == 0 /* W */)
     {
         moveDir.x += forwardVector.x;
-        //moveDir.y += forwardVector.y;
         moveDir.z += forwardVector.z;
-        
     }
-    if (key == 1/* S */)
+    else if (key == 1 /* S */)
     {
         moveDir.x -= forwardVector.x;
-        //moveDir.y -= forwardVector.y;
         moveDir.z -= forwardVector.z;
-
     }
-    if (key == 2/* A */)
+    else if (key == 2 /* A */)
     {
-        // 외적 계산 (Y축 기준으로 왼쪽 벡터)
-        float crossX = - forwardVector.z; // a_y * b_z - a_z * b_y
-        float crossY = 0; // a_z * b_x - a_x * b_z
-        float crossZ = forwardVector.x; // a_x * b_y - a_y * b_x
+        float crossX = -forwardVector.z;
+        float crossZ = forwardVector.x;
 
         moveDir.x -= crossX;
-        // moveDir.y -= crossY;
         moveDir.z -= crossZ;
     }
-
-    if (key == 3/* D */)
+    else if (key == 3 /* D */)
     {
-        // 외적 계산 (Y축 기준으로 오른쪽 벡터)
-        float crossX = -forwardVector.z; // a_y * b_z - a_z * b_y
-        float crossY = 0.f; // a_z * b_x - a_x * b_z
-        float crossZ = forwardVector.x; // a_x * b_y - a_y * b_x
+        float crossX = -forwardVector.z;
+        float crossZ = forwardVector.x;
 
         moveDir.x += crossX;
-        // moveDir.y += crossY;
         moveDir.z += crossZ;
     }
 
     // === moveDir 정규화 ===
-    float length = sqrt(moveDir.x * moveDir.x + moveDir.y * moveDir.y + moveDir.z * moveDir.z);
-    if (length > 0.0f) // 길이가 0이 아닐 때만 정규화
+    float length = std::sqrt(moveDir.x * moveDir.x + moveDir.y * moveDir.y + moveDir.z * moveDir.z);
+    if (length > 0.0f)
     {
         moveDir.x /= length;
-        moveDir.y /= length;
         moveDir.z /= length;
     }
 
-    position.x += moveDir.x * moveSpeed;
-    position.y += moveDir.y * moveSpeed;
-    position.z += moveDir.z * moveSpeed;
+    // 임시 위치 계산
+    float newX = position.x + moveDir.x * moveSpeed;
+    float newZ = position.z + moveDir.z * moveSpeed;
 
+    // 충돌 검사: 모든 블록에 대해 각각 검사
+    const int mazeRows = g_mazeMap.size();
+    const int mazeCols = g_mazeMap[0].size();
+    bool collision = false;
 
-    // moveDir 초기화 (옵션, 다음 이동 계산에서 누적 방지)
+    for (int z = 0; z < mazeRows; ++z)
+    {
+        for (int x = 0; x < mazeCols; ++x)
+        {
+            if (g_mazeMap[z][x] == 1) // 벽인 경우
+            {
+                float wallX = x * 5.f; // 벽의 X 좌표
+                float wallZ = z * 5.f; // 벽의 Z 좌표
+
+                // === 충돌 조건 계산 ===
+                float halfBlockSize = 2.5f; // 블록 한 변의 절반 크기 (3.0 / 2)
+                if (std::abs(newX - wallX) < (halfBlockSize + boundingRadius) && // X축 충돌
+                    std::abs(newZ - wallZ) < (halfBlockSize + boundingRadius))   // Z축 충돌
+                {
+                    collision = true; // 충돌 발생
+                    std::cout << "Collision detected with wall at (" << x << ", " << z << ")" << std::endl;
+                    break; // 충돌이 발생했으므로 더 이상 검사하지 않음
+                }
+            }
+        }
+        if (collision)
+            break;
+    }
+    // 충돌이 없을 경우에만 위치 갱신
+   if (!collision)
+    {
+        position.x = newX;
+        position.z = newZ;
+    }
+
+    // moveDir 초기화
     moveDir.x = 0.0f;
     moveDir.y = 0.0f;
     moveDir.z = 0.0f;
+
+    cout << "characterPos" << position.x << ", " << position.z << endl;
 }
 
 void Character::Rotate(float deltaYaw)
@@ -146,6 +202,7 @@ void Character::Update(float deltaTime)
 void Character::Shoot()
 {
 }
+
 
 float Character::GetPostionX()
 {

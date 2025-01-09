@@ -1,6 +1,5 @@
 #pragma once
 
-
 class Character
 {
 
@@ -60,6 +59,11 @@ public:
     void Jump();
     void Update(float deltaTime);
     void Shoot();
+
+    
+
+    
+
     //void TakeDamage(int amount);
     //bool IsGameOver() const;
     //float GetMoveSpeed();

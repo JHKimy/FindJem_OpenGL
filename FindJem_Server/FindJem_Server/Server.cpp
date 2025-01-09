@@ -181,6 +181,11 @@ int main()
 		cout << endl;  // 각 행 끝에 줄 바꿈
 	}
 
+
+	std::unique_ptr<Character> character = make_unique<Character>();
+
+
+
 	// 1. 소켓 초기화 
 	SocketUtils::Init();
 

@@ -99,9 +99,16 @@ bool NetworkManager::RecvThread() {
         m_Scene->GetCharacter()->SetYaw(p->yaw);
         break;
     }
-    case SC_OTHER_CHARACTER_MOVE: {
-        SC_0THER_CHARACTER_MOVE_PACKET* p = reinterpret_cast<SC_0THER_CHARACTER_MOVE_PACKET*>(buf);
-        // 다른 플레이어 위치, fv, yaw 처리
+    case SC_OTHER_CHARACTER_MOVE: 
+    {
+        if (g_isOtherCharacter) {
+            SC_0THER_CHARACTER_MOVE_PACKET* p = reinterpret_cast<SC_0THER_CHARACTER_MOVE_PACKET*>(buf);
+            // 다른 플레이어 위치, fv, yaw 처리
+            m_Scene->GetOtherCharacter1()->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+            m_Scene->GetOtherCharacter1()->SetForwardVector(glm::vec3(p->DirX, 0.f, p->DirZ));
+            m_Scene->GetOtherCharacter1()->SetYaw(p->yaw);
+            break;
+        }
         break;
     }
 
