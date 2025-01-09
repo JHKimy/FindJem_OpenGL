@@ -99,6 +99,11 @@ bool NetworkManager::RecvThread() {
         m_Scene->GetCharacter()->SetYaw(p->yaw);
         break;
     }
+    case SC_OTHER_CHARACTER_MOVE: {
+        SC_0THER_CHARACTER_MOVE_PACKET* p = reinterpret_cast<SC_0THER_CHARACTER_MOVE_PACKET*>(buf);
+        // 다른 플레이어 위치, fv, yaw 처리
+        break;
+    }
 
     default:
         std::cout << "Unknown packet type: " << packetType << std::endl;

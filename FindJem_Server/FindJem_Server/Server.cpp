@@ -44,11 +44,7 @@ void Send_My_Character_Data(int clientid)
 	p.PosX = g_characters[clientid].GetPostionX();
 	p.PosY = g_characters[clientid].GetPostionY();
 	p.PosZ = g_characters[clientid].GetPostionZ();
-
 	p.yaw = g_characters[clientid].GetYaw();
-	//p.forwardVectorX = g_characters[clientid].GetForwordVecX();
-	//p.forwardVectorX = g_characters[clientid].GetForwordVecZ();
-
 
 	p.DirX = g_characters[clientid].GetForwordVecX();
 	p.DirZ = g_characters[clientid].GetForwordVecZ();
@@ -136,10 +132,28 @@ void HandleThread(int id)
 			//cout << g_characters[p->player_id].forwardVector.x << endl;
 			Send_My_Character_Data(p->player_id);
 
-			//for (auto& other : g_characters)
-			//{
+			for (auto& other : g_characters) {
+				if (other.playerID == p->player_id) continue;
+				{
+					lock_guard<mutex> lock(g_character_mutex);
+					if (!g_is_accept[other.playerID]) continue;
+				}
+				SC_0THER_CHARACTER_MOVE_PACKET packet;
+				packet.player_id = id;
 
-			//}
+				packet.packet_size = sizeof(packet);
+				packet.packet_type = SC_OTHER_CHARACTER_MOVE;
+
+
+				packet.PosX = g_characters[id].GetPostionX();
+				packet.PosY = g_characters[id].GetPostionY();
+				packet.PosZ = g_characters[id].GetPostionZ();
+				packet.DirX = g_characters[id].GetForwordVecX();
+				packet.DirZ = g_characters[id].GetForwordVecZ();
+				packet.yaw = g_characters[id].GetYaw();
+				int retval = send(g_clientSocketes[other.playerID],
+					reinterpret_cast<const char*>(&packet), sizeof(packet), 0);
+			}
 			break;
 		}default:
 			std::cout << "Unknown packet type: " << packetType << std::endl;

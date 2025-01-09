@@ -12,6 +12,8 @@ constexpr char CS_READY = 2;
 constexpr char CS_PLAYER = 3;
 constexpr char CS_BULLET = 4;
 
+
+
 // 맵 정보
 constexpr char SC_MAZE_DATA = 1;
 
@@ -19,6 +21,7 @@ constexpr char SC_MAZE_DATA = 1;
 // 상대 플레이어 정보
 constexpr char SC_ADD_CHARACTER = 2;
 constexpr char SC_CHARACTER_MOVE = 3;
+constexpr char SC_OTHER_CHARACTER_MOVE = 4;
 // 오브젝트 정보 
 
 // 총알 정보
@@ -94,9 +97,20 @@ struct SC_CHARACTER_MOVE_PACKET
 	float DirZ;
 
 	float yaw;
+};
+struct SC_0THER_CHARACTER_MOVE_PACKET
+{
+	char packet_size;	// 패킷 크기
+	char packet_type;	// 패킷 종류
+	int player_id;		// 플레이어 id
 
-	//float forwardVectorX;
-	//float forwardVectorY;
-	//float forwardVectorZ;
+	float PosX;
+	float PosY;
+	float PosZ;
+
+	float DirX;
+	float DirZ;
+
+	float yaw;
 };
 #pragma pack(pop) 
