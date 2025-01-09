@@ -22,6 +22,9 @@ constexpr char SC_MAZE_DATA = 1;
 constexpr char SC_ADD_CHARACTER = 2;
 constexpr char SC_CHARACTER_MOVE = 3;
 constexpr char SC_OTHER_CHARACTER_MOVE = 4;
+
+constexpr char SC_ENEMY = 4;
+
 // 오브젝트 정보 
 
 // 총알 정보
@@ -114,4 +117,16 @@ struct SC_0THER_CHARACTER_MOVE_PACKET
 
 	float yaw;
 };
+
+struct SC_ENEMY_PACKET {
+	char packet_size;	// 패킷 크기
+	char packet_type;	// 패킷 종류
+	int player_id;		// 플레이어 id
+
+	float PosX;
+	float PosY;
+	float PosZ;
+
+};
+
 #pragma pack(pop) 

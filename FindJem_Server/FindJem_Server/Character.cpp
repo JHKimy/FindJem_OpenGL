@@ -121,11 +121,11 @@ void Character::Move(char key)
         {
             if (g_mazeMap[z][x] == 1) // 벽인 경우
             {
-                float wallX = x * 5.f; // 벽의 X 좌표
-                float wallZ = z * 5.f; // 벽의 Z 좌표
+                float wallX = x * g_blockSize.x; // 벽의 X 좌표
+                float wallZ = z * g_blockSize.z; // 벽의 Z 좌표
 
                 // === 충돌 조건 계산 ===
-                float halfBlockSize = 2.5f; // 블록 한 변의 절반 크기 (3.0 / 2)
+                float halfBlockSize = g_blockSize.x / 2.f; // 블록 한 변의 절반 크기
                 if (std::abs(newX - wallX) < (halfBlockSize + boundingRadius) && // X축 충돌
                     std::abs(newZ - wallZ) < (halfBlockSize + boundingRadius))   // Z축 충돌
                 {

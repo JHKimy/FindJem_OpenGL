@@ -57,6 +57,29 @@ void Send_My_Character_Data(int clientid)
 	}
 }
 
+void Send_Enemy_Data(int clientid)
+{
+	// 미로 정보 담는 패킷 구조체
+	SC_ENEMY_PACKET p;
+	p.packet_size = sizeof(p);
+	p.packet_type = SC_ENEMY;
+	p.player_id = clientid;
+
+	//for (int i{}; i < g_enemies.size(); ++i) {
+		p.PosX = g_enemies[0]->GetPostionX();
+		p.PosY = g_enemies[0]->GetPostionY();
+		p.PosZ = g_enemies[0]->GetPostionZ();
+	//}
+	
+
+	if (g_is_accept[clientid]) {
+		// 데이터를 클라이언트 소켓으로 전송
+		int retval = send(g_clientSocketes[clientid],
+			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+	}
+}
+
+
 
 // 클라 요청 처리하는 서버 스레드 함수
 void HandleThread(int id)
@@ -71,7 +94,9 @@ void HandleThread(int id)
 
 	// 미로 데이터 보내기
 	Send_Maze_Data(id);
-
+	
+	// 적 데이터 보내기
+	Send_Enemy_Data(id);
 
 	while (true)
 	{
@@ -180,6 +205,11 @@ int main()
 		}
 		cout << endl;  // 각 행 끝에 줄 바꿈
 	}
+
+	// 적 생성
+	std::unique_ptr<Enemy> enemy = make_unique<Enemy>(15.f, 5.f, 15.f);
+	g_enemies[0] = std::move(enemy);
+
 
 
 	std::unique_ptr<Character> character = make_unique<Character>();

@@ -145,3 +145,38 @@ void NetworkManager::SetScene(std::shared_ptr<Scene> scene)
 {
     m_Scene = scene;
 }
+
+void NetworkManager::RecvOnce()
+{
+    char buf[1024];
+    int bytesReceived = recv(clientSocket, buf, sizeof(buf), 0);
+
+    if (bytesReceived <= 0) {
+        if (bytesReceived == 0) {
+            std::cout << "Server closed the connection." << std::endl;
+        }
+        else {
+            std::cout << "Recv error: " << WSAGetLastError() << std::endl;
+        }
+        return;
+    }
+
+    // 3. 패킷 타입 처리
+    char packetType = static_cast<char>(buf[1]);
+    if (packetType == SC_MAZE_DATA) {
+        SC_MAZE_INFO* p = reinterpret_cast<SC_MAZE_INFO*>(buf);
+        // 클라이언트 별 id 설정(패킷 send시 id 식별 용도)
+        g_id = p->player_id;
+        startPos.x = p->x;
+        startPos.y = p->y;
+        startPos.z = p->z;
+        // 4. 씬에 미로 데이터 설정
+        m_Scene = std::make_shared<Scene>(shaderProgram);
+        m_Scene->SetMaze(p->mazeMap);
+    }
+
+
+    else {
+        std::cout << "Unknown packet type: " << packetType << std::endl;
+    }
+}

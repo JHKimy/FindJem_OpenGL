@@ -36,6 +36,8 @@ public:
     SOCKET GetSocket() { return clientSocket; }
 
        
+    void RecvOnce();
+
 private:
     SOCKET clientSocket;
 
