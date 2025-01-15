@@ -206,13 +206,14 @@ void NetworkManager::RecvEnemiesData()
 
     SC_ENEMY_PACKET* p = reinterpret_cast<SC_ENEMY_PACKET*>(buf);
 
-    if (p->packet_type == SC_ENEMY) {
+    if (p->packet_type == SC_ENEMY) 
+    {
         std::cout << "Enemy packet received. EnemyID: " << p->enemy_id
             << " Position: (" << p->PosX << ", " << p->PosY << ", " << p->PosZ << ")"
             << std::endl;
 
         // 利 按眉 积己 肺流
-        //m_Scene->enemies[p->enemy_id] = make_shared<Enemy>(glm::vec3(p->PosX, p->PosY, p->PosZ));
+        m_Scene->SetEnemy(p->enemy_id, make_unique<Enemy>(glm::vec3(p->PosX, p->PosY, p->PosZ)));
     }
     else {
         std::cout << "Unknown packet type: " << (int)p->packet_type << std::endl;

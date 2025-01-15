@@ -221,7 +221,7 @@ GLvoid Controller::Mouse(int button, int state, int x, int y)
 
 GLvoid Controller::PassiveMotion(int x, int y)
 {
-	float sensitivity = 0.1f;
+	float sensitivity = 0.3f;
 
 
 	if (isFirstPersonView) { // 1인칭 모드일 때만 처리
@@ -230,7 +230,7 @@ GLvoid Controller::PassiveMotion(int x, int y)
 		g_yaw = deltaX * sensitivity;
 
 		float deltaY = y - winHeight / 2;
-		g_pitch = deltaY;
+		g_pitch = deltaY * 2;
 		// 캐릭터 회전 업데이트
 		//character->Rotate(deltaX * sensitivity);
 

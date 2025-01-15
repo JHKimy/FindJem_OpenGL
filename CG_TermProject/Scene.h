@@ -40,6 +40,16 @@ private:
     // 액터와 적 관리
     std::vector<std::unique_ptr<Actor>> actors; // 씬에 포함된 액터들
     std::vector<std::unique_ptr<Enemy>> enemies; // 적들
+public:
+    std::unique_ptr<Enemy> GetEnemy(int num) {
+        return std::move(enemies[num]);
+    };
+
+    void SetEnemy(int num, std::unique_ptr<Enemy> enemy) {
+        enemies[num] = std::move(enemy);
+    }
+
+private:
 
     std::vector<std::vector<int>> mazeMap; // 미로 데이터
 

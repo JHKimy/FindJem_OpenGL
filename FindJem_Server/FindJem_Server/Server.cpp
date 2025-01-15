@@ -148,6 +148,7 @@ void HandleThread(int id)
 			}
 			break;
 		}
+
 		case CS_PLAYER: {
 			// 받고 계산하고 보내기
 			CS_PLAYER_PACKET* p = reinterpret_cast<CS_PLAYER_PACKET*>(buf);
@@ -181,6 +182,7 @@ void HandleThread(int id)
 			}
 			break;
 		}
+
 		case CS_MAP_OK: {
 			CS_MAP_OK_PACKET* p = reinterpret_cast<CS_MAP_OK_PACKET*>(buf);
 			cout << p->player_id << endl;
