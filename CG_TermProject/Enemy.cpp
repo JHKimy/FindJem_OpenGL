@@ -5,10 +5,10 @@
 // ===== 생성자 =====
 Enemy::Enemy(const glm::vec3& position)
     : Actor(
-        "Cube.obj", 
-        position, 
-        glm::vec3(2.0f), 
-        glm::vec3(0.0f), 
+        "Cube.obj",
+        position,
+        glm::vec3(2.0f),
+        glm::vec3(0.0f),
         glm::vec3(1.0f, 0.0f, 0.0f)),
     health(3),
     isActive(true),
@@ -19,7 +19,7 @@ Enemy::Enemy(const glm::vec3& position)
     isJumping(false),
     jumpSpeed(0.0f),
     currentDir({ 1, 0 }),
-    targetTile({ static_cast<int>(position.x / 5.0f), static_cast<int>(position.z / 5.0f) }) 
+    targetTile({ static_cast<int>(position.x / 5.0f), static_cast<int>(position.z / 5.0f) })
 {
     targetPosition = glm::vec3(targetTile.x * 5.0f, 0.0f, targetTile.y * 5.0f);
 
@@ -65,7 +65,7 @@ void Enemy::Update(float deltaTime, const glm::vec3& playerPosition, const std::
 
 // ===== 순찰 동작 =====
 void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, float deltaTime) {
-    
+
     // printf("dklfjsjf0");
 
     //position.y = 3.f;
@@ -108,7 +108,7 @@ void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap, const glm::vec3
 
 // ===== 추적 동작 =====
 void Enemy::Chase(const glm::vec3& playerPosition, const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, float deltaTime) {
-    
+
     if (currentPathIndex >= path.size()) {
         detectPath = false;  // 경로가 끝났다면 경로 업데이트 필요
         return;

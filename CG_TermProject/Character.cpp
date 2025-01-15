@@ -72,7 +72,7 @@ void Character::Update(float deltaTime) {
         }
     }
 
-    bulletPool.UpdateAllBullets(deltaTime,GetPosition());
+    bulletPool.UpdateAllBullets(deltaTime, GetPosition());
 
     //// ÃÑ¾Ë ¾÷µ¥ÀÌÆ®
     //for (auto bullet : bullets) {
@@ -113,7 +113,7 @@ void Character::IncrementDefeatedEnemies() {
     defeatedEnemies++;
 }
 
-void Character::Shoot() 
+void Character::Shoot()
 {
     glm::vec3 bulletPos = position + forwardVector * 1.5f + glm::vec3(0.0f, 1.0f, 0.0f); // ÃÑ¾Ë À§Ä¡
 

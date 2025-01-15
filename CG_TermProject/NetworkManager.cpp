@@ -5,7 +5,7 @@
 
 
 NetworkManager::NetworkManager()
-{   
+{
     // Winsock 초기화
     WSADATA wsaData;
     // Winsock 2.2버전 초기화
@@ -16,7 +16,7 @@ NetworkManager::NetworkManager()
     // 클라이언트 소켓 생성
     // (IPv4, TCP, 기본 프로토콜)
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-    
+
     if (clientSocket == INVALID_SOCKET) {
         WSACleanup();
         exit(1);
@@ -29,7 +29,7 @@ NetworkManager::~NetworkManager() {
 }
 
 // 서버에 연결
-bool NetworkManager::Connect() 
+bool NetworkManager::Connect()
 {
     // 서버 주소 정보 구조체
     sockaddr_in serverAddr;
@@ -52,8 +52,10 @@ bool NetworkManager::Connect()
 // 서버 데이터 받기
 bool NetworkManager::RecvThread() {
 
+
+
     // 데이터 저장 버퍼
-    char buf[1024];
+    char buf[BUFSIZE];
 
     // 서버로부터 데이터 수신
     int bytesReceived = recv(clientSocket, buf, sizeof(buf), 0);
@@ -68,16 +70,16 @@ bool NetworkManager::RecvThread() {
         }
         return false;
     }
- 
+
     // 패킷의 2번째로 패킷 타입
     // 문자형으로 반환
     char packetType = static_cast<char>(buf[1]);
-    
+
     // 패킷 처리
     switch (packetType) {
 
-    // 캐릭터 이동 패킷
-    case SC_ADD_CHARACTER: 
+        // 캐릭터 이동 패킷
+    case SC_ADD_CHARACTER:
     {
         SC_ADD_CHARACTER_PACKET* p = reinterpret_cast<SC_ADD_CHARACTER_PACKET*>(buf);
         position.x = p->PosX;
@@ -91,15 +93,16 @@ bool NetworkManager::RecvThread() {
     }
 
     // 캐릭터 이동 패킷
-    case SC_CHARACTER_MOVE: 
+    case SC_CHARACTER_MOVE:
     {
         SC_CHARACTER_MOVE_PACKET* p = reinterpret_cast<SC_CHARACTER_MOVE_PACKET*>(buf);
         m_Scene->GetCharacter()->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
         m_Scene->GetCharacter()->SetForwardVector(glm::vec3(p->DirX, 0.f, p->DirZ));
         m_Scene->GetCharacter()->SetYaw(p->yaw);
+        //cout <<p->yaw<< endl;
         break;
     }
-    case SC_OTHER_CHARACTER_MOVE: 
+    case SC_OTHER_CHARACTER_MOVE:
     {
         if (g_isOtherCharacter) {
             SC_0THER_CHARACTER_MOVE_PACKET* p = reinterpret_cast<SC_0THER_CHARACTER_MOVE_PACKET*>(buf);
@@ -138,17 +141,16 @@ void NetworkManager::SendPlayerMove(CS_PLAYER_PACKET& p)
 
     int retval = send(clientSocket,
         reinterpret_cast<const char*>(&p), sizeof(p), 0);
-    
+
 }
 
 void NetworkManager::SetScene(std::shared_ptr<Scene> scene)
 {
     m_Scene = scene;
 }
-
 void NetworkManager::RecvMazeData()
 {
-    char buf[1024];
+    char buf[BUFSIZE];
     int bytesReceived = recv(clientSocket, buf, sizeof(buf), 0);
 
     if (bytesReceived <= 0) {
@@ -172,6 +174,7 @@ void NetworkManager::RecvMazeData()
         startPos.z = p->z;
         // 4. 씬에 미로 데이터 설정
         m_Scene->SetMaze(p->mazeMap);
+
     }
 
 
@@ -182,8 +185,8 @@ void NetworkManager::RecvMazeData()
 
 void NetworkManager::RecvEnemiesData()
 {
-    char buf[1024];
-    int bytesReceived = recv(clientSocket, buf, sizeof(buf), 0);
+    char buf[BUFSIZE];
+    int bytesReceived = recv(clientSocket, buf, sizeof(SC_ENEMY_PACKET), 0);
 
     if (bytesReceived <= 0) {
         if (bytesReceived == 0) {
@@ -195,25 +198,23 @@ void NetworkManager::RecvEnemiesData()
         return;
     }
 
-    // 3. 패킷 타입 처리
-    char packetType = static_cast<char>(buf[1]);
-    if (packetType == SC_ENEMY) {
-        SC_ENEMY_PACKET* p = reinterpret_cast<SC_ENEMY_PACKET*>(buf);
-        //g_id = p->enemy_id;
-
-        // 여기 안에 패킷으로 enemy 생성 ㄱㄱ 
-        m_Scene->enemies[p->enemy_id] = make_shared<Enemy>(glm::vec3(p->PosX, p->PosY, p->PosZ));
-
-        // enemys[p->enemy_id].함수() --- 이런식으로 되게 ㄱㄱ
-        // 이 패킷은 걍 오브젝트 생성인거고 
-        // ---------------------------   
-        // 오브젝트 이동패킷 올때 
-        // enemys[p->enemy_id].update() 이런식으로 되게 좀 해주셈
-        //m_Scene->enemies[p->enemy_id]->SetPosition(1, 1, 10);
+    if (bytesReceived != sizeof(SC_ENEMY_PACKET)) {
+        std::cout << "Incomplete packet received. Expected: " << sizeof(SC_ENEMY_PACKET)
+            << ", Received: " << bytesReceived << std::endl;
+        return;
     }
 
+    SC_ENEMY_PACKET* p = reinterpret_cast<SC_ENEMY_PACKET*>(buf);
 
+    if (p->packet_type == SC_ENEMY) {
+        std::cout << "Enemy packet received. EnemyID: " << p->enemy_id
+            << " Position: (" << p->PosX << ", " << p->PosY << ", " << p->PosZ << ")"
+            << std::endl;
+
+        // 적 객체 생성 로직
+        //m_Scene->enemies[p->enemy_id] = make_shared<Enemy>(glm::vec3(p->PosX, p->PosY, p->PosZ));
+    }
     else {
-        std::cout << "Unknown packet type: " << packetType << std::endl;
+        std::cout << "Unknown packet type: " << (int)p->packet_type << std::endl;
     }
 }

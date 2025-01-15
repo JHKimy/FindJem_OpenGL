@@ -3,7 +3,7 @@
 
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 9000
-#define BUFSIZE 8000
+#define BUFSIZE 8192
 
 
 
@@ -14,7 +14,6 @@ constexpr char CS_BULLET = 4;
 constexpr char CS_MAP_OK = 5;
 
 
-
 // 맵 정보
 constexpr char SC_MAZE_DATA = 1;
 
@@ -23,11 +22,8 @@ constexpr char SC_MAZE_DATA = 1;
 constexpr char SC_ADD_CHARACTER = 2;
 constexpr char SC_CHARACTER_MOVE = 3;
 constexpr char SC_OTHER_CHARACTER_MOVE = 4;
-
-constexpr char SC_ENEMY = 4;
-
 // 오브젝트 정보 
-
+constexpr char SC_ENEMY = 5;
 // 총알 정보
 //...... 추가
 
@@ -44,7 +40,7 @@ struct CS_PLAYER_PACKET
 	bool status = true;	// 상태
 	bool ready = false;	// 레디 상태
 	char direction = -1;		// 0 : forward  / 1 : back / 2 : left / 3 : right / 4 : jump
-	
+
 	float dirX;
 	float dirY;
 	float dirZ;
@@ -53,12 +49,6 @@ struct CS_PLAYER_PACKET
 	float camera_angleY;
 
 };
-struct CS_MAP_OK_PACKET
-{
-	char packet_size;		// 패킷 크기
-	char packet_type;		// 패킷 종류
-	int player_id;			// 플레이어 id
-};
 
 struct CS_READY_PACKET
 {
@@ -66,6 +56,13 @@ struct CS_READY_PACKET
 	char packet_type;		// 패킷 종류
 	int player_id;			// 플레이어 id
 };
+struct CS_MAP_OK_PACKET
+{
+	char packet_size;		// 패킷 크기
+	char packet_type;		// 패킷 종류
+	int player_id;			// 플레이어 id
+};
+
 
 // 서버->클라 패킷
 struct SC_MAZE_INFO
@@ -98,11 +95,11 @@ struct SC_CHARACTER_MOVE_PACKET
 	char packet_size;	// 패킷 크기
 	char packet_type;	// 패킷 종류
 	int player_id;		// 플레이어 id
-	
+
 	float PosX;
 	float PosY;
 	float PosZ;
-	
+
 	float DirX;
 	float DirZ;
 
@@ -119,10 +116,10 @@ struct SC_0THER_CHARACTER_MOVE_PACKET
 	float PosY;
 	float PosZ;
 
-	float	DirX;
-	float	DirZ;
+	float DirX;
+	float DirZ;
 
-	float	yaw;
+	float yaw;
 };
 
 struct SC_ENEMY_PACKET {
@@ -135,5 +132,4 @@ struct SC_ENEMY_PACKET {
 	float	PosZ;
 
 };
-
 #pragma pack(pop) 

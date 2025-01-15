@@ -31,7 +31,7 @@ public:
 	// 참조형 변수는 반드시 생성자에서 초기화
 	Controller(std::shared_ptr<Scene> scene, Camera* camera);
 
-    ~Controller() {}
+	~Controller() {}
 
 
 	// 입력 이벤트

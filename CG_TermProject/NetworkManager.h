@@ -17,6 +17,7 @@ class Scene;
 #pragma comment(lib, "ws2_32.lib")
 class NetworkManager
 {
+
 public:
     NetworkManager();
 
@@ -29,7 +30,7 @@ public:
     void SendReady();
 
     void SendPlayerMove(CS_PLAYER_PACKET& p);
-    
+
     void SetScene(std::shared_ptr<Scene> Scene);
 
     SOCKET GetSocket() { return clientSocket; }
@@ -37,7 +38,6 @@ public:
     void RecvMazeData();
 
     void RecvEnemiesData();
-
 private:
     SOCKET clientSocket;
 

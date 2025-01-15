@@ -29,7 +29,7 @@ public:
 
 
     // float   scale;          // 크기
-    
+
     // 전방 벡터
     struct ForwardVector
     {
@@ -50,7 +50,7 @@ public:
     float   gravity;
 
     int defeatedEnemies = 0; // 적 제거 카운트
-    
+
     //BulletPool bulletPool;
 
 
@@ -60,9 +60,9 @@ public:
     void Update(float deltaTime);
     void Shoot();
 
-    
 
-    
+
+
 
     //void TakeDamage(int amount);
     //bool IsGameOver() const;

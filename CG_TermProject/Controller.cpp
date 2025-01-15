@@ -47,11 +47,11 @@ void Controller::Update(float deltaTime)
 	// 나중에 변수 처리??
 	// 카메라 1인칭 시점 설정
 	camera->FirstPersonView(
-		character->GetPosition(), 
-		character->GetYaw(), 
+		character->GetPosition(),
+		character->GetYaw(),
 		g_pitch * 0.1f);
 
-	if(g_keyPressed)
+	if (g_keyPressed)
 	{
 		p.player_id = g_id;
 		if (Command[W]) {
@@ -70,7 +70,7 @@ void Controller::Update(float deltaTime)
 	}
 	// 서버에 보내기
 	networkmanager.SendPlayerMove(p);
-	
+
 	// =========================================
 
 	/*moveDirection += character->GetForwardVector();
@@ -87,10 +87,10 @@ void Controller::Update(float deltaTime)
 
 	// 충돌 감지
 	bool collisionDetected = false;
-	for (const auto& otherActor : scene->GetActors()) 
+	for (const auto& otherActor : scene->GetActors())
 	{
-		if (character != otherActor.get() 
-			&& character->CheckCollision(otherActor.get())) 
+		if (character != otherActor.get()
+			&& character->CheckCollision(otherActor.get()))
 		{
 			collisionDetected = true;
 			break;
@@ -133,38 +133,38 @@ GLvoid Controller::Keyboard(unsigned char key, int x, int y)
 
 	switch (key)
 	{
-	case 'w': Command[W] = true; 
+	case 'w': Command[W] = true;
 		g_keyPressed = true;
 		break;		// 앞으로 이동
 
-	case 's': Command[S] = true; 
+	case 's': Command[S] = true;
 		g_keyPressed = true;
 		break;		// 뒤로 이동
-	case 'a': Command[A] = true; 
+	case 'a': Command[A] = true;
 		g_keyPressed = true;
 		break;		// 왼쪽으로 이동
-	case 'd': Command[D] = true; 
+	case 'd': Command[D] = true;
 		g_keyPressed = true;
 		break;		// 오른쪽으로 이동
 	case 'r': Command[R] = true;
 		g_keyPressed = true;
 		networkmanager.SendReady();
 		break;		// 준비 상태 
-	case 32/*SpaceBar*/: Command[SpaceBar] = true; 
+	case 32/*SpaceBar*/: Command[SpaceBar] = true;
 		// g_keyPressed = true;??
 
 		break; // 캐릭터 점프	
 
-		 
 
-	case '1': 
-		Command[Num1] = true; 
+
+	case '1':
+		Command[Num1] = true;
 		Command[Num2] = false;
 		glutSetCursor(GLUT_CURSOR_NONE);
 
 		break;
-	case '2': 
-		Command[Num2] = true; 
+	case '2':
+		Command[Num2] = true;
 		Command[Num1] = false;
 		glutSetCursor(GLUT_CURSOR_INHERIT);
 
@@ -184,17 +184,17 @@ GLvoid Controller::KeyboardUp(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	case 'w':Command[W] = false; 
+	case 'w':Command[W] = false;
 		g_keyPressed = false;
 
 		break;
-	case 's':Command[S] = false; 
+	case 's':Command[S] = false;
 		g_keyPressed = false;
 		break;
-	case 'a':Command[A] = false; 
+	case 'a':Command[A] = false;
 		g_keyPressed = false;
 		break;
-	case 'd':Command[D] = false; 
+	case 'd':Command[D] = false;
 		g_keyPressed = false;
 		break;
 
@@ -227,7 +227,7 @@ GLvoid Controller::PassiveMotion(int x, int y)
 	if (isFirstPersonView) { // 1인칭 모드일 때만 처리
 		// 마우스 이동 변화에 따라 시점을 업데이트
 		float deltaX = x - winWidth / 2;
-		g_yaw = deltaX;
+		g_yaw = deltaX * sensitivity;
 
 		float deltaY = y - winHeight / 2;
 		g_pitch = deltaY;
@@ -238,7 +238,7 @@ GLvoid Controller::PassiveMotion(int x, int y)
 		//camera->FirstPersonView(character->GetPosition(), character->GetYaw(), deltaY * sensitivity);
 
 		glutWarpPointer(winWidth / 2, winHeight / 2); // 마우스를 중앙으로 되돌립니다.
-		
+
 	}
 	glutPostRedisplay();
 

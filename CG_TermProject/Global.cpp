@@ -25,9 +25,9 @@ StartPos startPos;
 Direction direction;
 
 // 서버 캐릭터 위치
- Position position;
+Position position;
 
- // 데이터 수신 완료 플래그
+// 데이터 수신 완료 플래그
 bool g_bReady = false;
 
 bool g_isOtherCharacter = false;

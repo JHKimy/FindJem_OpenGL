@@ -37,7 +37,7 @@ Character::Character(int id)
     // mass = 2.f;          // 질량
     // gravity(9.8f),       // 중력 영향
     //    bulletPool(30)
-    
+
 }
 
 void Character::Move(char key)
@@ -49,7 +49,7 @@ void Character::Move(char key)
     if (!hasPrinted)
     {
         const float blockDiameter = 5.0f; // 블록의 지름
-        std::cout << "Current Maze Map:" << std::endl;
+        //std::cout << "Current Maze Map:" << std::endl;
 
         for (int z = 0; z < g_mazeMap.size(); ++z)
         {
@@ -60,8 +60,8 @@ void Character::Move(char key)
                     // 화면상의 좌표 (월드 좌표)
                     float blockCenterX = x * blockDiameter;
                     float blockCenterZ = z * blockDiameter;
-                    std::cout << "Wall at Maze Coordinates (" << z << ", " << x << ") -> "
-                        << "World Coordinates (" << blockCenterX << ", " << blockCenterZ << ")" << std::endl;
+                   /* std::cout << "Wall at Maze Coordinates (" << z << ", " << x << ") -> "
+                        << "World Coordinates (" << blockCenterX << ", " << blockCenterZ << ")" << std::endl;*/
                 }
             }
         }
@@ -121,11 +121,11 @@ void Character::Move(char key)
         {
             if (g_mazeMap[z][x] == 1) // 벽인 경우
             {
-                float wallX = x * g_blockSize.x; // 벽의 X 좌표
-                float wallZ = z * g_blockSize.z; // 벽의 Z 좌표
+                float wallX = x * 5.f; // 벽의 X 좌표
+                float wallZ = z * 5.f; // 벽의 Z 좌표
 
                 // === 충돌 조건 계산 ===
-                float halfBlockSize = g_blockSize.x / 2.f; // 블록 한 변의 절반 크기
+                float halfBlockSize = 2.5f; // 블록 한 변의 절반 크기 (3.0 / 2)
                 if (std::abs(newX - wallX) < (halfBlockSize + boundingRadius) && // X축 충돌
                     std::abs(newZ - wallZ) < (halfBlockSize + boundingRadius))   // Z축 충돌
                 {
@@ -139,7 +139,7 @@ void Character::Move(char key)
             break;
     }
     // 충돌이 없을 경우에만 위치 갱신
-   if (!collision)
+    if (!collision)
     {
         position.x = newX;
         position.z = newZ;
@@ -150,7 +150,7 @@ void Character::Move(char key)
     moveDir.y = 0.0f;
     moveDir.z = 0.0f;
 
-    cout << "characterPos" << position.x << ", " << position.z << endl;
+    //cout << "characterPos" << position.x << ", " << position.z << endl;
 }
 
 void Character::Rotate(float deltaYaw)
