@@ -13,36 +13,34 @@ class Enemy
 {
 public:
     int     enemyID;       // 플레이어 ID
-    bool    isActive;               // 활성 상태
+    bool    isActive;      // 활성 상태
+    
     // 위치
     struct Position
     {
         float x, y, z;
     }position;
 
-    float   boundingRadius; // 충돌 구체 반지름
-
     int     health;
     float   mass;
     float   moveSpeed;
     bool    isJumping;
 
-    EnemyState currentState;     // 현재 상태
+    EnemyState currentState;    // 현재 상태
 
-    float detectionRadius;       // 탐지 거리
-    float chaseRadius;           // 추적 유지 거리
+    float detectionRadius;      // 탐지 거리
+    float chaseRadius;          // 추적 유지 거리
 
+    float   boundingRadius;     // 충돌 구체 반지름
 
 
     // ===== 생성자 =====
     Enemy(float x, float y, float z, int id);
 
-    bool IsActive();
+    bool IsActive() { return IsActive; };
 
 
-    float GetPostionX(){
-        return position.x;
-    }
+    float GetPostionX(){return position.x;}
 
     float GetPostionY(){
         return position.y;
@@ -66,8 +64,8 @@ public:
 
 private:
     // ===== 내부 유틸리티 함수 =====
-    //void Patrol(const std::vector<std::vector<int>>& mazeMap, const Vec3& blockSize, float deltaTime);
-    //void Chase(const std::pair<int,int> playerPosition, const std::vector<std::vector<int>>& mazeMap, const Vec3& blockSize, float deltaTime);
+    void Patrol(const std::vector<std::vector<int>>& mazeMap, const Vec3& blockSize, float deltaTime);
+    void Chase(const std::pair<int,int> playerPosition, const std::vector<std::vector<int>>& mazeMap, const Vec3& blockSize, float deltaTime);
     //bool isValid(int x, int z, const std::vector<std::vector<int>>& mazeMap);
 };
 

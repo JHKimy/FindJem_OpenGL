@@ -30,3 +30,4 @@ extern std::vector<std::vector<int>> g_mazeMap;
 
 extern int get_id();
 
+extern float

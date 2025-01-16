@@ -44,12 +44,6 @@ void Scene::Initialize()
     mainCharacter = make_unique<Character>(glm::vec3(startPos.x, startPos.y, startPos.z));
 
 
-    otherCharacter2 = make_unique<Actor>("Cube.obj",
-        glm::vec3(15.f, 0.f, 15.f),
-        blockSize,
-        glm::vec3(0),
-        glm::vec3(0, 0, 1));
-
     mainCamera->TopView();
 
     // Àû ÃÊ±âÈ­
@@ -110,7 +104,6 @@ void Scene::Render()
         otherCharacter1->Render(SceneShader);
     }
 
-    otherCharacter2->Render(SceneShader);
 
     // ÃÑ¾Ë ·»´õ¸µ
     const auto& bullets = mainCharacter->GetBulletPool().GetAllBullets();

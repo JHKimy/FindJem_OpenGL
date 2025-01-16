@@ -32,7 +32,6 @@ private:
 
 
     std::unique_ptr<Character> otherCharacter1;   // 플레이어 캐릭터
-    std::unique_ptr<Actor> otherCharacter2;   // 플레이어 캐릭터
 
 
     //std::unique_ptr<MazeGenerator> mazeGenerator; // 미로 생성기
