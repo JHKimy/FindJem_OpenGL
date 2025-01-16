@@ -37,16 +37,23 @@ private:
     //std::unique_ptr<MazeGenerator> mazeGenerator; // 미로 생성기
 
     // 액터와 적 관리
+
+public:
     std::vector<std::unique_ptr<Actor>> actors; // 씬에 포함된 액터들
     std::vector<std::unique_ptr<Enemy>> enemies; // 적들
 public:
-    std::unique_ptr<Enemy> GetEnemy(int num) {
-        return std::move(enemies[num]);
-    };
 
-    void SetEnemy(int num, std::unique_ptr<Enemy> enemy) {
-        enemies[num] = std::move(enemy);
+    Enemy* GetEnemy(size_t index) {
+        if (index < enemies.size()) {
+            return enemies[index].get(); // 소유권을 유지한 채 객체 참조 반환
+        }
+        return nullptr; // 유효하지 않은 인덱스인 경우 nullptr 반환
     }
+
+
+    //void SetEnemy(int num, std::unique_ptr<Enemy> enemy) {
+    //    enemies[num] = std::move(enemy);
+    //}
 
 private:
 

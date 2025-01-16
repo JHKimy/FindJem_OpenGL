@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "AstarPath.h"
 
 void Send_Maze_Data(int clientid)
 {
@@ -59,7 +60,7 @@ void Send_My_Character_Data(int clientid)
 
 void Send_Enemy_Data(int clientid)
 {
-	// 미로 정보 담는 패킷 구조체
+	// 적 정보 담는 패킷 구조체
 	SC_ENEMY_PACKET p;
 	p.packet_size = sizeof(p);
 	p.packet_type = SC_ENEMY;
@@ -82,9 +83,115 @@ void Send_Enemy_Data(int clientid)
 	}
 }
 
+std::mutex dataMutex;
+
 void EnemyThread()
 {
+
+	// 미로 정보 담는 패킷 구조체
+	SC_ENEMY_PACKET p;
+	p.packet_size = sizeof(p);
+	p.packet_type = SC_ENEMY;
+
+
 	while (true) {
+		std::lock_guard<std::mutex> lock(dataMutex);
+		if (g_characters[0].isReady){
+			for (int i{}; i < g_characters.size(); ++i){
+				for (int j{}; j < g_enemies.size(); ++j){
+					
+					if (g_is_accept[i]) {
+						// 플레이어와 적 거리
+						float distanceToPlayer = std::sqrt(
+							std::pow(g_characters[i].position.x - g_enemies[j]->position.x, 2) +
+							std::pow(g_characters[i].position.z - g_enemies[j]->position.z, 2));
+
+						// 상태에 따라 행동 결정
+						switch (g_enemies[j]->currentState)
+						{
+						case EnemyState::Patrol:
+							// 경로가 업데이트되지 않았다면 경로를 새로 계산
+							if (!g_enemies[j]->detectPath)
+							{
+
+								float tempX = static_cast<int>(g_enemies[j]->position.x / g_blockSize.x);
+								float tempZ = static_cast<int>(g_enemies[j]->position.z / g_blockSize.z);
+								vec2 startTile = { tempX, tempZ };
+
+
+
+								float tempX2 = static_cast<int>(g_characters[i].GetPostionX() / g_blockSize.x);
+								float tempZ2 = static_cast<int>(g_characters[i].GetPostionZ() / g_blockSize.z);
+								vec2 goalTile = {tempX2,tempZ2};
+
+								cout << "[DEBUG] Character Position: (" << g_characters[i].GetPostionX()
+									<< ", " << g_characters[i].GetPostionZ() << ")" << endl;
+								cout << "[DEBUG] Goal Tile: (" << goalTile.x << ", " << goalTile.z << ")" << endl;
+
+								g_enemies[j]->path = Astar::FindPath(startTile, goalTile, g_mazeMap);
+
+								g_enemies[j]->currentPathIndex = 0;
+								g_enemies[j]->detectPath = true;  // 경로가 업데이트되었음을 표시
+
+
+								// 경로가 계산된 결과 출력
+								if (g_enemies[j]->path.empty()) {
+									cout << "[DEBUG] Pathfinding failed! No path found." << endl;
+								}
+								else {
+									cout << "[DEBUG] Path found:" << endl;
+									for (auto& p : g_enemies[j]->path) {
+										cout << "  Tile: (" << p.x << ", " << p.z << ")" << endl;
+									}
+								}
+							}
+							
+							// g_enemies[j]->Patrol(g_mazeMap);
+
+							break;
+
+
+
+						case EnemyState::Chase:
+								//for (const auto& tile : g_enemies[j]->path) {
+								//	std::cout << "Path Tile: (" << tile.x << ", " << tile.z << ")" << std::endl;
+								//}
+
+					
+							// g_enemies[j]->Chase({ g_characters[i].GetPostionX(),g_characters[i].GetPostionZ() }, g_mazeMap);
+							break;
+
+						}
+
+						//===================================
+						p.enemy_id = g_enemies[j]->GetEnemyID();
+						p.PosX = g_enemies[j]->GetPostionX();
+						p.PosY = g_enemies[j]->GetPostionY();
+						p.PosZ = g_enemies[j]->GetPostionZ();
+
+					}
+				}
+
+
+
+
+				if (g_is_accept[i]) {
+					// 데이터를 클라이언트 소켓으로 전송
+					int retval = send(g_clientSocketes[i],
+						reinterpret_cast<const char*>(&p), sizeof(p), 0);
+					if (retval == SOCKET_ERROR) {
+						cout << "fail ! " << i << ": " << WSAGetLastError() << endl;
+					}
+					else {
+						//cout << "Send to client " << i << endl;
+					}
+
+				}
+
+			}
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(100)); // CPU 과부하 방지
+		}
 
 	}
 }
@@ -117,7 +224,7 @@ void HandleThread(int id)
 				std::cout << "Client disconnected." << std::endl;
 			}
 			else {
-				std::cout << "Recv error: " << WSAGetLastError() << std::endl;
+				//std::cout << "Recv error: " << WSAGetLastError() << std::endl;
 			}
 		}
 
@@ -206,7 +313,7 @@ void HandleThread(int id)
 			break;
 		}
 	}
-	SocketUtils::Close(g_clientSocketes[id]);
+	//SocketUtils::Close(g_clientSocketes[id]);
 }
 
 
@@ -227,7 +334,8 @@ int main()
 		}
 		cout << endl;  // 각 행 끝에 줄 바꿈
 	}
-	g_enemies[0] = make_unique<Enemy>(15.f, 0.f, 15.f, 0);
+	g_enemies[0] = make_shared<Enemy>(15.f, 0.f, 15.f, 0);
+	//g_enemies[0]->currentState = EnemyState::Patrol;
 
 	std::unique_ptr<Character> character = make_unique<Character>();
 

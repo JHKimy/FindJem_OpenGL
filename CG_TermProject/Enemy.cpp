@@ -54,6 +54,8 @@ void Enemy::Update(float deltaTime, const glm::vec3& playerPosition, const std::
                 path = Astar::FindPath(startTile, goalTile, mazeMap);
                 currentPathIndex = 0;
                 detectPath = true;  // 경로가 업데이트되었음을 표시
+
+
             }
             Chase(playerPosition, mazeMap, blockSize, deltaTime);
         }
@@ -101,6 +103,14 @@ void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap, const glm::vec3
     glm::vec3 directionToTarget = glm::normalize(targetPosition - position);
     position += directionToTarget * moveSpeed * deltaTime;
 
+   
+    
+    
+    
+    
+    
+    
+    
     if (glm::length(targetPosition - position) < 0.1f) {
         position = targetPosition;
     }

@@ -47,7 +47,7 @@ void Scene::Initialize()
     mainCamera->TopView();
 
     // 적 초기화
-    InitializeEnemies();
+    // InitializeEnemies();
 }
 
 void Scene::Update(float deltaTime)
@@ -64,32 +64,37 @@ void Scene::Update(float deltaTime)
         g_bReady = false;
     }
 
-
     // 적 상태 관리 및 충돌 처리
     glm::vec3 playerPosition = mainCharacter->GetPosition();
 
-    for (auto& enemy : enemies)
-    {
-        if (!enemy->IsActive()) continue;
+    cout << enemies[0].get()->GetPosition().z<<endl;
+
+    //for (auto& enemy : enemies)
+    //{
+        //if (!enemy->IsActive()) continue;
 
         // 이전 위치 저장
         //glm::vec3 prevPosition = enemy->GetPosition() - enemy->GetDirection() * 0.1f;
 
+
+
         // 적 업데이트
-        enemy->Update(deltaTime, playerPosition, mazeMap, blockSize);
+        //##### enemy->Update(deltaTime, playerPosition, mazeMap, blockSize);
+
+
 
         //// 적과 벽돌 충돌 감지
         //if (enemy->CheckCollisionWithActors(actors, blockSize - 0.4f))
         //{
         //    enemy->SetPosition(prevPosition); // 충돌 시 이전 위치로 복구
         //}
-    }
+   // }
 
     // 적과 총알 충돌 처리
-    HandleBulletEnemyCollisions();
+    // HandleBulletEnemyCollisions();
 
     // 비활성화된 적 제거
-    RemoveInactiveEnemies();
+    // RemoveInactiveEnemies();
 
     // 적 제거 카운트 출력
     // std::cout << "Defeated Enemies: " << mainCharacter->GetDefeatedEnemies() << std::endl;
@@ -124,6 +129,7 @@ void Scene::Render()
         if (enemy->IsActive())
         {
             enemy->Render(SceneShader);
+            //cout << "REndfs"<<endl;
         }
     }
 }
@@ -160,32 +166,32 @@ void Scene::InitializeMaze()
 
 void Scene::InitializeEnemies()
 {
-    std::vector<glm::vec3> emptySpaces;
+    //std::vector<glm::vec3> emptySpaces;
 
-    // 빈 공간 찾기
-    for (int z = 0; z < mazeMap.size(); ++z)
-    {
-        for (int x = 0; x < mazeMap[z].size(); ++x)
-        {
-            if (mazeMap[z][x] == 0)
-            {
-                emptySpaces.push_back(glm::vec3(x * blockSize.x, 0.0f, z * blockSize.z));
-            }
-        }
-    }
+    //// 빈 공간 찾기
+    //for (int z = 0; z < mazeMap.size(); ++z)
+    //{
+    //    for (int x = 0; x < mazeMap[z].size(); ++x)
+    //    {
+    //        if (mazeMap[z][x] == 0)
+    //        {
+    //            emptySpaces.push_back(glm::vec3(x * blockSize.x, 0.0f, z * blockSize.z));
+    //        }
+    //    }
+    //}
 
-    // 랜덤으로 적 생성
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, emptySpaces.size() - 1);
+    //// 랜덤으로 적 생성
+    //std::random_device rd;
+    //std::mt19937 gen(rd());
+    //std::uniform_int_distribution<> dist(0, emptySpaces.size() - 1);
 
-    for (int i = 0; i < 1; ++i)
-    {
-        int randomIndex = dist(gen);
-        glm::vec3 enemyPosition = emptySpaces[randomIndex];
-        enemies.push_back(std::make_unique<Enemy>(enemyPosition));
-        emptySpaces.erase(emptySpaces.begin() + randomIndex);
-    }
+    //for (int i = 0; i < 1; ++i)
+    //{
+    //    int randomIndex = dist(gen);
+    //    glm::vec3 enemyPosition = emptySpaces[randomIndex];
+    //    enemies.push_back(std::make_shared<Enemy>(enemyPosition));
+    //    emptySpaces.erase(emptySpaces.begin() + randomIndex);
+    //}
 }
 
 void Scene::HandleBulletEnemyCollisions()
@@ -219,8 +225,8 @@ void Scene::HandleBulletEnemyCollisions()
 
 void Scene::RemoveInactiveEnemies()
 {
-    enemies.erase(
-        std::remove_if(enemies.begin(), enemies.end(),
-            [](const std::unique_ptr<Enemy>& enemy) { return !enemy->IsActive(); }),
-        enemies.end());
+    //enemies.erase(
+    //    std::remove_if(enemies.begin(), enemies.end(),
+    //        [](const std::unique_ptr<Enemy>& enemy) { return !enemy->IsActive(); }),
+    //    enemies.end());
 }

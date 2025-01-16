@@ -115,6 +115,23 @@ bool NetworkManager::RecvThread() {
         break;
     }
 
+    case SC_ENEMY:
+    {
+        SC_ENEMY_PACKET* p = reinterpret_cast<SC_ENEMY_PACKET*>(buf);
+        //m_Scene->GetEnemy(p->enemy_id)->SetPosition(glm::vec3(p->PosX,0, 0));
+        
+        m_Scene->enemies[p->enemy_id]->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+        
+        
+
+        //cout << p->PosX <<","<< p->PosY <<"," << p->PosZ << endl;
+        
+        
+        //m_Scene->GetEnemy(p->enemy_id)->SetForwardVector(glm::vec3(p->DirX, 0.f, p->DirZ));
+        //m_Scene->GetCharacter()->SetYaw(p->yaw);
+        break;
+    }
+
     default:
         std::cout << "Unknown packet type: " << packetType << std::endl;
         break;
@@ -213,7 +230,7 @@ void NetworkManager::RecvEnemiesData()
             << std::endl;
 
         // 利 按眉 积己 肺流
-        m_Scene->SetEnemy(p->enemy_id, make_unique<Enemy>(glm::vec3(p->PosX, p->PosY, p->PosZ)));
+        m_Scene->enemies[p->enemy_id]= make_unique<Enemy>(glm::vec3(p->PosX, p->PosY, p->PosZ));
     }
     else {
         std::cout << "Unknown packet type: " << (int)p->packet_type << std::endl;

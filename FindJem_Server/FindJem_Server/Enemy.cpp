@@ -1,9 +1,10 @@
 #include "AStarPath.h"
 #include "Enemy.h"
 #include <iostream>
+#include "pch.h"
 
 // ===== 생성자 =====
-Enemy::Enemy(float x, float y, float z, int id) : enemyID{id}
+Enemy::Enemy(float x, float y, float z, int id) : enemyID{ id }, currentDir{1,0}
 {
     isActive = true;
     
@@ -18,69 +19,135 @@ Enemy::Enemy(float x, float y, float z, int id) : enemyID{id}
 
     detectionRadius = 20.0f;
     chaseRadius = 30.0f;
+    targetTile.x = static_cast<int>(position.x / 5.0f);
 
+    targetTile.z = static_cast<int>(position.z / 5.0f);
+    
+    targetPosition.x = targetTile.x * 5.0f;
+    targetPosition.y = 0.0f;
+    targetPosition.z = targetTile.z * 5.0f;
+
+    detectPath = false;
  }
 
 // ===== 순찰 동작 =====
 void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap) {
 
 
-    // 미로 좌표 변환
-    int mazeX = static_cast<int>(position.x / blockSize.x);
-    int mazeZ = static_cast<int>(position.z / blockSize.z);
+    // 적 위치 미로 좌표 변환
+    int mazeX = static_cast<int>(position.x / g_blockSize.x);
+    int mazeZ = static_cast<int>(position.z / g_blockSize.z);
 
-    if (glm::length(targetPosition - position) < 0.1f) {
-        const std::vector<glm::ivec2> directions = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
+    // 타겟 위치와 적 위치 간격 짧아지면 탐색
+    if (std::sqrt(
+        std::pow(targetPosition.x - position.x, 2) +
+        std::pow(targetPosition.z - position.z, 2)) < 0.1f)
+    {
+        // 4방향
+        const std::vector<vec2> directions = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
         bool foundNext = false;
 
+        // 4방향 탐색
         for (const auto& dir : directions) {
+            // 다음 미로 좌표
             int nextX = mazeX + dir.x;
-            int nextZ = mazeZ + dir.y;
+            int nextZ = mazeZ + dir.z;
 
-            if (isValid(nextX, nextZ, mazeMap) && dir != -currentDir) {
+            cout << dir.x << "," << dir.z << endl;
+
+            // 다음 미로 좌표 가능한지 && 현재 방향과 반대편방향은 아닌지
+            // 막혔을때 그 방향 좌우 살피기 위함
+            if (isValid(nextX, nextZ, mazeMap) && (dir.x != -currentDir.x || dir.z != -currentDir.z))
+            {
                 currentDir = dir;
-                targetTile = { nextX, nextZ };
+                targetTile = { (float)nextX, (float)nextZ };
                 foundNext = true;
                 break;
             }
         }
-
-        if (!foundNext) {
-            currentDir = -currentDir; // 반대 방향
-            targetTile = { mazeX + currentDir.x, mazeZ + currentDir.y };
+        // 가는 방향, 좌, 우 다 안되면 반대 방향
+        if (!foundNext) 
+        {
+            currentDir = { -currentDir.x, -currentDir.z }; // 반대 방향
+            targetTile = { mazeX + currentDir.x, mazeZ + currentDir.z };
         }
 
-        targetPosition = glm::vec3(targetTile.x * blockSize.x, position.y, targetTile.y * blockSize.z);
+        // 월드 목표위치로 변환
+        targetPosition = { targetTile.x * g_blockSize.x, position.y, targetTile.z * g_blockSize.z };
     }
 
-    glm::vec3 directionToTarget = glm::normalize(targetPosition - position);
-    position += directionToTarget * moveSpeed * deltaTime;
+    // 목표 위치를 향한 방향 계산
+    vec3 directionToTarget = {
+        targetPosition.x - position.x,
+        targetPosition.y - position.y,
+        targetPosition.z - position.z
+    };
 
-    if (glm::length(targetPosition - position) < 0.1f) {
+    // 방향 벡터 정규화
+    float magnitude = std::sqrt(
+        std::pow(directionToTarget.x, 2) +
+        std::pow(directionToTarget.y, 2) +
+        std::pow(directionToTarget.z, 2));
+
+    if (magnitude > 0.0f) {
+        directionToTarget.x /= magnitude;
+        directionToTarget.y /= magnitude;
+        directionToTarget.z /= magnitude;
+    }
+
+    // 이동
+    position.x += directionToTarget.x * moveSpeed ;
+    position.y += directionToTarget.y * moveSpeed ;
+    position.z += directionToTarget.z * moveSpeed ;
+
+
+    // 목표 위치에 도달했는지 확인
+    float distanceToTarget = std::sqrt(
+        std::pow(targetPosition.x - position.x, 2) +
+        std::pow(targetPosition.y - position.y, 2) +
+        std::pow(targetPosition.z - position.z, 2));
+
+    if (distanceToTarget < 0.1f) {
         position = targetPosition;
     }
+
 }
 
 // ===== 추적 동작 =====
-void Enemy::Chase(const glm::vec3& playerPosition, const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize, float deltaTime) {
+void Enemy::Chase(const vec2 playerPosition, const std::vector<std::vector<int>>& mazeMap) 
+{
 
     if (currentPathIndex >= path.size()) {
         detectPath = false;  // 경로가 끝났다면 경로 업데이트 필요
         return;
     }
 
-    float nextX = path[currentPathIndex].x * blockSize.x;
-    float nextZ = path[currentPathIndex].y * blockSize.z;
+    float nextX = path[currentPathIndex].x * g_blockSize.x;
+    float nextZ = path[currentPathIndex].z * g_blockSize.z;
 
-    glm::vec3 nextPos = { nextX, 0, nextZ };
-    glm::vec3 moveDir = glm::normalize(nextPos - position);
+    vec3 nextPos = { nextX, 0, nextZ };
+    
+    //#######
+    vec3 moveDir = normalize(nextPos , position);
 
-    position += moveDir * moveSpeed * deltaTime;
+    // 이동
+    position.x += moveDir.x * moveSpeed;
+    position.y += moveDir.y * moveSpeed;
+    position.z += moveDir.z * moveSpeed;
 
 
-    if (glm::distance(position, nextPos) < 0.1f) {
+
+
+    // 목표 위치에 도달했는지 확인
+    float distanceToNext = std::sqrt(
+        std::pow(nextPos.x - position.x, 2) +
+        std::pow(nextPos.y - position.y, 2) +
+        std::pow(nextPos.z - position.z, 2));
+
+    if (distanceToNext < 0.1f) {
         currentPathIndex++;
     }
+
 }
 
 
@@ -89,8 +156,8 @@ void Enemy::Chase(const glm::vec3& playerPosition, const std::vector<std::vector
 
 
 //// ===== 유효 타일 확인 =====
-//bool Enemy::isValid(int x, int z, const std::vector<std::vector<int>>& mazeMap) {
-//    return x >= 0 && z >= 0 &&
-//        x < mazeMap[0].size() && z < mazeMap.size() &&
-//        mazeMap[z][x] == 0;
-//}
+bool Enemy::isValid(int x, int z, const std::vector<std::vector<int>>& mazeMap) {
+    return x >= 0 && z >= 0 &&
+        x < mazeMap[0].size() && z < mazeMap.size() &&
+        mazeMap[z][x] == 0;
+}
