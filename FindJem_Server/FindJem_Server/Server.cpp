@@ -70,14 +70,21 @@ void Send_Enemy_Data(int clientid)
 	p.PosZ = g_enemies[0]->GetPostionZ();
 	p.enemy_id = g_enemies[0]->GetEnemyID();
 
-	
 
-	
+
+
 	if (g_is_accept[clientid]) {
 		cout << " send enemy to clientid : " << clientid << endl;
 		// 데이터를 클라이언트 소켓으로 전송
 		int retval = send(g_clientSocketes[clientid],
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+
+	}
+}
+
+void EnemyThread()
+{
+	while (true) {
 
 	}
 }
@@ -190,7 +197,7 @@ void HandleThread(int id)
 				lock_guard<mutex> lock(g_character_mutex);
 				Send_Enemy_Data(p->player_id);
 			}
-			
+
 			cout << "id : " << p->player_id << endl;
 			break;
 		}
@@ -199,6 +206,7 @@ void HandleThread(int id)
 			break;
 		}
 	}
+	SocketUtils::Close(g_clientSocketes[id]);
 }
 
 
@@ -248,7 +256,7 @@ int main()
 	SOCKADDR_IN clientAddr;
 	int addrLen = sizeof(clientAddr);
 
-
+	thread eThread{ EnemyThread };
 	// 6. 클라이언트 접속 기다리는 루프
 	while (true)
 	{
@@ -278,7 +286,7 @@ int main()
 	// 9. 모든 스레드 종료될때 까지 기다림
 	for (auto& t : g_threads)
 		t.join();
-
+	eThread.join();
 	// 10. 리소스 정리
 	SocketUtils::Close(listenSocket);
 	SocketUtils::Clear();
