@@ -83,7 +83,7 @@ void Send_Enemy_Data(int clientid)
 	}
 }
 
-std::mutex dataMutex;
+
 
 void EnemyThread()
 {
@@ -95,7 +95,7 @@ void EnemyThread()
 
 
 	while (true) {
-		std::lock_guard<std::mutex> lock(dataMutex);
+		std::lock_guard<std::mutex> lock(g_EnemyMutex);
 		if (g_characters[0].isReady){
 			for (int i{}; i < g_characters.size(); ++i){
 				for (int j{}; j < g_enemies.size(); ++j){
@@ -313,7 +313,7 @@ void HandleThread(int id)
 			break;
 		}
 	}
-	//SocketUtils::Close(g_clientSocketes[id]);
+	SocketUtils::Close(g_clientSocketes[id]);
 }
 
 
