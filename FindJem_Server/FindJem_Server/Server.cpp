@@ -83,8 +83,6 @@ void Send_Enemy_Data(int clientid)
 	}
 }
 
-
-
 void EnemyThread()
 {
 
@@ -102,63 +100,38 @@ void EnemyThread()
 					
 					if (g_is_accept[i]) {
 						// 플레이어와 적 거리
-						float distanceToPlayer = std::sqrt(
-							std::pow(g_characters[i].position.x - g_enemies[j]->position.x, 2) +
-							std::pow(g_characters[i].position.z - g_enemies[j]->position.z, 2));
-
+						float distanceToPlayer = g_enemies[j]->DistanceToPlayer(j, i);
 						// 상태에 따라 행동 결정
+
+						//std::cout << " current : " << (int)g_enemies[j]->currentState << endl;
+
 						switch (g_enemies[j]->currentState)
 						{
+
 						case EnemyState::Patrol:
-							// 경로가 업데이트되지 않았다면 경로를 새로 계산
-							if (!g_enemies[j]->detectPath)
-							{
-
-								float tempX = static_cast<int>(g_enemies[j]->position.x / g_blockSize.x);
-								float tempZ = static_cast<int>(g_enemies[j]->position.z / g_blockSize.z);
-								vec2 startTile = { tempX, tempZ };
-
-
-
-								float tempX2 = static_cast<int>(g_characters[i].GetPostionX() / g_blockSize.x);
-								float tempZ2 = static_cast<int>(g_characters[i].GetPostionZ() / g_blockSize.z);
-								vec2 goalTile = {tempX2,tempZ2};
-
-								cout << "[DEBUG] Character Position: (" << g_characters[i].GetPostionX()
-									<< ", " << g_characters[i].GetPostionZ() << ")" << endl;
-								cout << "[DEBUG] Goal Tile: (" << goalTile.x << ", " << goalTile.z << ")" << endl;
-
-								g_enemies[j]->path = Astar::FindPath(startTile, goalTile, g_mazeMap);
-
-								g_enemies[j]->currentPathIndex = 0;
-								g_enemies[j]->detectPath = true;  // 경로가 업데이트되었음을 표시
-
-
-								// 경로가 계산된 결과 출력
-								if (g_enemies[j]->path.empty()) {
-									cout << "[DEBUG] Pathfinding failed! No path found." << endl;
-								}
-								else {
-									cout << "[DEBUG] Path found:" << endl;
-									for (auto& p : g_enemies[j]->path) {
-										cout << "  Tile: (" << p.x << ", " << p.z << ")" << endl;
-									}
-								}
+							// 탐지 범위보다 거리가 길면
+							if (g_enemies[j]->detectionRadius > distanceToPlayer){
+								g_enemies[j]->currentState = EnemyState::Chase;
 							}
-							
-							// g_enemies[j]->Patrol(g_mazeMap);
-
+							else {
+								g_enemies[j]->Patrol(g_mazeMap);
+							}
 							break;
 
-
-
 						case EnemyState::Chase:
-								//for (const auto& tile : g_enemies[j]->path) {
-								//	std::cout << "Path Tile: (" << tile.x << ", " << tile.z << ")" << std::endl;
-								//}
-
-					
-							// g_enemies[j]->Chase({ g_characters[i].GetPostionX(),g_characters[i].GetPostionZ() }, g_mazeMap);
+							
+							if (distanceToPlayer > g_enemies[j]->chaseRadius) {
+								g_enemies[j]->currentState = EnemyState::Patrol;
+							}
+							else {
+								if (!g_enemies[j]->detectPath)
+								{
+									g_enemies[j]->MakeAStarPath(j, i);
+									// 경로 생성 완료
+									g_enemies[j]->detectPath = true;
+								}
+								g_enemies[j]->Chase();
+							}
 							break;
 
 						}
@@ -365,6 +338,7 @@ int main()
 	int addrLen = sizeof(clientAddr);
 
 	thread eThread{ EnemyThread };
+
 	// 6. 클라이언트 접속 기다리는 루프
 	while (true)
 	{
@@ -395,6 +369,7 @@ int main()
 	for (auto& t : g_threads)
 		t.join();
 	eThread.join();
+
 	// 10. 리소스 정리
 	SocketUtils::Close(listenSocket);
 	SocketUtils::Clear();

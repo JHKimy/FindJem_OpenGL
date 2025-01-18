@@ -125,12 +125,14 @@ Controller* mainController = nullptr;
 void main(int argc, char** argv)
 {
 
+// ========================
 	// 1. 서버와 연결
 	if (!networkmanager.Connect())
 	{
 		cout << "Failed to connect to the server" << endl;
 		return;
 	}
+// ========================
 
 	// 윈도우 생성하기
 	glutInit(&argc, argv);
@@ -163,6 +165,7 @@ void main(int argc, char** argv)
 	// 2. 서버로부터 데이터 수신
 	networkmanager.RecvMazeData();
 
+	// 1. 서버에 Map 수신 완료 패킷 보냄
 	{
 		CS_MAP_OK_PACKET p;
 		p.packet_size = sizeof(p);
@@ -172,6 +175,7 @@ void main(int argc, char** argv)
 		int retval = send(networkmanager.GetSocket(),
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
 	}
+	// 2. 적 정보 받기
 	networkmanager.RecvEnemiesData();
 
 
@@ -181,8 +185,9 @@ void main(int argc, char** argv)
 	mainScene->Initialize();
 
 
-
-	// 5. 데이터 수신 스레드 시작
+	// 1. Connect
+	//      ↓
+	// 2. 데이터 수신 스레드 시작
 	// 별도 스레드 생성
 	thread networkThread(
 		[ & ] ( )

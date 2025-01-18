@@ -64,11 +64,12 @@ void Scene::Update(float deltaTime)
         g_bReady = false;
     }
 
-    // 利 惑怕 包府 棺 面倒 贸府
+
     glm::vec3 playerPosition = mainCharacter->GetPosition();
 
-    cout << enemies[0].get()->GetPosition().z<<endl;
-
+    // cout << enemies[0].get()->GetPosition().z<<endl;
+     
+    // 利 惑怕 包府 棺 面倒 贸府
     //for (auto& enemy : enemies)
     //{
         //if (!enemy->IsActive()) continue;

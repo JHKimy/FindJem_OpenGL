@@ -108,10 +108,12 @@ public:
 public:
     // ===== 내부 유틸리티 함수 =====
     void Patrol(const std::vector<std::vector<int>>& mazeMap);
-    void Chase(const vec2 playerPosition, const std::vector<std::vector<int>>& mazeMap);
+
+    void MakeAStarPath(int enemyIndex, int playerIndex);
+    void Chase();
     bool isValid(int x, int z, const std::vector<std::vector<int>>& mazeMap);
 
-
+    float DistanceToPlayer(int enemyIndex, int playerIndex);
 
 
 

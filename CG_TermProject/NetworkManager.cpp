@@ -102,6 +102,7 @@ bool NetworkManager::RecvThread() {
         //cout <<p->yaw<< endl;
         break;
     }
+
     case SC_OTHER_CHARACTER_MOVE:
     {
         if (g_isOtherCharacter) {
@@ -115,6 +116,7 @@ bool NetworkManager::RecvThread() {
         break;
     }
 
+    // 적 이동 패킷
     case SC_ENEMY:
     {
         SC_ENEMY_PACKET* p = reinterpret_cast<SC_ENEMY_PACKET*>(buf);
@@ -165,6 +167,7 @@ void NetworkManager::SetScene(std::shared_ptr<Scene> scene)
 {
     m_Scene = scene;
 }
+
 void NetworkManager::RecvMazeData()
 {
     char buf[BUFSIZE];
@@ -182,7 +185,8 @@ void NetworkManager::RecvMazeData()
 
     // 3. 패킷 타입 처리
     char packetType = static_cast<char>(buf[1]);
-    if (packetType == SC_MAZE_DATA) {
+    if (packetType == SC_MAZE_DATA) 
+    {
         SC_MAZE_INFO* p = reinterpret_cast<SC_MAZE_INFO*>(buf);
         // 클라이언트 별 id 설정(패킷 send시 id 식별 용도)
         g_id = p->player_id;
