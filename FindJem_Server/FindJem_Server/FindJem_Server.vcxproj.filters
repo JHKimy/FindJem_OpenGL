@@ -45,6 +45,9 @@
     <ClCompile Include="AStarPath.cpp">
       <Filter>Map</Filter>
     </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>GameData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="protocol.h">
@@ -70,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="Types.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>GameData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

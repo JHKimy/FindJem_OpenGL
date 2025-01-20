@@ -4,7 +4,7 @@
 #include <algorithm> // std::max, std::min
 #include "pch.h"
 
-Character::Character(int id)
+Character::Character(int id) : bulletPool(30)
 {
     if (id == 0) {
         position.x = -10.f;
@@ -36,7 +36,7 @@ Character::Character(int id)
     moveDir.z = 0.f;
     // mass = 2.f;          // 질량
     // gravity(9.8f),       // 중력 영향
-    //    bulletPool(30)
+    //bulletPool(30)
 
 }
 
@@ -201,6 +201,24 @@ void Character::Update(float deltaTime)
 
 void Character::Shoot()
 {
+    // 총알의 초기 위치를 설정 (캐릭터의 위치 + forwardVector * 거리)
+    vec3 bulletPos = vec3{
+        position.x + forwardVector.x * 1.0f, // 총구의 x 좌표
+        position.y + forwardVector.y * 1.0f, // 총구의 y 좌표
+        position.z + forwardVector.z * 1.0f  // 총구의 z 좌표
+    };
+
+    vec3 bulletForward = vec3{
+       forwardVector.x, // 총구의 x 좌표
+       forwardVector.y, // 총구의 y 좌표
+       forwardVector.z// 총구의 z 좌표
+    };
+
+    auto bullet = bulletPool.GetBullet(); // 비활성화된 총알 가져오기
+    if (bullet) {
+        bullet->Activate(bulletPos, bulletForward); // 활성화 및 초기화
+    }
+
 }
 
 
