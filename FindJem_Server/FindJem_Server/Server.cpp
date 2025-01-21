@@ -85,7 +85,6 @@ void Send_Enemy_Data(int clientid)
 
 
 
-
 void EnemyThread()
 {
 
@@ -179,14 +178,13 @@ void BulletTread()
 {
 
 	// 미로 정보 담는 패킷 구조체
-	SC_BULLET_PACKET p;
-	p.packet_size = sizeof(p);
-	p.packet_type = SC_BULLET;
+	
 
+	SC_BULLET_PACKET p;
 
 	while (true) {
 		if (g_bulletQueue.empty()) {
-			return;
+			break;
 		}
 		//std::lock_guard<std::mutex> lock(g_EnemyMutex);
 		if (g_characters[0].isReady) {
@@ -194,6 +192,11 @@ void BulletTread()
 			{
 				for (int j{}; j < g_characters[i].bulletPool.pool.size(); ++j)
 				{
+					cout << "총알 스레드" << endl;
+					p = g_bulletQueue.front();
+					g_bulletQueue.pop();
+					p.packet_size = sizeof(p);
+					p.packet_type = SC_BULLET;
 					p.player_id = i;
 					p.PosX = g_characters[i].bulletPool.pool[j].get()->GetPosition().x;
 					p.PosY = g_characters[i].bulletPool.pool[j].get()->GetPosition().y;
@@ -344,6 +347,7 @@ void HandleThread(int id)
 		case CS_BULLET: {
 			// 받고 계산하고 보내기
 			SC_BULLET_PACKET p;
+			cout << "클릭" << endl;
 			g_bulletQueue.push(p);
 			break;
 		}
