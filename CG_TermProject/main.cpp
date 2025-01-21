@@ -178,6 +178,7 @@ void main(int argc, char** argv)
 	// 2. 적 정보 받기
 	networkmanager.RecvEnemiesData();
 
+	// networkmanager.RecvBulletData();
 
 
 

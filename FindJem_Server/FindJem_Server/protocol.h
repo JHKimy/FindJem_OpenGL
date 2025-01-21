@@ -147,6 +147,7 @@ struct SC_BULLET_PACKET {
 	char	packet_size;	// 패킷 크기
 	char	packet_type;	// 패킷 종류
 	int		player_id;
+	bool	bActive;
 	float	PosX;
 	float	PosY;
 	float	PosZ;

@@ -37,9 +37,9 @@ void Bullet::Activate( vec3& position,  vec3& newDirection)
 // ==================================
 
 
-BulletPool::BulletPool(size_t size) : poolSize(size)
+BulletPool::BulletPool(int size) : poolSize(size)
 {
-    for (size_t i{}; i < poolSize; ++i) {
+    for (int i{}; i < poolSize; ++i) {
         pool.emplace_back(std::make_shared<Bullet>());
         pool.back()->DeActivate(); // 비활성화 된 상태로 초기화
     }
@@ -76,8 +76,8 @@ std::vector<std::shared_ptr<Bullet>>& BulletPool::GetAllBullets()
     return pool;
 }
 
-size_t BulletPool::GetAvailableBulletCount() {
-    size_t count = 0;
+int BulletPool::GetAvailableBulletCount() {
+    int count = 0;
     for (const auto& bullet : pool) {
         if (!bullet->IsActive()) { // 비활성화된 총알만 카운트
             ++count;

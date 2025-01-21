@@ -43,13 +43,13 @@ public:
 // 오브젝트 풀
 class BulletPool
 {
-private:
+public:
 	std::vector<std::shared_ptr<Bullet>> pool;
-	size_t poolSize;
+	int poolSize;
 
 public:
 	BulletPool() = default;
-	BulletPool(size_t poolSize);
+	BulletPool(int poolSize);
 
 	// 비활성화 된 총알 반환
 	std::shared_ptr<Bullet> GetBullet();
@@ -60,6 +60,6 @@ public:
 	//const std::vector<std::shared_ptr<Bullet>>& GetAllBullets() const;
 
 	// 사용 가능한 총알(비활성화된 총알) 개수 반환
-	size_t GetAvailableBulletCount();
+	int GetAvailableBulletCount();
 
 };

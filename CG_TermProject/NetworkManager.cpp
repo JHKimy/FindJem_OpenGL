@@ -134,6 +134,21 @@ bool NetworkManager::RecvThread() {
         break;
     }
 
+    case SC_BULLET:
+    {
+            SC_BULLET_PACKET* p = reinterpret_cast<SC_BULLET_PACKET*>(buf);
+            // 다른 플레이어 위치, fv, yaw 처리
+            //m_Scene->GetOtherCharacter1()->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+            //m_Scene->GetOtherCharacter1()->SetForwardVector(glm::vec3(p->DirX, 0.f, p->DirZ));
+            //m_Scene->GetOtherCharacter1()->SetYaw(p->yaw);
+
+            cout << "received Bullet from Server" << endl;
+            break;
+        
+        break;
+    }
+
+
     default:
         std::cout << "Unknown packet type: " << packetType << std::endl;
         break;
@@ -240,3 +255,40 @@ void NetworkManager::RecvEnemiesData()
         std::cout << "Unknown packet type: " << (int)p->packet_type << std::endl;
     }
 }
+
+
+
+//void NetworkManager::RecvBulletData()
+//{
+//    char buf[BUFSIZE];
+//    int bytesReceived = recv(clientSocket, buf, sizeof(SC_BULLET_PACKET), 0);
+//
+//    if (bytesReceived <= 0) {
+//        if (bytesReceived == 0) {
+//            std::cout << "Server closed the connection." << std::endl;
+//        }
+//        else {
+//            std::cout << "Recv error: " << WSAGetLastError() << std::endl;
+//        }
+//        return;
+//    }
+//
+//    if (bytesReceived != sizeof(SC_ENEMY_PACKET)) {
+//        std::cout << "Incomplete packet received. Expected: " << sizeof(SC_ENEMY_PACKET)
+//            << ", Received: " << bytesReceived << std::endl;
+//        return;
+//    }
+//
+//    SC_BULLET_PACKET* p = reinterpret_cast<SC_BULLET_PACKET*>(buf);
+//
+//    if (p->packet_type == SC_BULLET)
+//    {
+//        std::cout << "bulletData from server " <<  std::endl;
+//
+//        // 적 객체 생성 로직
+//        //m_Scene->enemies[p->enemy_id] = make_unique<Enemy>(glm::vec3(p->PosX, p->PosY, p->PosZ));
+//    }
+//    else {
+//        std::cout << "Unknown packet type: " << (int)p->packet_type << std::endl;
+//    }
+//}

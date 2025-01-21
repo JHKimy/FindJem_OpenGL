@@ -83,6 +83,9 @@ void Send_Enemy_Data(int clientid)
 	}
 }
 
+
+
+
 void EnemyThread()
 {
 
@@ -90,7 +93,6 @@ void EnemyThread()
 	SC_ENEMY_PACKET p;
 	p.packet_size = sizeof(p);
 	p.packet_type = SC_ENEMY;
-
 
 	while (true) {
 		std::lock_guard<std::mutex> lock(g_EnemyMutex);
@@ -168,6 +170,63 @@ void EnemyThread()
 
 	}
 }
+
+
+
+
+
+void BulletTread()
+{
+
+	// 미로 정보 담는 패킷 구조체
+	SC_BULLET_PACKET p;
+	p.packet_size = sizeof(p);
+	p.packet_type = SC_BULLET;
+
+
+	while (true) {
+		if (g_bulletQueue.empty()) {
+			return;
+		}
+		//std::lock_guard<std::mutex> lock(g_EnemyMutex);
+		if (g_characters[0].isReady) {
+			for (int i{}; i < g_characters.size(); ++i)
+			{
+				for (int j{}; j < g_characters[i].bulletPool.pool.size(); ++j)
+				{
+					p.player_id = i;
+					p.PosX = g_characters[i].bulletPool.pool[j].get()->GetPosition().x;
+					p.PosY = g_characters[i].bulletPool.pool[j].get()->GetPosition().y;
+					p.PosZ = g_characters[i].bulletPool.pool[j].get()->GetPosition().z;
+				}
+
+				if (g_is_accept[i]) {
+					// 데이터를 클라이언트 소켓으로 전송
+					int retval = send(g_clientSocketes[i],
+						reinterpret_cast<const char*>(&p), sizeof(p), 0);
+					if (retval == SOCKET_ERROR) {
+						cout << "fail ! " << i << ": " << WSAGetLastError() << endl;
+					}
+					else {
+						//cout << "Send to client " << i << endl;
+					}
+
+				}
+
+
+			}
+
+
+		}
+
+	}
+}
+
+
+
+
+
+
 
 // 클라 요청 처리하는 서버 스레드 함수
 void HandleThread(int id)
@@ -281,6 +340,15 @@ void HandleThread(int id)
 			cout << "id : " << p->player_id << endl;
 			break;
 		}
+
+		case CS_BULLET: {
+			// 받고 계산하고 보내기
+			SC_BULLET_PACKET p;
+			g_bulletQueue.push(p);
+			break;
+		}
+
+
 		default:
 			std::cout << "Unknown packet type: " << packetType << std::endl;
 			break;
@@ -338,6 +406,9 @@ int main()
 	int addrLen = sizeof(clientAddr);
 
 	thread eThread{ EnemyThread };
+	
+	
+	thread bThread{ BulletTread };
 
 	// 6. 클라이언트 접속 기다리는 루프
 	while (true)
@@ -369,6 +440,7 @@ int main()
 	for (auto& t : g_threads)
 		t.join();
 	eThread.join();
+	bThread.join();
 
 	// 10. 리소스 정리
 	SocketUtils::Close(listenSocket);

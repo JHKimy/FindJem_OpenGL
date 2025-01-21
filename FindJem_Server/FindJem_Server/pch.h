@@ -26,10 +26,12 @@ extern std::array<std::shared_ptr<Enemy>, 1> g_enemies;
 extern mutex						g_character_mutex;
 extern mutex						g_mutex;
 extern mutex						g_EnemyMutex;
+extern mutex						g_BulletMutex;
 // 미로 데이터
 extern std::vector<std::vector<int>> g_mazeMap;
-
+extern std::queue<SC_BULLET_PACKET> g_bulletQueue;
 extern int get_id();
+
 
 // 미로 블록 한개 사이즈
 extern struct BlockSize {
