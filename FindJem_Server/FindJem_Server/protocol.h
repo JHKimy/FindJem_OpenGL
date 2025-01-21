@@ -24,6 +24,8 @@ constexpr char SC_CHARACTER_MOVE = 3;
 constexpr char SC_OTHER_CHARACTER_MOVE = 4;
 // 오브젝트 정보 
 constexpr char SC_ENEMY = 5;
+constexpr char SC_BULLET = 6;
+
 // 총알 정보
 //...... 추가
 
@@ -127,6 +129,24 @@ struct SC_ENEMY_PACKET {
 	char	packet_type;	// 패킷 종류
 	int		enemy_id;		// 적 id
 
+	float	PosX;
+	float	PosY;
+	float	PosZ;
+
+};
+
+struct CS_BULLET_PACKET {
+	char	packet_size;	// 패킷 크기
+	char	packet_type;	// 패킷 종류
+	int		player_id;
+	bool	bisFire = false;
+
+};
+
+struct SC_BULLET_PACKET {
+	char	packet_size;	// 패킷 크기
+	char	packet_type;	// 패킷 종류
+	int		player_id;
 	float	PosX;
 	float	PosY;
 	float	PosZ;
