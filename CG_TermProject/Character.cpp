@@ -20,6 +20,9 @@ Character::Character(const glm::vec3& position)
     bulletPool(30)
 {
     boundingRadius = 1.5f;  // 충돌 범위
+    
+    
+    bullets.resize(5);
 }
 
 glm::vec3 Character::GetForwardVector() const

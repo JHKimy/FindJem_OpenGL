@@ -213,8 +213,21 @@ GLvoid Controller::KeyboardUp(unsigned char key, int x, int y)
 
 GLvoid Controller::Mouse(int button, int state, int x, int y)
 {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-		character->Shoot(); // 캐릭터가 총알 발사
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) 
+	{
+		//character->Shoot(); // 캐릭터가 총알 발사
+
+		// 클라에서 서버 보내는 패킷
+		CS_BULLET_PACKET p;
+		p.packet_size = sizeof(p);
+		p.packet_type = CS_BULLET;
+		p.player_id = g_id;
+		p.bisFire = true;
+
+		int retval = send(networkmanager.GetSocket(),
+			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+		
+		//networkmanager.RecvBulletData();
 	}
 
 }

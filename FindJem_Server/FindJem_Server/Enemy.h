@@ -44,7 +44,7 @@ public:
     float detectionRadius;      // 탐지 거리
     float chaseRadius;          // 추적 유지 거리
 
-    float   boundingRadius;     // 충돌 구체 반지름
+    float   boundingRadius = 1.f;     // 충돌 구체 반지름
 
 
 
@@ -63,6 +63,10 @@ public:
 
     bool IsActive() const{ return isActive; };
 
+    vec3& GetPosition()
+    {
+        return position;
+    }
 
     float GetPostionX(){return position.x;}
 

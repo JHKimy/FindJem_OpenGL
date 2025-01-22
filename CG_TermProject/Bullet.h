@@ -17,6 +17,13 @@ public:
     bool IsActive() const;
     void DeActivate();
     void Activate(const glm::vec3& position, const glm::vec3& newDirection);
+
+
+    void SetActive(bool a) {
+        isActive = a;
+    }
+
+
     glm::vec3 GetDirection() const
     {
         return direction;

@@ -15,10 +15,13 @@ private:
 public:
 	Bullet();
 
-	void Update(float deltaTime);
+	void Update();
 	bool IsActive();
 	void DeActivate();
 	void Activate(vec3& position, vec3& newDirection);
+
+
+
 
 	vec3 GetDirection()
 	{
@@ -36,6 +39,9 @@ public:
 	{
 		return position;
 	}
+
+
+	float boundingRadius = 0.3f;
 };
 
 
@@ -43,7 +49,7 @@ public:
 // 오브젝트 풀
 class BulletPool
 {
-private:
+public:
 	std::vector<std::shared_ptr<Bullet>> pool;
 	size_t poolSize;
 
@@ -53,7 +59,7 @@ public:
 
 	// 비활성화 된 총알 반환
 	std::shared_ptr<Bullet> GetBullet();
-	void UpdateAllBullets(float deltaTime, vec3 startPos);
+	void UpdateAllBullets(vec3 startPos);
 	std::vector<std::shared_ptr<Bullet>>& GetAllBullets();
 
 	// 모든 총알 반환

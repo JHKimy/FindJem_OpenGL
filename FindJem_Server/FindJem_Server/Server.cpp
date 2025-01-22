@@ -1,6 +1,44 @@
 #include "pch.h"
 #include "AstarPath.h"
 
+void HandleBulletEnemyCollisions()
+{
+	// 모든 캐릭터에 대해서
+	for (int i{}; i < g_characters.size(); ++i) {
+		for (auto& enemy : g_enemies)
+		{
+			if (!enemy->IsActive()) continue;
+
+
+			for (auto& bullet : g_characters[i].bulletPool.pool)
+			{
+				if (!bullet->IsActive()) continue;
+
+				float distance = V::Distance(bullet->GetPosition(), enemy->GetPosition());
+
+				if (distance < (bullet->boundingRadius + enemy->boundingRadius))
+				{
+					//glm::vec3 bulletDirection = glm::normalize(bullet->GetDirection());
+					//enemy->TakeDamage(1, bulletDirection); // 적 체력 감소
+					bullet->DeActivate();                 // 총알 비활성화
+
+					printf("Enemy hit\n");
+
+					//if (!enemy->IsActive())
+					//{
+					//	printf("Enemy defeated\n");
+					//	//g_characters[i]->IncrementDefeatedEnemies(); // 적 제거 카운트 증가
+					//	break;
+					//}
+				}
+			}
+		}
+	}
+}
+
+
+
+
 void Send_Maze_Data(int clientid)
 {
 	// 미로 정보 담는 패킷 구조체
@@ -83,6 +121,51 @@ void Send_Enemy_Data(int clientid)
 	}
 }
 
+
+void Send_Bullet_Data(int clientid)
+{
+
+	
+	auto& bullets = g_characters[clientid].bulletPool.pool;
+
+	for (int i{}; i< bullets.size();++i)
+	{
+		if (bullets[i]->IsActive()) 
+		{
+			// 적 정보 담는 패킷 구조체
+			SC_BULLET_PACKET p;
+
+			p.packet_size = sizeof(p);
+			p.packet_type = SC_BULLET;
+			p.bullet_id = i;
+			p.PosX = bullets[i]->GetPosition().x;
+			p.PosY = bullets[i]->GetPosition().y;
+			p.PosZ = bullets[i]->GetPosition().z;
+		
+			if (g_is_accept[clientid]) {
+				cout << " send enemy to clientid : " << clientid << endl;
+				// 데이터를 클라이언트 소켓으로 전송
+				int retval = send(g_clientSocketes[clientid],
+					reinterpret_cast<const char*>(&p), sizeof(p), 0);
+
+			}
+		}
+	}
+	
+	
+	// for()
+
+	//p.PosX = g_enemies[0]->GetPostionX();
+	//p.PosY = g_enemies[0]->GetPostionY();
+	//p.PosZ = g_enemies[0]->GetPostionZ();
+	//p.enemy_id = g_enemies[0]->GetEnemyID();
+
+
+
+
+}
+
+
 void EnemyThread()
 {
 
@@ -107,7 +190,6 @@ void EnemyThread()
 
 						switch (g_enemies[j]->currentState)
 						{
-
 						case EnemyState::Patrol:
 							// 탐지 범위보다 거리가 길면
 							if (g_enemies[j]->detectionRadius > distanceToPlayer){
@@ -133,7 +215,6 @@ void EnemyThread()
 								g_enemies[j]->Chase();
 							}
 							break;
-
 						}
 
 						//===================================
@@ -168,6 +249,63 @@ void EnemyThread()
 
 	}
 }
+
+void BulletTread()
+{
+	// 서버에서 클라로 보내는 패킷
+	SC_BULLET_PACKET p;
+	p.packet_size = sizeof(p);
+	p.packet_type = SC_BULLET;
+
+	while (true) {
+		//std::this_thread::sleep_for(std::chrono::milliseconds(500)); // CPU 과부하 방지
+
+		std::lock_guard<std::mutex> lock(g_BulletMutex); // Mutex로 보호
+		if (g_characters[0].isReady) {
+			for (int i{}; i < g_characters.size(); ++i)
+			{
+				for (int j{};j<g_characters[i].bulletPool.pool.size();++j)
+				{
+					if (g_is_accept[i]) 
+					{
+						if (g_characters[i].bulletPool.pool[j]->IsActive()) 
+						{
+							//g_characters[i].bulletPool.pool[j]->Update();
+
+							g_characters[i].bulletPool.UpdateAllBullets
+							(vec3(g_characters[i].GetPostionX(), g_characters[i].GetPostionY(), g_characters[i].GetPostionZ()));
+
+
+							
+							p.player_id = i;
+							p.bullet_id = j;
+							p.PosX = g_characters[i].bulletPool.pool[j]->GetPosition().x;
+							p.PosY = g_characters[i].bulletPool.pool[j]->GetPosition().y + 1.f;
+							p.PosZ = g_characters[i].bulletPool.pool[j]->GetPosition().z;
+							p.bActive = g_characters[i].bulletPool.pool[j]->IsActive();
+
+
+							HandleBulletEnemyCollisions();
+
+
+							cout << "bullet : " << p.PosX << " , " << p.PosZ << endl;
+							cout << "id : " << p.player_id << endl;
+
+							int retval = send(g_clientSocketes[i],
+								reinterpret_cast<const char*>(&p), sizeof(p), 0);
+						}
+					}
+				}
+			}
+		}
+
+	}
+}
+
+
+
+
+
 
 // 클라 요청 처리하는 서버 스레드 함수
 void HandleThread(int id)
@@ -281,6 +419,30 @@ void HandleThread(int id)
 			cout << "id : " << p->player_id << endl;
 			break;
 		}
+
+		case CS_BULLET:
+		{
+			CS_BULLET_PACKET* p = reinterpret_cast<CS_BULLET_PACKET*>(buf);
+
+			if (p->bisFire) 
+			{
+				g_characters[p->player_id].Shoot();
+				// g_characters[p->player_id].bulletPool.pool[0]->Update(1);
+				cout << "서버에서 클릭 패킷 받음" << endl;
+				//Send_Bullet_Data(p->player_id);
+			}
+
+			/*auto& a = g_characters[p->player_id].bulletPool.GetAllBullets();
+
+			for (auto& b : a) {
+				cout << b->IsActive()<<endl;
+			}*/
+
+
+
+			break;
+		}
+
 		default:
 			std::cout << "Unknown packet type: " << packetType << std::endl;
 			break;
@@ -288,6 +450,12 @@ void HandleThread(int id)
 	}
 	SocketUtils::Close(g_clientSocketes[id]);
 }
+
+
+
+
+
+
 
 
 int main()
@@ -339,6 +507,10 @@ int main()
 
 	thread eThread{ EnemyThread };
 
+	// 총알 스레드
+	thread bThread{ BulletTread };
+
+
 	// 6. 클라이언트 접속 기다리는 루프
 	while (true)
 	{
@@ -369,6 +541,7 @@ int main()
 	for (auto& t : g_threads)
 		t.join();
 	eThread.join();
+	bThread.join();
 
 	// 10. 리소스 정리
 	SocketUtils::Close(listenSocket);

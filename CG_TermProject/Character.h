@@ -26,6 +26,15 @@ private:
 
     BulletPool bulletPool;
 
+
+
+
+
+public:
+    vector<std::shared_ptr<Bullet>>bullets;
+
+
+
     // ÃÑ¾Ë ¸®½ºÆ®
     //std::vector<std::unique_ptr<Bullet>> bullets;
 

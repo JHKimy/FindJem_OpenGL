@@ -38,6 +38,9 @@ public:
     void RecvMazeData();
 
     void RecvEnemiesData();
+
+    void RecvBulletData();
+
 private:
     SOCKET clientSocket;
 

@@ -6,7 +6,7 @@
 #define BUFSIZE 8192
 
 
-
+// 클라서버 타입
 constexpr char CS_LOGIN = 1;
 constexpr char CS_READY = 2;
 constexpr char CS_PLAYER = 3;
@@ -14,18 +14,14 @@ constexpr char CS_BULLET = 4;
 constexpr char CS_MAP_OK = 5;
 
 
-// 맵 정보
+// 서버클라 타입
 constexpr char SC_MAZE_DATA = 1;
-
-// 초기 플레이어 정보 
-// 상대 플레이어 정보
 constexpr char SC_ADD_CHARACTER = 2;
 constexpr char SC_CHARACTER_MOVE = 3;
 constexpr char SC_OTHER_CHARACTER_MOVE = 4;
-// 오브젝트 정보 
 constexpr char SC_ENEMY = 5;
-// 총알 정보
-//...... 추가
+constexpr char SC_BULLET = 6;
+
 
 
 #pragma pack(push, 1)
@@ -56,11 +52,20 @@ struct CS_READY_PACKET
 	char packet_type;		// 패킷 종류
 	int player_id;			// 플레이어 id
 };
+
 struct CS_MAP_OK_PACKET
 {
 	char packet_size;		// 패킷 크기
 	char packet_type;		// 패킷 종류
 	int player_id;			// 플레이어 id
+};
+
+struct CS_BULLET_PACKET
+{
+	char	packet_size;		// 패킷 크기
+	char	packet_type;		// 패킷 종류
+	int		player_id;			// 플레이어 id
+	bool	bisFire = false;	// 발사
 };
 
 
@@ -132,4 +137,17 @@ struct SC_ENEMY_PACKET {
 	float	PosZ;
 
 };
+
+struct SC_BULLET_PACKET 
+{
+	char	packet_size;	// 패킷 크기
+	char	packet_type;	// 패킷 종류
+	int		player_id;
+	int		bullet_id;
+	bool	bActive;
+	float	PosX;
+	float	PosY;
+	float	PosZ;
+};
+
 #pragma pack(pop) 

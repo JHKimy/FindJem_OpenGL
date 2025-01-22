@@ -4,15 +4,16 @@
 Bullet::Bullet():
     isActive(false),
     direction(vec3{ 0.f,0.f,0.f }),
-    moveSpeed(30.f)
+    moveSpeed(1.f)
 {
 }
 
-void Bullet::Update(float deltaTime) {
+void Bullet::Update( ) 
+{
     if (isActive) {
-        position.x += direction.x * moveSpeed;
-        position.y += direction.y * moveSpeed;
-        position.z += direction.z * moveSpeed;
+        position.x += direction.x * moveSpeed * 0.01;
+        position.y += direction.y * moveSpeed * 0.01;
+        position.z += direction.z * moveSpeed * 0.01;
     }
 }
 
@@ -54,11 +55,11 @@ std::shared_ptr<Bullet> BulletPool::GetBullet()
     }
 }
 
-void BulletPool::UpdateAllBullets(float deltaTime, vec3 startPos)
+void BulletPool::UpdateAllBullets( vec3 startPos)
 {
     for (auto& bullet : pool) {
         if (bullet->IsActive()) { // 활성화된 총알만 업데이트
-            bullet->Update(deltaTime);
+            bullet->Update();
 
             // startPos로부터 현재 위치까지의 거리 계산
             float bullet_distance = V::Distance(startPos, bullet->GetPosition());

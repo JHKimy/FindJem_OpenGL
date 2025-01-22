@@ -42,9 +42,14 @@ void Scene::Initialize()
 
     // 캐릭터 초기화
     mainCharacter = make_unique<Character>(glm::vec3(startPos.x, startPos.y, startPos.z));
-
+                                                                                                                                                                                                                                                                                                          
 
     mainCamera->TopView();
+
+    for (int i{}; i < mainCharacter->bullets.size(); ++i)
+    {
+        mainCharacter->bullets[i] = make_shared<Bullet>();
+    }
 
     // 적 초기화
     // InitializeEnemies();
@@ -111,11 +116,23 @@ void Scene::Render()
     }
 
 
+    //// 총알 렌더링
+    //const auto& bullets = mainCharacter->GetBulletPool().GetAllBullets();
+    //for (const auto& bullet : bullets)
+    //{
+    //    if (bullet->IsActive()) bullet->Render(SceneShader);
+    //}
+
     // 총알 렌더링
-    const auto& bullets = mainCharacter->GetBulletPool().GetAllBullets();
-    for (const auto& bullet : bullets)
+    const auto& bullets = mainCharacter->bullets;
+    //for (const auto& bullet : bullets)
+    for (int i{};i<bullets.size();++i)
     {
-        if (bullet->IsActive()) bullet->Render(SceneShader);
+        if (bullets[i]->IsActive()) 
+        {
+            cout << "bulletNum : " << i << " Render " << endl;
+            bullets[i]->Render(SceneShader);
+        }
     }
 
     // 액터 렌더링

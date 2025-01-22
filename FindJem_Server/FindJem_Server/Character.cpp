@@ -4,7 +4,7 @@
 #include <algorithm> // std::max, std::min
 #include "pch.h"
 
-Character::Character(int id) : bulletPool(30)
+Character::Character(int id) : bulletPool(5)
 {
     if (id == 0) {
         position.x = -10.f;

@@ -12,6 +12,7 @@ std::array<std::shared_ptr<Enemy>, 1> g_enemies;
 mutex						g_character_mutex;
 mutex                       g_mutex;
 mutex						g_EnemyMutex;
+mutex						g_BulletMutex;
 // 빈 슬롯의 클라이언트 ID 반환 함수
 int get_id()
 {

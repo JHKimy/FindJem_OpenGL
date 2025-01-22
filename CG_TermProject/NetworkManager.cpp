@@ -124,15 +124,56 @@ bool NetworkManager::RecvThread() {
         
         m_Scene->enemies[p->enemy_id]->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
         
-        
-
         //cout << p->PosX <<","<< p->PosY <<"," << p->PosZ << endl;
-        
-        
         //m_Scene->GetEnemy(p->enemy_id)->SetForwardVector(glm::vec3(p->DirX, 0.f, p->DirZ));
         //m_Scene->GetCharacter()->SetYaw(p->yaw);
         break;
     }
+
+
+    case SC_BULLET:
+    {
+        SC_BULLET_PACKET* p = reinterpret_cast<SC_BULLET_PACKET*>(buf);
+        cout << p->bullet_id << endl;
+        cout << p->PosX << endl;
+
+
+        m_Scene->GetCharacter()->bullets[p->bullet_id]->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+        m_Scene->GetCharacter()->bullets[p->bullet_id]->SetActive(true);
+
+
+
+        //for (int i{}; i < m_Scene->GetCharacter()->bullets.size(); ++i) 
+        //{
+        //    cout << m_Scene->GetCharacter()->bullets[i]->IsActive() << endl;
+        //    
+        //}
+        //if (p->bActive) 
+        //{
+        //    cout << "dd" << endl;
+        //}
+        //auto bullets = m_Scene->GetCharacter()->bullets;
+        //cout << p->bActive << endl;
+        //for (int i{}; i< m_Scene->GetCharacter()->bullets.size();++i)
+        //{
+        //    //b->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+        //    cout << m_Scene->GetCharacter()->bullets[i]->IsActive() << endl;
+        //    //cout << p->PosX << " , " << p->PosY << " , " << p->PosZ << endl;
+        //}
+        //auto bullet = std::make_shared<Bullet>();
+        //bullet->SetActive(p->bActive);
+        //bullets.push_back(bullet);
+        //for (auto& b : bullets) 
+        //{
+        //    //b->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+        //    cout << p->bActive << endl;
+        //    //cout << p->PosX << " , " << p->PosY << " , " << p->PosZ << endl;
+        //}
+        // m_Scene->enemies[p->enemy_id]->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+
+        break;
+    }
+
 
     default:
         std::cout << "Unknown packet type: " << packetType << std::endl;
@@ -239,4 +280,28 @@ void NetworkManager::RecvEnemiesData()
     else {
         std::cout << "Unknown packet type: " << (int)p->packet_type << std::endl;
     }
+}
+
+
+void NetworkManager::RecvBulletData()
+{
+    //char buf[BUFSIZE];
+    //int bytesReceived = recv(clientSocket, buf, sizeof(SC_BULLET_PACKET), 0);
+
+
+    //SC_BULLET_PACKET* p = reinterpret_cast<SC_BULLET_PACKET*>(buf);
+
+    //if (p->packet_type == SC_BULLET)
+    //{
+    //    
+    //    std::cout << "bullet_id: " << p->player_id
+    //        << " Position: (" << p->PosX << ", " << p->PosY << ", " << p->PosZ << ")"
+    //        << std::endl;
+
+    //    // 利 按眉 积己 肺流
+    //    //m_Scene->enemies[p->bullet_id] = make_unique<Enemy>(glm::vec3(p->PosX, p->PosY, p->PosZ));
+    //}
+    //else {
+    //    std::cout << "Unknown packet type: " << (int)p->packet_type << std::endl;
+    //}
 }
