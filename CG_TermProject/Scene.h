@@ -5,6 +5,7 @@
 #include <GL/glew.h> // OpenGL의 GLuint 및 관련 타입 정의
 #include "MazeGenerator.h" // 미로 생성기
 #include "Enemy.h"
+#include "Bullet.h"
 
 using std::vector;
 using std::unique_ptr;
@@ -41,6 +42,10 @@ private:
 public:
     std::vector<std::unique_ptr<Actor>> actors; // 씬에 포함된 액터들
     std::vector<std::unique_ptr<Enemy>> enemies; // 적들
+    std::vector<std::unique_ptr<Bullet>> bullets; // 적들
+
+    //std::vector<std::unique_ptr<>> ; // 
+
 public:
 
     Enemy* GetEnemy(size_t index) {

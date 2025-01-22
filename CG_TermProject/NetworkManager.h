@@ -39,7 +39,7 @@ public:
 
     void RecvEnemiesData();
     
-    //void RecvBulletData();
+    void RecvBulletData();
 
 private:
     SOCKET clientSocket;

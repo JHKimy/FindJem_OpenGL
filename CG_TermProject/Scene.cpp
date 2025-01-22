@@ -26,6 +26,7 @@ Scene::Scene(GLuint shaderProgram)
     // 적 개수 초기화
     enemies.resize(1);
 
+    //bullets.resize(10);
 
     // mazeGenerator = make_unique<MazeGenerator>(15, 15);
 }
@@ -83,7 +84,6 @@ void Scene::Update(float deltaTime)
         //##### enemy->Update(deltaTime, playerPosition, mazeMap, blockSize);
 
 
-
         //// 적과 벽돌 충돌 감지
         //if (enemy->CheckCollisionWithActors(actors, blockSize - 0.4f))
         //{
@@ -99,6 +99,12 @@ void Scene::Update(float deltaTime)
 
     // 적 제거 카운트 출력
     // std::cout << "Defeated Enemies: " << mainCharacter->GetDefeatedEnemies() << std::endl;
+
+
+
+
+    std::cout << "Number of bullets in scene: " << bullets.size() << std::endl;
+
 }
 
 void Scene::Render()
@@ -111,12 +117,31 @@ void Scene::Render()
     }
 
 
-    // 총알 렌더링
-    const auto& bullets = mainCharacter->GetBulletPool().GetAllBullets();
-    for (const auto& bullet : bullets)
-    {
-        if (bullet->IsActive()) bullet->Render(SceneShader);
-    }
+    //// 총알 렌더링
+    //const auto& bullets = mainCharacter->GetBulletPool().GetAllBullets();
+    //for (const auto& bullet : bullets)
+    //{
+    //    if (bullet->IsActive()) bullet->Render(SceneShader);
+    //}
+
+
+
+
+
+    //// 총알 렌더링
+    //const auto& bullets = mainCharacter->testPool;
+    //for (const auto& bullet : bullets)
+    //{
+    //    if (bullet->IsActive()) {
+    //        bullet->Render(SceneShader);
+
+    //        cout << "dd" << endl;
+    //    }
+    //}
+
+
+
+
 
     // 액터 렌더링
     for (const auto& actor : actors)
@@ -133,6 +158,17 @@ void Scene::Render()
             //cout << "REndfs"<<endl;
         }
     }
+
+
+
+        for (const auto& bullet : bullets)
+        {
+            //if (bullet->IsActive()) {
+            bullet->Render(SceneShader);
+
+    
+        }
+   
 }
 
 void Scene::SetMaze(int mazeMapData[15][15])

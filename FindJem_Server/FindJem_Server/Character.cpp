@@ -4,6 +4,9 @@
 #include <algorithm> // std::max, std::min
 #include "pch.h"
 
+
+
+// 1. ÃÑ¾Ë ¸¸µé±â
 Character::Character(int id) : bulletPool(5)
 {
     if (id == 0) {

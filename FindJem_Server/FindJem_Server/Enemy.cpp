@@ -152,19 +152,19 @@ void Enemy::Chase()
 {
     
     if (path.empty()) {
-        cout << "[DEBUG] Chase: Path is empty!" << endl;
+        //cout << "[DEBUG] Chase: Path is empty!" << endl;
         return;
     }
 
-    cout << "[DEBUG] Starting Chase. Current Path Index: " << currentPathIndex << endl;
+    //cout << "[DEBUG] Starting Chase. Current Path Index: " << currentPathIndex << endl;
     while (currentPathIndex < path.size()) {
         // 다음 타일 좌표 계산
         float nextX = path[currentPathIndex].x * g_blockSize.x;
         float nextZ = path[currentPathIndex].z * g_blockSize.z;
         vec3 nextPos = { nextX, 0, nextZ };
 
-        cout << "[DEBUG] Current Position: (" << position.x << ", " << position.z << ")" << endl;
-        cout << "[DEBUG] Target Position: (" << nextPos.x << ", " << nextPos.z << ")" << endl;
+        //cout << "[DEBUG] Current Position: (" << position.x << ", " << position.z << ")" << endl;
+        //cout << "[DEBUG] Target Position: (" << nextPos.x << ", " << nextPos.z << ")" << endl;
 
         // 방향 벡터 계산
         vec3 moveDir = normalize(position, nextPos);
@@ -180,11 +180,11 @@ void Enemy::Chase()
             std::pow(nextPos.y - position.y, 2) +
             std::pow(nextPos.z - position.z, 2));
 
-        cout << "[DEBUG] Distance to Next: " << distanceToNext << endl;
+        //cout << "[DEBUG] Distance to Next: " << distanceToNext << endl;
 
         if (distanceToNext < 0.1f) {
             currentPathIndex++; // 다음 타일로 이동
-            cout << "[DEBUG] Moving to Next Index: " << currentPathIndex << endl;
+            //cout << "[DEBUG] Moving to Next Index: " << currentPathIndex << endl;
         }
         else {
             break; // 아직 다음 타일에 도달하지 못했으므로 루프 종료
@@ -194,7 +194,7 @@ void Enemy::Chase()
     // 경로 끝에 도달했는지 확인
     if (currentPathIndex >= path.size()) {
         detectPath = false; // 경로가 끝났음을 표시
-        cout << "[DEBUG] Chase: Reached end of path." << endl;
+       // cout << "[DEBUG] Chase: Reached end of path." << endl;
     }
 }
 

@@ -11,7 +11,7 @@ Character::Character(const glm::vec3& position)
         glm::vec3(0),       // 회전
         glm::vec3(0, 1, 0)  // 색상
     ),
-
+     
     health(100),        // 체력
     mass(2.f),          // 질량
     moveSpeed(0.5f),    // 스피드
@@ -20,6 +20,7 @@ Character::Character(const glm::vec3& position)
     bulletPool(30)
 {
     boundingRadius = 1.5f;  // 충돌 범위
+    //testPool.resize(10);
 }
 
 glm::vec3 Character::GetForwardVector() const
@@ -74,13 +75,18 @@ void Character::Update(float deltaTime) {
 
     bulletPool.UpdateAllBullets(deltaTime, GetPosition());
 
+
+    //m_Scene->GetCharacter()->testPool.push_back(std::move(a)); // 소유권 이전
+
+    for (auto& bullet : testPool) {
+    bullet->Update(deltaTime);
+    }
+
     //// 총알 업데이트
     //for (auto bullet : bullets) {
     //    bullet->Update(deltaTime);
     //}
 }
-
-
 
 void Character::TakeDamage(int amount) {
     health -= amount;

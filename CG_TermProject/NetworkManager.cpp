@@ -136,14 +136,65 @@ bool NetworkManager::RecvThread() {
 
     case SC_BULLET:
     {
-            SC_BULLET_PACKET* p = reinterpret_cast<SC_BULLET_PACKET*>(buf);
+            //SC_BULLET_PACKET* p = reinterpret_cast<SC_BULLET_PACKET*>(buf);
             // 다른 플레이어 위치, fv, yaw 처리
             //m_Scene->GetOtherCharacter1()->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
             //m_Scene->GetOtherCharacter1()->SetForwardVector(glm::vec3(p->DirX, 0.f, p->DirZ));
             //m_Scene->GetOtherCharacter1()->SetYaw(p->yaw);
+            //cout << p->PosX << endl;
+            // auto b = std::make_unique<Bullet>();
 
-            cout << "received Bullet from Server" << endl;
-            break;
+           // b->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+           // cout << b->GetPosition().x << endl;
+            // 소유권 이전
+          //  m_Scene->bullets.push_back(std::move(b));
+
+            
+
+            //for (const auto& c : m_Scene->bullets)
+            //{
+            //    cout << c.get()->GetPosition().x << endl;
+            //}
+
+            //cout << m_Scene->bullets[0]->GetPosition().x << endl;
+
+            //auto& pool = m_Scene->GetCharacter()->testPool;
+
+            //m_Scene->bullets[p->player_id].
+
+            //for (auto& bullet : pool) {
+            //    if (!bullet) { // 비활성화된 슬롯 찾기
+            //        bullet = std::make_unique<Bullet>();
+            //        bullet->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+            //        std::cout << "Received Bullet from Server at "
+            //            << bullet->GetPosition().x << ", "
+            //            << bullet->GetPosition().z << std::endl;
+            //        return true; // 처리 후 종료
+            //    }
+            //    if (bullet) {
+            //        std::cout << "Received Bullet from Server at "
+            //            << bullet->GetPosition().x << ", "
+            //            << bullet->GetPosition().z << std::endl;
+
+            //    }
+            //}            
+            //// 소유권을 testPool로 이전
+            //for (auto& a : m_Scene->GetCharacter()->testPool) 
+            //{
+            //    std::unique_ptr<Bullet> b = std::make_unique<Bullet>();
+            //    b->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+
+            //    a = std::move(b);
+
+            //    cout << a.get()->GetPosition().x << endl;
+            //    // m_Scene->GetCharacter()->testPool[0] = std::move(b);
+            //    // ->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+
+            //    cout << "received Bullet from Server" << endl;
+            //}
+            ////cout << m_Scene->GetCharacter()->testPool[0]->GetScale().x << endl;
+            ////cout << p->PosX << " , " << p->PosZ << endl;
+  
         
         break;
     }
@@ -255,6 +306,53 @@ void NetworkManager::RecvEnemiesData()
         std::cout << "Unknown packet type: " << (int)p->packet_type << std::endl;
     }
 }
+
+
+
+
+
+void NetworkManager::RecvBulletData()
+{
+    char buf[BUFSIZE];
+    int bytesReceived = recv(clientSocket, buf, sizeof(SC_BULLET_PACKET), 0);
+
+    //if (bytesReceived <= 0) {
+    //    if (bytesReceived == 0) {
+    //        std::cout << "Server closed the connection." << std::endl;
+    //    }
+    //    else {
+    //        std::cout << "Recv error: " << WSAGetLastError() << std::endl;
+    //    }
+    //    return;
+    //}
+    //if (bytesReceived != sizeof(SC_ENEMY_PACKET)) {
+    //    std::cout << "Incomplete packet received. Expected: " << sizeof(SC_ENEMY_PACKET)
+    //        << ", Received: " << bytesReceived << std::endl;
+    //    return;
+    //}
+
+    SC_BULLET_PACKET* p = reinterpret_cast<SC_BULLET_PACKET*>(buf);
+
+    // p->packet_size = sizeof(p);
+    // p->packet_type = SC_BULLET;
+
+    // 새로 생성
+    std::unique_ptr<Bullet> b = std::make_unique<Bullet>();
+    // 보내준거 확인
+    //b->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+    b->Activate(glm::vec3(p->PosX, p->PosY, p->PosZ),glm::vec3(1,0,1));
+
+    m_Scene->bullets.push_back(std::move(b));
+
+    //if (p->packet_type == SC_BULLET)
+    //{
+    //    // 적 객체 생성 로직
+    //    auto b = make_unique<Bullet>();
+    //    b->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+    //    m_Scene->bullets.push_back(b);
+    //}
+}
+
 
 
 

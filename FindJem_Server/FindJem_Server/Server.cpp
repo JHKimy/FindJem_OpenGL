@@ -83,6 +83,31 @@ void Send_Enemy_Data(int clientid)
 	}
 }
 
+// 시작 위치
+void Send_Bullet_Data(int clientid)
+{
+	// 적 정보 담는 패킷 구조체
+	SC_BULLET_PACKET p;
+	p.packet_size = sizeof(p);
+	p.packet_type = SC_BULLET;
+	p.player_id = clientid;
+
+
+	p.PosX = g_characters[0].GetPostionX();
+	p.PosY = g_characters[0].GetPostionY();
+	p.PosZ = g_characters[0].GetPostionZ();
+
+
+
+
+	if (g_is_accept[clientid]) {
+		cout << " send bullet to clientid : " << clientid << endl;
+		// 데이터를 클라이언트 소켓으로 전송
+		int retval = send(g_clientSocketes[clientid],
+			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+
+	}
+}
 
 
 void EnemyThread()
@@ -95,10 +120,10 @@ void EnemyThread()
 
 	while (true) {
 		std::lock_guard<std::mutex> lock(g_EnemyMutex);
-		if (g_characters[0].isReady){
-			for (int i{}; i < g_characters.size(); ++i){
-				for (int j{}; j < g_enemies.size(); ++j){
-					
+		if (g_characters[0].isReady) {
+			for (int i{}; i < g_characters.size(); ++i) {
+				for (int j{}; j < g_enemies.size(); ++j) {
+
 					if (g_is_accept[i]) {
 						// 플레이어와 적 거리
 						float distanceToPlayer = g_enemies[j]->DistanceToPlayer(j, i);
@@ -111,7 +136,7 @@ void EnemyThread()
 
 						case EnemyState::Patrol:
 							// 탐지 범위보다 거리가 길면
-							if (g_enemies[j]->detectionRadius > distanceToPlayer){
+							if (g_enemies[j]->detectionRadius > distanceToPlayer) {
 								g_enemies[j]->currentState = EnemyState::Chase;
 							}
 							else {
@@ -120,7 +145,7 @@ void EnemyThread()
 							break;
 
 						case EnemyState::Chase:
-							
+
 							if (distanceToPlayer > g_enemies[j]->chaseRadius) {
 								g_enemies[j]->currentState = EnemyState::Patrol;
 							}
@@ -174,58 +199,71 @@ void EnemyThread()
 
 
 
-void BulletTread()
+
+void BulletTread() 
 {
-
-	// 미로 정보 담는 패킷 구조체
-	
-
 	SC_BULLET_PACKET p;
 
+
 	while (true) {
-		if (g_bulletQueue.empty()) {
-			break;
-		}
-		//std::lock_guard<std::mutex> lock(g_EnemyMutex);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500)); // CPU 과부하 방지
+
+		std::lock_guard<std::mutex> lock(g_BulletMutex); // Mutex로 보호
 		if (g_characters[0].isReady) {
 			for (int i{}; i < g_characters.size(); ++i)
 			{
-				for (int j{}; j < g_characters[i].bulletPool.pool.size(); ++j)
+				for (auto& b : g_characters[i].bulletPool.pool) 
 				{
-					cout << "총알 스레드" << endl;
-					p = g_bulletQueue.front();
-					g_bulletQueue.pop();
-					p.packet_size = sizeof(p);
-					p.packet_type = SC_BULLET;
-					p.player_id = i;
-					p.PosX = g_characters[i].bulletPool.pool[j].get()->GetPosition().x;
-					p.PosY = g_characters[i].bulletPool.pool[j].get()->GetPosition().y;
-					p.PosZ = g_characters[i].bulletPool.pool[j].get()->GetPosition().z;
-				}
+					if (g_is_accept[i]) {
+						if (b->IsActive()) {
+							p.packet_size = sizeof(p);
+							p.packet_type = SC_BULLET;
+							p.player_id = i;
+							p.PosX = b->GetPosition().x;
+							p.PosY = b->GetPosition().y;
+							p.PosZ = b->GetPosition().z;
+							p.bActive = b->IsActive();
 
-				if (g_is_accept[i]) {
-					// 데이터를 클라이언트 소켓으로 전송
-					int retval = send(g_clientSocketes[i],
-						reinterpret_cast<const char*>(&p), sizeof(p), 0);
-					if (retval == SOCKET_ERROR) {
-						cout << "fail ! " << i << ": " << WSAGetLastError() << endl;
+
+							cout << "bullet : " << p.PosX << " , " << p.PosZ << endl;
+							cout << "id : " << p.player_id << endl;
+
+							int retval = send(g_clientSocketes[i],
+								reinterpret_cast<const char*>(&p), sizeof(p), 0);
+						}
 					}
-					else {
-						//cout << "Send to client " << i << endl;
-					}
-
 				}
-
-
 			}
-
-
 		}
 
 	}
+	//	std::lock_guard<std::mutex> lock(g_BulletMutex); // Mutex로 보호
+	//	if (!g_bulletQueue.empty()) {
+	//		for (int i{}; i < g_clientSocketes.size(); ++i) {
+	//			if (!g_is_accept[i]) continue;
+
+	//			if (!g_bulletQueue.empty()) {
+	//				p = g_bulletQueue.front();
+	//				cout << "총알 스레드" << g_bulletQueue.size() << endl;
+	//				g_bulletQueue.pop();
+	//				cout << "총알 스레드" << g_bulletQueue.size() << endl;
+	//				p.packet_size = sizeof(p);
+	//				p.packet_type = SC_BULLET;
+	//				p.player_id = i;
+	//				p.PosX = 0.f;
+	//				p.PosY = 0.f;
+	//				p.PosZ = 0.f;
+
+	//				int retval = send(g_clientSocketes[i],
+	//					reinterpret_cast<const char*>(&p), sizeof(p), 0);
+	//				if (retval == SOCKET_ERROR) {
+	//					cout << "Send fail! Client " << i << " Error: " << WSAGetLastError() << endl;
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 }
-
-
 
 
 
@@ -346,12 +384,27 @@ void HandleThread(int id)
 
 		case CS_BULLET: {
 			// 받고 계산하고 보내기
-			SC_BULLET_PACKET p;
-			cout << "클릭" << endl;
-			g_bulletQueue.push(p);
-			break;
-		}
+			CS_BULLET_PACKET* p = reinterpret_cast<CS_BULLET_PACKET*>(buf);
+			if (p->bisFire) {
+				g_characters[p->player_id].Shoot();
+				// cout << p->player_id << endl;
 
+				// g_characters
+				Send_Bullet_Data(p->player_id);
+
+
+				//SC_BULLET_PACKET packet;
+				//packet.PosX = 
+				//packet.PosY = 
+				//packet.PosZ = 
+
+				cout << "서버에서 클릭 패킷 받음" << endl;
+				//if (g_characters[id].isReady)
+				//	g_bulletQueue.push(packet);
+			}
+			break;
+
+		}
 
 		default:
 			std::cout << "Unknown packet type: " << packetType << std::endl;
@@ -410,8 +463,8 @@ int main()
 	int addrLen = sizeof(clientAddr);
 
 	thread eThread{ EnemyThread };
-	
-	
+
+
 	thread bThread{ BulletTread };
 
 	// 6. 클라이언트 접속 기다리는 루프

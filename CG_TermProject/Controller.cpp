@@ -213,7 +213,8 @@ GLvoid Controller::KeyboardUp(unsigned char key, int x, int y)
 
 GLvoid Controller::Mouse(int button, int state, int x, int y)
 {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) 
+	{
 		//character->Shoot(); // 캐릭터가 총알 발사
 
 		cout << "Click Shoot" << endl;
@@ -227,7 +228,14 @@ GLvoid Controller::Mouse(int button, int state, int x, int y)
 
 		int retval = send(networkmanager.GetSocket(),
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
+	
+	// 계산 해준것 받기
+	networkmanager.RecvBulletData();
+
+	cout << "잘 받음" << endl;
+	
 	}
+
 
 }
 

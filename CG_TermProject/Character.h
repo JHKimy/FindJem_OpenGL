@@ -89,4 +89,15 @@ public:
         // 사용 가능한 총알 수
        // std::cout << "Available Bullets: " << bulletPool.GetAvailableBulletCount() << std::endl;
     }
+
+    
+
+
+
+    // 테스트
+    std::vector<std::unique_ptr<Bullet>> testPool;
+
+
+
+
 };
