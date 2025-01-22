@@ -130,7 +130,7 @@ void Scene::Render()
     {
         if (bullets[i]->IsActive()) 
         {
-            cout << "bulletNum : " << i << " Render " << endl;
+           // cout << "bulletNum : " << i << " Render " << endl;
             bullets[i]->Render(SceneShader);
         }
     }

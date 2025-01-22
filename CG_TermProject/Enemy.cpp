@@ -155,6 +155,11 @@ bool Enemy::IsActive() const {
     return isActive;
 }
 
+void Enemy::SetActive(bool active)
+{
+    isActive = active;
+}
+
 // ===== 데미지 처리 =====
 void Enemy::TakeDamage(int amount, const glm::vec3& bulletDirection) {
     health -= amount;

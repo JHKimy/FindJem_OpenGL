@@ -18,18 +18,18 @@ void HandleBulletEnemyCollisions()
 
 				if (distance < (bullet->boundingRadius + enemy->boundingRadius))
 				{
-					//glm::vec3 bulletDirection = glm::normalize(bullet->GetDirection());
-					//enemy->TakeDamage(1, bulletDirection); // 적 체력 감소
+					vec3 bulletDirection = V::Normalize(bullet->GetDirection());
+					enemy->TakeDamage(1, bulletDirection); // 적 체력 감소
 					bullet->DeActivate();                 // 총알 비활성화
 
 					printf("Enemy hit\n");
 
-					//if (!enemy->IsActive())
-					//{
-					//	printf("Enemy defeated\n");
-					//	//g_characters[i]->IncrementDefeatedEnemies(); // 적 제거 카운트 증가
-					//	break;
-					//}
+					if (!enemy->IsActive())
+					{
+						printf("Enemy defeated\n");
+						g_characters[i].IncrementDefeatedEnemies(); // 적 제거 카운트 증가
+						break;
+					}
 				}
 			}
 		}
@@ -219,6 +219,7 @@ void EnemyThread()
 
 						//===================================
 						p.enemy_id = g_enemies[j]->GetEnemyID();
+						p.bActive = g_enemies[j]->IsActive();
 						p.PosX = g_enemies[j]->GetPostionX();
 						p.PosY = g_enemies[j]->GetPostionY();
 						p.PosZ = g_enemies[j]->GetPostionZ();
@@ -287,9 +288,11 @@ void BulletTread()
 
 							HandleBulletEnemyCollisions();
 
+							std::this_thread::sleep_for(std::chrono::microseconds(1)); // 10ms 대기
 
-							cout << "bullet : " << p.PosX << " , " << p.PosZ << endl;
-							cout << "id : " << p.player_id << endl;
+							//std::lock_guard<std::mutex> lock(g_BulletMutex);
+							//cout << "id : " << p.player_id << endl;
+							//cout << "bullet : " << p.PosX << " , " << p.PosZ << endl;
 
 							int retval = send(g_clientSocketes[i],
 								reinterpret_cast<const char*>(&p), sizeof(p), 0);

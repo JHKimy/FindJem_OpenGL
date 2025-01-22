@@ -23,7 +23,7 @@ public:
 
 
 
-	vec3 GetDirection()
+	vec3& GetDirection()
 	{
 		return direction;
 	}

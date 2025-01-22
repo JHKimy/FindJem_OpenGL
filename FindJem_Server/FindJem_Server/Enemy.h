@@ -120,7 +120,20 @@ public:
     float DistanceToPlayer(int enemyIndex, int playerIndex);
 
 
+    void TakeDamage(int amount, vec3& bulletDirection) {
+        health -= amount;
+        if (health <= 0) {
+            isActive = false;
+        }
 
+        position.x += bulletDirection.x * 2.f;
+        position.y += bulletDirection.y * 2.f;
+        position.z += bulletDirection.z * 2.f;
+        //if (!isJumping) {
+        //    isJumping = true;
+        //    jumpSpeed = 3.0f;
+        //}
+    }
 
 
 

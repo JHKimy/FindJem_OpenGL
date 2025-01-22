@@ -123,7 +123,8 @@ bool NetworkManager::RecvThread() {
         //m_Scene->GetEnemy(p->enemy_id)->SetPosition(glm::vec3(p->PosX,0, 0));
         
         m_Scene->enemies[p->enemy_id]->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
-        
+        m_Scene->enemies[p->enemy_id]->SetActive(p->bActive);
+
         //cout << p->PosX <<","<< p->PosY <<"," << p->PosZ << endl;
         //m_Scene->GetEnemy(p->enemy_id)->SetForwardVector(glm::vec3(p->DirX, 0.f, p->DirZ));
         //m_Scene->GetCharacter()->SetYaw(p->yaw);
@@ -134,8 +135,8 @@ bool NetworkManager::RecvThread() {
     case SC_BULLET:
     {
         SC_BULLET_PACKET* p = reinterpret_cast<SC_BULLET_PACKET*>(buf);
-        cout << p->bullet_id << endl;
-        cout << p->PosX << endl;
+        //cout << p->bullet_id << endl;
+        //cout << p->PosX << endl;
 
 
         m_Scene->GetCharacter()->bullets[p->bullet_id]->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));

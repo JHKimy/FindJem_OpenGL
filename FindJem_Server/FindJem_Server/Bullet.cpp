@@ -4,7 +4,7 @@
 Bullet::Bullet():
     isActive(false),
     direction(vec3{ 0.f,0.f,0.f }),
-    moveSpeed(1.f)
+    moveSpeed(20.f)
 {
 }
 

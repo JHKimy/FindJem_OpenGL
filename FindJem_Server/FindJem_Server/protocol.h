@@ -131,6 +131,7 @@ struct SC_ENEMY_PACKET {
 	char	packet_size;	// 패킷 크기
 	char	packet_type;	// 패킷 종류
 	int		enemy_id;		// 적 id
+	bool	bActive;
 
 	float	PosX;
 	float	PosY;

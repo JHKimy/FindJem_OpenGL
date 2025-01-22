@@ -53,6 +53,9 @@ public:
 
     int defeatedEnemies = 0; // 적 제거 카운트
 
+    void IncrementDefeatedEnemies() {
+        defeatedEnemies++;
+    }
     // 총알
     BulletPool bulletPool;
 

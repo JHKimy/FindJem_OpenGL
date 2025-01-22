@@ -17,6 +17,7 @@ public:
     // ===== 주요 함수 =====
     void Update(float deltaTime, const glm::vec3& playerPosition, const std::vector<std::vector<int>>& mazeMap, const glm::vec3& blockSize);
     bool IsActive() const;
+    void SetActive(bool active);
     void TakeDamage(int amount, const glm::vec3& bulletDirection);
     bool CheckCollisionWithActors(const std::vector<std::unique_ptr<Actor>>& actors, glm::vec3 blockSize);
     glm::vec3 GetDirection() const { return direction; } // 이동 방향 반환
