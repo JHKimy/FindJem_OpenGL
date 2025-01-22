@@ -1,6 +1,4 @@
 #pragma once
-#include "Bullet.h"
-#include "Types.h"
 
 class Character
 {
@@ -53,9 +51,7 @@ public:
 
     int defeatedEnemies = 0; // 적 제거 카운트
 
-    // 총알
-    BulletPool bulletPool;
-
+    //BulletPool bulletPool;
 
 
     void Move(char key);
