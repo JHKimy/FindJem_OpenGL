@@ -7,9 +7,9 @@
 Character::Character(int id) : bulletPool(5)
 {
     if (id == 0) {
-        position.x = -10.f;
+        position.x = -15.f;
         position.y = 0.f;
-        position.z = 5.f;
+        position.z = 0.f;
     }
     else if (id == 1) {
         position.x = -15.f;
@@ -21,9 +21,9 @@ Character::Character(int id) : bulletPool(5)
         position.y = 0.f;
         position.z = 5.f;
     }
+    
 
-
-    health = 100;        // 체력
+    health = 50;        // 체력
     moveSpeed = 0.5f;    // 스피드
     isJumping = false;   // 점프 상태
     isReady = false;
@@ -143,6 +143,16 @@ void Character::Move(char key)
     {
         position.x = newX;
         position.z = newZ;
+    }
+    else
+    {
+        // 충돌 발생 시 반대 방향으로 -0.1 이동
+        position.x -= moveDir.x * 0.01f;
+        position.z -= moveDir.z * 0.01f;
+
+        // 로그 출력
+        std::cout << "Collision detected. Adjusting position to: ("
+            << position.x << ", " << position.z << ")" << std::endl;
     }
 
     // moveDir 초기화

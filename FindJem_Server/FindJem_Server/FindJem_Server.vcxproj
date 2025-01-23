@@ -135,6 +135,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="SocketUtils.cpp" />
+    <ClCompile Include="Types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AStarPath.h" />

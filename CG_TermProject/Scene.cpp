@@ -24,7 +24,7 @@ Scene::Scene(GLuint shaderProgram)
     mazeMap.resize(15, std::vector<int>(15));
 
     // 적 개수 초기화
-    enemies.resize(4);
+    enemies.resize(5);
 
 
     // mazeGenerator = make_unique<MazeGenerator>(15, 15);

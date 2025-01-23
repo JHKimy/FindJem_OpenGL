@@ -48,6 +48,9 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>GameData</Filter>
     </ClCompile>
+    <ClCompile Include="Types.cpp">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="protocol.h">

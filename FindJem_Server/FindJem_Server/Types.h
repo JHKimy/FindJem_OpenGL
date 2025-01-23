@@ -49,3 +49,5 @@ namespace V {
         return vec3{ v.x / magnitude, v.y / magnitude, v.z / magnitude };
     }
 }
+
+extern int g_totalDefeatedEnemies ; // 모든 캐릭터의 적 처치 합계

@@ -12,7 +12,7 @@ Enemy::Enemy(float x, float y, float z, int id) : enemyID{ id }, currentDir{1,0}
     position.y = y;
     position.z = z;
 
-    health = 3;
+    health = 30;
     moveSpeed = 0.1f;
 
     currentState = EnemyState::Patrol;

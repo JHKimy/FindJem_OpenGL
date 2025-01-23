@@ -137,7 +137,7 @@ struct SC_0THER_CHARACTER_MOVE_PACKET
 struct SC_START_ENEMY_PACKET {
 	char	packet_size;	// 패킷 크기
 	char	packet_type;	// 패킷 종류
-	std::array<enemydata, 4> data;
+	std::array<enemydata, 5> data;
 };
 struct SC_ENEMY_PACKET {
 	char	packet_size;	// 패킷 크기

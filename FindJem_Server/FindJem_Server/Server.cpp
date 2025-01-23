@@ -20,7 +20,7 @@ void HandleBulletEnemyCollisions()
 				if (distance < (bullet->boundingRadius + enemy->boundingRadius))
 				{
 					vec3 bulletDirection = V::Normalize(bullet->GetDirection());
-					enemy->TakeDamage(1, bulletDirection); // 적 체력 감소
+					enemy->TakeDamage(10, bulletDirection); // 적 체력 감소
 					bullet->DeActivate();                 // 총알 비활성화
 
 					printf("Enemy hit\n");
@@ -37,6 +37,67 @@ void HandleBulletEnemyCollisions()
 	}
 }
 
+void HandleCharacterEnemyCollisions() 
+{
+	float currentTime = static_cast<float>(std::chrono::duration_cast<std::chrono::seconds>(
+		std::chrono::steady_clock::now().time_since_epoch())
+		.count());
+
+	// 모든 캐릭터에 대해 처리
+	for (int i = 0; i < g_characters.size(); ++i) {
+		auto& character = g_characters[i];
+
+		if (!character.GetActive()) continue; // 캐릭터가 비활성 상태면 건너뜀
+
+		for (auto& enemy : g_enemies) {
+			if (!enemy->IsActive()) continue; // 적이 비활성 상태면 건너뜀
+
+			// 캐릭터와 적 간 거리 계산
+			float distance = V::Distance(character.GetPosition(), enemy->GetPosition());
+
+			// 충돌 조건 확인
+			if (distance < (character.boundingRadius + enemy->boundingRadius +1.f)) {
+				printf("Character and Enemy collided\n");
+
+				// 체력 감소
+				vec3 tempDis =
+					vec3(character.GetPosition().x - enemy->GetPosition().x,
+						character.GetPosition().y - enemy->GetPosition().y,
+						character.GetPosition().z - enemy->GetPosition().z);
+
+				vec3 enemyToCharacter = V::Normalize(tempDis);
+
+				if (character.CanTakeDamage(currentTime)) {
+					character.TakeDamage(10); // 체력 10 감소
+					character.SetLastDamageTime(currentTime);
+
+					printf("Character health: %d\n", character.GetHealth());
+				}
+
+				// 뒤로 밀리기
+				// 밀림 거리 1
+
+				float dis = 0.05f;
+
+				vec3 knockbackDirection =
+					vec3(enemyToCharacter.x * dis,
+						enemyToCharacter.y * dis,
+						enemyToCharacter.z * dis
+						);
+				vec3 knockbackMove =
+					vec3(character.GetPosition().x + knockbackDirection.x,
+						character.GetPosition().y + knockbackDirection.y,
+						character.GetPosition().z + knockbackDirection.z);
+
+				character.SetPosition(knockbackMove);
+
+				// 충돌 처리 후 상태 출력
+				printf("Character health: %d\n", character.GetHealth());
+				break;
+			}
+		}
+	}
+}
 
 
 
@@ -204,8 +265,15 @@ void EnemyThread()
 			{
 				std::lock_guard<std::mutex> lock(g_EnemyMutex);
 
-				for (int i = 0; i < g_characters.size(); ++i) {
-					for (int j = 0; j < g_enemies.size(); ++j) {
+				for (int i = 0; i < g_characters.size(); ++i) 
+				{
+
+
+
+
+
+					for (int j = 0; j < g_enemies.size(); ++j) 
+					{
 						if (g_is_accept[i]) {
 							float distanceToPlayer = g_enemies[j]->DistanceToPlayer(j, i);
 
@@ -235,20 +303,28 @@ void EnemyThread()
 						}
 					}
 				}
+
+				// **캐릭터와 적 충돌 감지 및 처리**
+				HandleCharacterEnemyCollisions();
 			}
 
 			for (int i = 0; i < g_characters.size(); ++i) {
 				for (int j = 0; j < g_enemies.size(); ++j) {
 					if (g_is_accept[i]) {
+
+						
+
 						SC_ENEMY_PACKET p;
 						p.packet_size = sizeof(p);
 						p.packet_type = SC_ENEMY;
 
 						p.enemy_id = g_enemies[j]->GetEnemyID();
 						p.bActive = g_enemies[j]->IsActive();
+
 						p.PosX = g_enemies[j]->GetPostionX();
 						p.PosY = g_enemies[j]->GetPostionY();
 						p.PosZ = g_enemies[j]->GetPostionZ();
+
 
 						int retval = send(g_clientSocketes[i], reinterpret_cast<const char*>(&p), sizeof(p), 0);
 						if (retval == SOCKET_ERROR) {
@@ -541,7 +617,7 @@ int main()
 {
 	// 미로 생성기
 	std::unique_ptr<MazeGenerator> mazeGenerator;
-	mazeGenerator = make_unique<MazeGenerator>(15, 15);
+	mazeGenerator = make_unique<MazeGenerator>(7, 7);
 
 	// 맵 생성 및 변환
 	mazeGenerator->GeneratePrimMaze();
