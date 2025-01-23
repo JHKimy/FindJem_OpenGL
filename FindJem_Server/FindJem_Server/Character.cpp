@@ -130,7 +130,7 @@ void Character::Move(char key)
                     std::abs(newZ - wallZ) < (halfBlockSize + boundingRadius))   // Z축 충돌
                 {
                     collision = true; // 충돌 발생
-                    std::cout << "Collision detected with wall at (" << x << ", " << z << ")" << std::endl;
+                    //std::cout << "Collision detected with wall at (" << x << ", " << z << ")" << std::endl;
                     break; // 충돌이 발생했으므로 더 이상 검사하지 않음
                 }
             }

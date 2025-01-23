@@ -7,7 +7,7 @@ std::array<Character, 2>	g_characters;
 // 미로 데이터
 std::vector<std::vector<int>> g_mazeMap;
 
-std::array<std::shared_ptr<Enemy>, 1> g_enemies;
+std::array<std::shared_ptr<Enemy>, 4> g_enemies;
 // 멀티스레드 환경에서 동기화를 위한 mutex
 mutex						g_character_mutex;
 mutex                       g_mutex;

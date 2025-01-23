@@ -13,7 +13,7 @@ Enemy::Enemy(float x, float y, float z, int id) : enemyID{ id }, currentDir{1,0}
     position.z = z;
 
     health = 3;
-    moveSpeed = 0.5f;
+    moveSpeed = 0.1f;
 
     currentState = EnemyState::Patrol;
 
@@ -27,7 +27,7 @@ Enemy::Enemy(float x, float y, float z, int id) : enemyID{ id }, currentDir{1,0}
     targetPosition.y = 0.0f;
     targetPosition.z = targetTile.z * 5.0f;
 
-    detectPath = false;
+    //detectPath = false;
  }
 
 // ===== 순찰 동작 =====
@@ -53,7 +53,7 @@ void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap) {
             int nextX = mazeX + dir.x;
             int nextZ = mazeZ + dir.z;
 
-            cout << dir.x << "," << dir.z << endl;
+            //cout << dir.x << "," << dir.z << endl;
 
             // 다음 미로 좌표 가능한지 && 현재 방향과 반대편방향은 아닌지
             // 막혔을때 그 방향 좌우 살피기 위함
@@ -125,26 +125,26 @@ void Enemy::MakeAStarPath(int enemyIndex, int playerIndex)
     float tempZ2 = static_cast<int>(g_characters[playerIndex].GetPostionZ() / g_blockSize.z);
     vec2 goalTile = { tempX2,tempZ2 };
 
-    cout << "[DEBUG] Character Position: (" << g_characters[playerIndex].GetPostionX()
-        << ", " << g_characters[playerIndex].GetPostionZ() << ")" << endl;
-    cout << "[DEBUG] Goal Tile: (" << goalTile.x << ", " << goalTile.z << ")" << endl;
+   // cout << "[DEBUG] Character Position: (" << g_characters[playerIndex].GetPostionX()
+   //     << ", " << g_characters[playerIndex].GetPostionZ() << ")" << endl;
+   // cout << "[DEBUG] Goal Tile: (" << goalTile.x << ", " << goalTile.z << ")" << endl;
 
     g_enemies[enemyIndex]->path = Astar::FindPath(startTile, goalTile, g_mazeMap);
 
     g_enemies[enemyIndex]->currentPathIndex = 0;
-    g_enemies[enemyIndex]->detectPath = true;  // 경로가 업데이트되었음을 표시
+    //g_enemies[enemyIndex]->detectPath = true;  // 경로가 업데이트되었음을 표시
 
 
-    // 경로가 계산된 결과 출력
-    if (g_enemies[enemyIndex]->path.empty()) {
-        cout << "[DEBUG] Pathfinding failed! No path found." << endl;
-    }
-    else {
-        cout << "[DEBUG] Path found:" << endl;
-        for (auto& p : g_enemies[enemyIndex]->path) {
-            cout << "  Tile: (" << p.x << ", " << p.z << ")" << endl;
-        }
-    }
+    //// 경로가 계산된 결과 출력
+    //if (g_enemies[enemyIndex]->path.empty()) {
+    //  //  cout << "[DEBUG] Pathfinding failed! No path found." << endl;
+    //}
+    //else {
+    //  //  cout << "[DEBUG] Path found:" << endl;
+    //    for (auto& p : g_enemies[enemyIndex]->path) {
+    //       // cout << "  Tile: (" << p.x << ", " << p.z << ")" << endl;
+    //    }
+    //}
 }
 
 // ===== 추적 동작 =====
@@ -152,19 +152,19 @@ void Enemy::Chase()
 {
     
     if (path.empty()) {
-        cout << "[DEBUG] Chase: Path is empty!" << endl;
+       // cout << "[DEBUG] Chase: Path is empty!" << endl;
         return;
     }
 
-    cout << "[DEBUG] Starting Chase. Current Path Index: " << currentPathIndex << endl;
+  //  cout << "[DEBUG] Starting Chase. Current Path Index: " << currentPathIndex << endl;
     while (currentPathIndex < path.size()) {
         // 다음 타일 좌표 계산
         float nextX = path[currentPathIndex].x * g_blockSize.x;
         float nextZ = path[currentPathIndex].z * g_blockSize.z;
         vec3 nextPos = { nextX, 0, nextZ };
 
-        cout << "[DEBUG] Current Position: (" << position.x << ", " << position.z << ")" << endl;
-        cout << "[DEBUG] Target Position: (" << nextPos.x << ", " << nextPos.z << ")" << endl;
+        //cout << "[DEBUG] Current Position: (" << position.x << ", " << position.z << ")" << endl;
+        //cout << "[DEBUG] Target Position: (" << nextPos.x << ", " << nextPos.z << ")" << endl;
 
         // 방향 벡터 계산
         vec3 moveDir = normalize(position, nextPos);
@@ -180,11 +180,11 @@ void Enemy::Chase()
             std::pow(nextPos.y - position.y, 2) +
             std::pow(nextPos.z - position.z, 2));
 
-        cout << "[DEBUG] Distance to Next: " << distanceToNext << endl;
+        //cout << "[DEBUG] Distance to Next: " << distanceToNext << endl;
 
         if (distanceToNext < 0.1f) {
             currentPathIndex++; // 다음 타일로 이동
-            cout << "[DEBUG] Moving to Next Index: " << currentPathIndex << endl;
+            //cout << "[DEBUG] Moving to Next Index: " << currentPathIndex << endl;
         }
         else {
             break; // 아직 다음 타일에 도달하지 못했으므로 루프 종료
@@ -193,8 +193,8 @@ void Enemy::Chase()
 
     // 경로 끝에 도달했는지 확인
     if (currentPathIndex >= path.size()) {
-        detectPath = false; // 경로가 끝났음을 표시
-        cout << "[DEBUG] Chase: Reached end of path." << endl;
+        //detectPath = false; // 경로가 끝났음을 표시
+        //cout << "[DEBUG] Chase: Reached end of path." << endl;
     }
 }
 

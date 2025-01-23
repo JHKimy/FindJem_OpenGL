@@ -1,9 +1,10 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "AstarPath.h"
+#include <random>
 
 void HandleBulletEnemyCollisions()
 {
-	// ¸ğµç Ä³¸¯ÅÍ¿¡ ´ëÇØ¼­
+	// ëª¨ë“  ìºë¦­í„°ì— ëŒ€í•´ì„œ
 	for (int i{}; i < g_characters.size(); ++i) {
 		for (auto& enemy : g_enemies)
 		{
@@ -19,15 +20,15 @@ void HandleBulletEnemyCollisions()
 				if (distance < (bullet->boundingRadius + enemy->boundingRadius))
 				{
 					vec3 bulletDirection = V::Normalize(bullet->GetDirection());
-					enemy->TakeDamage(1, bulletDirection); // Àû Ã¼·Â °¨¼Ò
-					bullet->DeActivate();                 // ÃÑ¾Ë ºñÈ°¼ºÈ­
+					enemy->TakeDamage(1, bulletDirection); // ì  ì²´ë ¥ ê°ì†Œ
+					bullet->DeActivate();                 // ì´ì•Œ ë¹„í™œì„±í™”
 
 					printf("Enemy hit\n");
 
 					if (!enemy->IsActive())
 					{
 						printf("Enemy defeated\n");
-						g_characters[i].IncrementDefeatedEnemies(); // Àû Á¦°Å Ä«¿îÆ® Áõ°¡
+						g_characters[i].IncrementDefeatedEnemies(); // ì  ì œê±° ì¹´ìš´íŠ¸ ì¦ê°€
 						break;
 					}
 				}
@@ -41,7 +42,7 @@ void HandleBulletEnemyCollisions()
 
 void Send_Maze_Data(int clientid)
 {
-	// ¹Ì·Î Á¤º¸ ´ã´Â ÆĞÅ¶ ±¸Á¶Ã¼
+	// ë¯¸ë¡œ ì •ë³´ ë‹´ëŠ” íŒ¨í‚· êµ¬ì¡°ì²´
 	SC_MAZE_INFO p;
 	p.packet_size = sizeof(p);
 	p.packet_type = SC_MAZE_DATA;
@@ -51,7 +52,7 @@ void Send_Maze_Data(int clientid)
 	p.y = g_characters[clientid].GetPostionY();
 	p.z = g_characters[clientid].GetPostionZ();
 
-	// ¹Ì·Î µ¥ÀÌÅÍ ÆĞÅ¶ ±¸Á¶Ã¼¿¡ º¹»ç
+	// ë¯¸ë¡œ ë°ì´í„° íŒ¨í‚· êµ¬ì¡°ì²´ì— ë³µì‚¬
 	for (int i{}; i < g_mazeMap.size(); ++i) {
 		for (int j{}; j < g_mazeMap[i].size(); ++j) {
 			p.mazeMap[i][j] = g_mazeMap[i][j];
@@ -60,7 +61,7 @@ void Send_Maze_Data(int clientid)
 
 
 	if (g_is_accept[clientid]) {
-		// µ¥ÀÌÅÍ¸¦ Å¬¶óÀÌ¾ğÆ® ¼ÒÄÏÀ¸·Î Àü¼Û
+		// ë°ì´í„°ë¥¼ í´ë¼ì´ì–¸íŠ¸ ì†Œì¼“ìœ¼ë¡œ ì „ì†¡
 		int retval = send(g_clientSocketes[clientid],
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
 
@@ -75,7 +76,7 @@ void Send_Maze_Data(int clientid)
 
 void Send_My_Character_Data(int clientid)
 {
-	// ¹Ì·Î Á¤º¸ ´ã´Â ÆĞÅ¶ ±¸Á¶Ã¼
+	// ë¯¸ë¡œ ì •ë³´ ë‹´ëŠ” íŒ¨í‚· êµ¬ì¡°ì²´
 	SC_CHARACTER_MOVE_PACKET p;
 	p.packet_size = sizeof(p);
 	p.packet_type = SC_CHARACTER_MOVE;
@@ -89,7 +90,7 @@ void Send_My_Character_Data(int clientid)
 	p.DirZ = g_characters[clientid].GetForwordVecZ();
 
 	if (g_is_accept[clientid]) {
-		// µ¥ÀÌÅÍ¸¦ Å¬¶óÀÌ¾ğÆ® ¼ÒÄÏÀ¸·Î Àü¼Û
+		// ë°ì´í„°ë¥¼ í´ë¼ì´ì–¸íŠ¸ ì†Œì¼“ìœ¼ë¡œ ì „ì†¡
 		int retval = send(g_clientSocketes[clientid],
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
 
@@ -98,27 +99,47 @@ void Send_My_Character_Data(int clientid)
 
 void Send_Enemy_Data(int clientid)
 {
-	// Àû Á¤º¸ ´ã´Â ÆĞÅ¶ ±¸Á¶Ã¼
-	SC_ENEMY_PACKET p;
+
+	// ì  ì •ë³´ ë‹´ëŠ” íŒ¨í‚· êµ¬ì¡°ì²´
+	SC_START_ENEMY_PACKET p;
 	p.packet_size = sizeof(p);
-	p.packet_type = SC_ENEMY;
+	p.packet_type = SC_START_ENEMY;
+	for (int i{}; i < g_enemies.size(); ++i) 
+	{
+		p.data[i].id = g_enemies[i]->GetEnemyID();
+		p.data[i].isActive = true;
+		p.data[i].x = g_enemies[i]->GetPostionX();
+		p.data[i].y = g_enemies[i]->GetPostionY();
+		p.data[i].z = g_enemies[i]->GetPostionZ();
 
-
-	p.PosX = g_enemies[0]->GetPostionX();
-	p.PosY = g_enemies[0]->GetPostionY();
-	p.PosZ = g_enemies[0]->GetPostionZ();
-	p.enemy_id = g_enemies[0]->GetEnemyID();
-
-
-
+		// cout << "id : " << p.data[i].id << endl;
+		//cout << "send ?? " << endl;
+	}
 
 	if (g_is_accept[clientid]) {
-		cout << " send enemy to clientid : " << clientid << endl;
-		// µ¥ÀÌÅÍ¸¦ Å¬¶óÀÌ¾ğÆ® ¼ÒÄÏÀ¸·Î Àü¼Û
+		//cout << " send enemy to clientid : " << clientid << endl;
+		// ë°ì´í„°ë¥¼ í´ë¼ì´ì–¸íŠ¸ ì†Œì¼“ìœ¼ë¡œ ì „ì†¡
 		int retval = send(g_clientSocketes[clientid],
 			reinterpret_cast<const char*>(&p), sizeof(p), 0);
 
+		if (retval == SOCKET_ERROR) {
+			//cout << "fail ! " << clientid << ": " << WSAGetLastError() << endl;
+		}
+		else {
+			cout << "Send to client " << clientid << endl;
+		}
+
 	}
+
+	//p.player_id = clientid;
+	//p.bullet_id = i;
+	//p.PosX = bullets[i]->GetPosition().x;
+	//p.PosY = bullets[i]->GetPosition().y;
+	//p.PosZ = bullets[i]->GetPosition().z;
+
+
+
+
 }
 
 
@@ -132,23 +153,33 @@ void Send_Bullet_Data(int clientid)
 	{
 		if (bullets[i]->IsActive()) 
 		{
-			// Àû Á¤º¸ ´ã´Â ÆĞÅ¶ ±¸Á¶Ã¼
-			SC_BULLET_PACKET p;
-
-			p.packet_size = sizeof(p);
-			p.packet_type = SC_BULLET;
-			p.bullet_id = i;
-			p.PosX = bullets[i]->GetPosition().x;
-			p.PosY = bullets[i]->GetPosition().y;
-			p.PosZ = bullets[i]->GetPosition().z;
+			// ì  ì •ë³´ ë‹´ëŠ” íŒ¨í‚· êµ¬ì¡°ì²´
+			
 		
-			if (g_is_accept[clientid]) {
-				cout << " send enemy to clientid : " << clientid << endl;
-				// µ¥ÀÌÅÍ¸¦ Å¬¶óÀÌ¾ğÆ® ¼ÒÄÏÀ¸·Î Àü¼Û
-				int retval = send(g_clientSocketes[clientid],
-					reinterpret_cast<const char*>(&p), sizeof(p), 0);
+			for (auto& other : g_characters) {
+				SC_BULLET_PACKET p;
+				//if (other.playerID == clientid) continue;
+				{
+					lock_guard<mutex> lock(g_character_mutex);
+					if (!g_is_accept[other.playerID]) continue;
+				}
 
+				p.packet_size = sizeof(p);
+				p.packet_type = SC_BULLET;
+				p.player_id = clientid;
+				p.bullet_id = i;
+				p.PosX = bullets[i]->GetPosition().x;
+				p.PosY = bullets[i]->GetPosition().y;
+				p.PosZ = bullets[i]->GetPosition().z;
+				if (g_is_accept[other.playerID]) {
+					//cout << " ì–´ë–¤ í´ë¼ì—ê²Œ ê°? : " << other.playerID << endl;
+					// ë°ì´í„°ë¥¼ í´ë¼ì´ì–¸íŠ¸ ì†Œì¼“ìœ¼ë¡œ ì „ì†¡
+					int retval = send(g_clientSocketes[other.playerID],
+						reinterpret_cast<const char*>(&p), sizeof(p), 0);
+
+				}
 			}
+			
 		}
 	}
 	
@@ -168,140 +199,186 @@ void Send_Bullet_Data(int clientid)
 
 void EnemyThread()
 {
-
-	// ¹Ì·Î Á¤º¸ ´ã´Â ÆĞÅ¶ ±¸Á¶Ã¼
-	SC_ENEMY_PACKET p;
-	p.packet_size = sizeof(p);
-	p.packet_type = SC_ENEMY;
-
-
 	while (true) {
-		std::lock_guard<std::mutex> lock(g_EnemyMutex);
-		if (g_characters[0].isReady){
-			for (int i{}; i < g_characters.size(); ++i){
-				for (int j{}; j < g_enemies.size(); ++j){
-					
-					if (g_is_accept[i]) {
-						// ÇÃ·¹ÀÌ¾î¿Í Àû °Å¸®
-						float distanceToPlayer = g_enemies[j]->DistanceToPlayer(j, i);
-						// »óÅÂ¿¡ µû¶ó Çàµ¿ °áÁ¤
+		if (g_characters[0].isReady) {
+			{
+				std::lock_guard<std::mutex> lock(g_EnemyMutex);
 
-						//std::cout << " current : " << (int)g_enemies[j]->currentState << endl;
+				for (int i = 0; i < g_characters.size(); ++i) {
+					for (int j = 0; j < g_enemies.size(); ++j) {
+						if (g_is_accept[i]) {
+							float distanceToPlayer = g_enemies[j]->DistanceToPlayer(j, i);
 
-						switch (g_enemies[j]->currentState)
-						{
-						case EnemyState::Patrol:
-							// Å½Áö ¹üÀ§º¸´Ù °Å¸®°¡ ±æ¸é
-							if (g_enemies[j]->detectionRadius > distanceToPlayer){
-								g_enemies[j]->currentState = EnemyState::Chase;
+							// í´ë¼ì´ì–¸íŠ¸ë³„ detectPathë¥¼ í™•ì¸
+							if (g_enemies[j]->detectPath.find(i) == g_enemies[j]->detectPath.end()) {
+								g_enemies[j]->detectPath[i] = false; // ì´ˆê¸°í™”
 							}
-							else {
-								g_enemies[j]->Patrol(g_mazeMap);
-							}
-							break;
 
-						case EnemyState::Chase:
-							
-							if (distanceToPlayer > g_enemies[j]->chaseRadius) {
-								g_enemies[j]->currentState = EnemyState::Patrol;
-							}
-							else {
-								if (!g_enemies[j]->detectPath)
-								{
-									g_enemies[j]->MakeAStarPath(j, i);
-									// °æ·Î »ı¼º ¿Ï·á
-									g_enemies[j]->detectPath = true;
+							switch (g_enemies[j]->currentState) {
+							case EnemyState::Patrol:
+								if (g_enemies[j]->detectionRadius > distanceToPlayer) {
+									g_enemies[j]->currentState = EnemyState::Chase;
+								}
+								else {
+									g_enemies[j]->Patrol(g_mazeMap);
+								}
+								break;
+
+							case EnemyState::Chase:
+								if (!g_enemies[j]->detectPath[i]) {
+									g_enemies[j]->MakeAStarPath(j, i); // í´ë¼ì´ì–¸íŠ¸ iì— ëŒ€í•œ ê²½ë¡œ ìƒì„±
+									g_enemies[j]->detectPath[i] = true;
 								}
 								g_enemies[j]->Chase();
+								break;
 							}
-							break;
 						}
+					}
+				}
+			}
 
-						//===================================
+			for (int i = 0; i < g_characters.size(); ++i) {
+				for (int j = 0; j < g_enemies.size(); ++j) {
+					if (g_is_accept[i]) {
+						SC_ENEMY_PACKET p;
+						p.packet_size = sizeof(p);
+						p.packet_type = SC_ENEMY;
+
 						p.enemy_id = g_enemies[j]->GetEnemyID();
 						p.bActive = g_enemies[j]->IsActive();
 						p.PosX = g_enemies[j]->GetPostionX();
 						p.PosY = g_enemies[j]->GetPostionY();
 						p.PosZ = g_enemies[j]->GetPostionZ();
 
-					}
-				}
-
-
-
-
-				if (g_is_accept[i]) {
-					// µ¥ÀÌÅÍ¸¦ Å¬¶óÀÌ¾ğÆ® ¼ÒÄÏÀ¸·Î Àü¼Û
-					int retval = send(g_clientSocketes[i],
-						reinterpret_cast<const char*>(&p), sizeof(p), 0);
-					if (retval == SOCKET_ERROR) {
-						cout << "fail ! " << i << ": " << WSAGetLastError() << endl;
-					}
-					else {
-						//cout << "Send to client " << i << endl;
-					}
-
-				}
-
-			}
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(100)); // CPU °úºÎÇÏ ¹æÁö
-		}
-
-	}
-}
-
-void BulletTread()
-{
-	// ¼­¹ö¿¡¼­ Å¬¶ó·Î º¸³»´Â ÆĞÅ¶
-	SC_BULLET_PACKET p;
-	p.packet_size = sizeof(p);
-	p.packet_type = SC_BULLET;
-
-	while (true) {
-		//std::this_thread::sleep_for(std::chrono::milliseconds(500)); // CPU °úºÎÇÏ ¹æÁö
-
-		std::lock_guard<std::mutex> lock(g_BulletMutex); // Mutex·Î º¸È£
-		if (g_characters[0].isReady) {
-			for (int i{}; i < g_characters.size(); ++i)
-			{
-				for (int j{};j<g_characters[i].bulletPool.pool.size();++j)
-				{
-					if (g_is_accept[i]) 
-					{
-						if (g_characters[i].bulletPool.pool[j]->IsActive()) 
-						{
-							//g_characters[i].bulletPool.pool[j]->Update();
-
-							g_characters[i].bulletPool.UpdateAllBullets
-							(vec3(g_characters[i].GetPostionX(), g_characters[i].GetPostionY(), g_characters[i].GetPostionZ()));
-
-
-							
-							p.player_id = i;
-							p.bullet_id = j;
-							p.PosX = g_characters[i].bulletPool.pool[j]->GetPosition().x;
-							p.PosY = g_characters[i].bulletPool.pool[j]->GetPosition().y + 1.f;
-							p.PosZ = g_characters[i].bulletPool.pool[j]->GetPosition().z;
-							p.bActive = g_characters[i].bulletPool.pool[j]->IsActive();
-
-
-							HandleBulletEnemyCollisions();
-
-							std::this_thread::sleep_for(std::chrono::microseconds(1)); // 10ms ´ë±â
-
-							//std::lock_guard<std::mutex> lock(g_BulletMutex);
-							//cout << "id : " << p.player_id << endl;
-							//cout << "bullet : " << p.PosX << " , " << p.PosZ << endl;
-
-							int retval = send(g_clientSocketes[i],
-								reinterpret_cast<const char*>(&p), sizeof(p), 0);
+						int retval = send(g_clientSocketes[i], reinterpret_cast<const char*>(&p), sizeof(p), 0);
+						if (retval == SOCKET_ERROR) {
+							std::cerr << "Send failed for client " << i << ": " << WSAGetLastError() << std::endl;
 						}
 					}
 				}
 			}
+
+			std::this_thread::sleep_for(std::chrono::microseconds(50));
+		}
+	}
+}
+
+//void BulletTread()
+//{
+//	// ì„œë²„ì—ì„œ í´ë¼ë¡œ ë³´ë‚´ëŠ” íŒ¨í‚·
+//	SC_BULLET_PACKET p;
+//	p.packet_size = sizeof(p);
+//	p.packet_type = SC_BULLET;
+//
+//	while (true) {
+//		//std::this_thread::sleep_for(std::chrono::milliseconds(500)); // CPU ê³¼ë¶€í•˜ ë°©ì§€
+//
+//		std::lock_guard<std::mutex> lock(g_BulletMutex); // Mutexë¡œ ë³´í˜¸
+//		if (g_characters[0].isReady) {
+//			for (int i{}; i < g_characters.size(); ++i)
+//			{
+//				for (int j{};j<g_characters[i].bulletPool.pool.size();++j)
+//				{
+//					if (g_is_accept[i]) 
+//					{
+//						if (g_characters[i].bulletPool.pool[j]->IsActive()) 
+//						{
+//							//g_characters[i].bulletPool.pool[j]->Update();
+//
+//							g_characters[i].bulletPool.UpdateAllBullets
+//							(vec3(g_characters[i].GetPostionX(), g_characters[i].GetPostionY(), g_characters[i].GetPostionZ()));
+//
+//
+//							
+//							p.player_id = i;
+//							p.bullet_id = j;
+//							p.PosX = g_characters[i].bulletPool.pool[j]->GetPosition().x;
+//							p.PosY = g_characters[i].bulletPool.pool[j]->GetPosition().y + 1.f;
+//							p.PosZ = g_characters[i].bulletPool.pool[j]->GetPosition().z;
+//							p.bActive = g_characters[i].bulletPool.pool[j]->IsActive();
+//
+//
+//							HandleBulletEnemyCollisions();
+//
+//							std::this_thread::sleep_for(std::chrono::microseconds(1)); // 10ms ëŒ€ê¸°
+//
+//							//std::lock_guard<std::mutex> lock(g_BulletMutex);
+//							//cout << "id : " << p.player_id << endl;
+//							//cout << "bullet : " << p.PosX << " , " << p.PosZ << endl;
+//
+//							int retval = send(g_clientSocketes[i],
+//								reinterpret_cast<const char*>(&p), sizeof(p), 0);
+//							if (retval == SOCKET_ERROR) {
+//								std::cerr << "[ERROR] Send failed for Player " << i
+//									<< " with error: " << WSAGetLastError() << "\n";
+//							}
+//							else {
+//								std::cerr << "[SUCCESS] Packet sent successfully to Player " << i << "\n";
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//
+//	}
+//}
+
+void BulletTread() {
+	while (true) {
+		{
+			lock_guard<mutex> lock(g_BulletMutex); // Mutex ë³´í˜¸
+			if (g_characters.empty() || !g_characters[0].isReady) continue;
+
+			// ëª¨ë“  í”Œë ˆì´ì–´ì— ëŒ€í•´ ì²˜ë¦¬
+			for (auto& character : g_characters) {
+				int senderID = character.playerID; // í˜„ì¬ í”Œë ˆì´ì–´ ID
+
+				// ëª¨ë“  ì´ì•Œì— ëŒ€í•´ ì²˜ë¦¬
+				for (int j = 0; j < character.bulletPool.pool.size(); ++j) {
+					if (!character.bulletPool.pool[j]->IsActive()) continue;
+
+					//g_characters[i].bulletPool.pool[j]->Update();
+
+					character.bulletPool.UpdateAllBullets
+					(vec3(character.GetPostionX(), character.GetPostionY(), character.GetPostionZ()));
+					// ì´ì•Œ ì •ë³´ ìƒì„±
+					SC_BULLET_PACKET packet;
+					packet.packet_size = sizeof(packet);
+					packet.packet_type = SC_BULLET;
+					packet.player_id = senderID;
+					packet.bullet_id = j;
+					packet.PosX = character.bulletPool.pool[j]->GetPosition().x;
+					packet.PosY = character.bulletPool.pool[j]->GetPosition().y + 1.f;
+					packet.PosZ = character.bulletPool.pool[j]->GetPosition().z;
+					packet.bActive = character.bulletPool.pool[j]->IsActive();
+					HandleBulletEnemyCollisions();
+					// ë‹¤ë¥¸ ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì „ì†¡
+					for (auto& other : g_characters) {
+						//if (other.playerID == senderID) continue; // ìê¸° ìì‹  ì œì™¸
+
+						//{
+						//	lock_guard<mutex> charLock(g_character_mutex);
+						//	if (!g_is_accept[other.playerID]) continue; // ì—°ê²°ë˜ì§€ ì•Šì€ í”Œë ˆì´ì–´ ì œì™¸
+						//}
+
+						int retval = send(g_clientSocketes[other.playerID],
+							reinterpret_cast<const char*>(&packet), sizeof(packet), 0);
+						//if (retval == SOCKET_ERROR) {
+						//	/*cerr << "[ERROR] Send failed for Player " << other.playerID
+						//		<< " with error: " << WSAGetLastError() << endl;*/
+						//}
+						//else {
+						//	cerr << "[SUCCESS] Bullet packet sent to Player " << other.playerID
+						//		<< " from Player " << senderID << endl;
+						//}
+					}
+				}
+			}
 		}
 
+		// CPU ê³¼ë¶€í•˜ ë°©ì§€
+		this_thread::sleep_for(chrono::microseconds(1000)); // 100Âµs ëŒ€ê¸°
 	}
 }
 
@@ -309,11 +386,10 @@ void BulletTread()
 
 
 
-
-// Å¬¶ó ¿äÃ» Ã³¸®ÇÏ´Â ¼­¹ö ½º·¹µå ÇÔ¼ö
+// í´ë¼ ìš”ì²­ ì²˜ë¦¬í•˜ëŠ” ì„œë²„ ìŠ¤ë ˆë“œ í•¨ìˆ˜
 void HandleThread(int id)
 {
-	// ¼­¹ö Ä³¸¯ÅÍ »ı¼º
+	// ì„œë²„ ìºë¦­í„° ìƒì„±
 	Character character{ id };
 	{
 		lock_guard<mutex> lock(g_character_mutex);
@@ -321,7 +397,7 @@ void HandleThread(int id)
 		g_characters[id].playerID = id;
 	}
 
-	// ¹Ì·Î µ¥ÀÌÅÍ º¸³»±â
+	// ë¯¸ë¡œ ë°ì´í„° ë³´ë‚´ê¸°
 	Send_Maze_Data(id);
 
 
@@ -329,11 +405,11 @@ void HandleThread(int id)
 	{
 		char buf[BUFSIZE];
 
-		// ÆĞÅ¶ ÀüÃ¼ µ¥ÀÌÅÍ ¼ö½Å
+		// íŒ¨í‚· ì „ì²´ ë°ì´í„° ìˆ˜ì‹ 
 		int retval = recv(g_clientSocketes[id], buf, sizeof(buf), 0);
 
 		if (retval <= 0) {
-			// ¿¬°á Á¾·á ¶Ç´Â ¿À·ù Ã³¸®
+			// ì—°ê²° ì¢…ë£Œ ë˜ëŠ” ì˜¤ë¥˜ ì²˜ë¦¬
 			if (retval == 0) {
 				std::cout << "Client disconnected." << std::endl;
 			}
@@ -344,7 +420,7 @@ void HandleThread(int id)
 
 		char packetType = static_cast<char>(buf[1]);
 
-		// Å¬¶ó¿¡¼­ ¹ŞÀº ÆĞÅ¶ Ã³¸®
+		// í´ë¼ì—ì„œ ë°›ì€ íŒ¨í‚· ì²˜ë¦¬
 		switch (packetType) {
 		case CS_READY: {
 			CS_READY_PACKET* p = reinterpret_cast<CS_READY_PACKET*>(buf);
@@ -368,17 +444,17 @@ void HandleThread(int id)
 				packet.PosZ = g_characters[id].GetPostionZ();
 				int retval = send(g_clientSocketes[other.playerID],
 					reinterpret_cast<const char*>(&packet), sizeof(packet), 0);
-				cout << "´©±¸¿¡°Ô °¨ ? : " << other.playerID << endl;
-				cout << "posx : " << packet.PosX << endl;
-				cout << "posy : " << packet.PosY << endl;
-				cout << "id : " << packet.player_id << endl;
+				//cout << "ëˆ„êµ¬ì—ê²Œ ê° ? : " << other.playerID << endl;
+				//cout << "posx : " << packet.PosX << endl;
+				//cout << "posy : " << packet.PosY << endl;
+				//cout << "id : " << packet.player_id << endl;
 
 			}
 			break;
 		}
 
 		case CS_PLAYER: {
-			// ¹Ş°í °è»êÇÏ°í º¸³»±â
+			// ë°›ê³  ê³„ì‚°í•˜ê³  ë³´ë‚´ê¸°
 			CS_PLAYER_PACKET* p = reinterpret_cast<CS_PLAYER_PACKET*>(buf);
 			g_characters[p->player_id].Move(p->direction);
 
@@ -413,13 +489,13 @@ void HandleThread(int id)
 
 		case CS_MAP_OK: {
 			CS_MAP_OK_PACKET* p = reinterpret_cast<CS_MAP_OK_PACKET*>(buf);
-			cout << p->player_id << endl;
+			//cout << p->player_id << endl;
 			{
 				lock_guard<mutex> lock(g_character_mutex);
 				Send_Enemy_Data(p->player_id);
 			}
 
-			cout << "id : " << p->player_id << endl;
+			//cout << "id : " << p->player_id << endl;
 			break;
 		}
 
@@ -431,7 +507,7 @@ void HandleThread(int id)
 			{
 				g_characters[p->player_id].Shoot();
 				// g_characters[p->player_id].bulletPool.pool[0]->Update(1);
-				cout << "¼­¹ö¿¡¼­ Å¬¸¯ ÆĞÅ¶ ¹ŞÀ½" << endl;
+				//cout << "ì„œë²„ì—ì„œ í´ë¦­ íŒ¨í‚· ë°›ìŒ" << endl;
 				//Send_Bullet_Data(p->player_id);
 			}
 
@@ -463,90 +539,125 @@ void HandleThread(int id)
 
 int main()
 {
-	// ¹Ì·Î »ı¼º±â
+	// ë¯¸ë¡œ ìƒì„±ê¸°
 	std::unique_ptr<MazeGenerator> mazeGenerator;
 	mazeGenerator = make_unique<MazeGenerator>(15, 15);
 
-	// ¸Ê »ı¼º ¹× º¯È¯
+	// ë§µ ìƒì„± ë° ë³€í™˜
 	mazeGenerator->GeneratePrimMaze();
 	mazeGenerator->addEntrances();
 	g_mazeMap = mazeGenerator->GetMaze();
 
 	for (int i = 0; i < g_mazeMap.size(); ++i) {
 		for (int j = 0; j < g_mazeMap[i].size(); ++j) {
-			cout << g_mazeMap[i][j] << " ";  // µ¥ÀÌÅÍ °ª Ãâ·Â
+			cout << g_mazeMap[i][j] << " ";  // ë°ì´í„° ê°’ ì¶œë ¥
 		}
-		cout << endl;  // °¢ Çà ³¡¿¡ ÁÙ ¹Ù²Ş
+		cout << endl;  // ê° í–‰ ëì— ì¤„ ë°”ê¿ˆ
 	}
-	g_enemies[0] = make_shared<Enemy>(15.f, 0.f, 15.f, 0);
+
+
+
+
+
+	std::vector<vec3> emptySpaces;
+
+	// ë¹ˆ ê³µê°„ ì°¾ê¸°
+	for (int z = 0; z < g_mazeMap.size(); ++z)
+	{
+		for (int x = 0; x < g_mazeMap[z].size(); ++x)
+		{
+			if (g_mazeMap[z][x] == 0)
+			{
+				emptySpaces.push_back(vec3(x * g_blockSize.x, 0.0f, z * g_blockSize.z));
+			}
+		}
+	}
+
+	// ëœë¤ìœ¼ë¡œ ì  ìƒì„±
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dist(0, emptySpaces.size() - 1);
+
+	for (int i = 0; i < g_enemies.size(); ++i)
+	{
+		int randomIndex = dist(gen);
+		vec3 enemyPosition = emptySpaces[randomIndex];
+		g_enemies[i] = std::make_shared<Enemy>(enemyPosition.x, enemyPosition.y, enemyPosition.z,i);
+		emptySpaces.erase(emptySpaces.begin() + randomIndex);
+	}
+
+
+
+
+	//g_enemies[0] = make_shared<Enemy>(15.f, 0.f, 15.f, 0);
 	//g_enemies[0]->currentState = EnemyState::Patrol;
 
 	std::unique_ptr<Character> character = make_unique<Character>();
 
 
 
-	// 1. ¼ÒÄÏ ÃÊ±âÈ­ 
+	// 1. ì†Œì¼“ ì´ˆê¸°í™” 
 	SocketUtils::Init();
 
-	// 2. ¸®½¼ ¼ÒÄÏ »ı¼º
+	// 2. ë¦¬ìŠ¨ ì†Œì¼“ ìƒì„±
 	SOCKET listenSocket = SocketUtils::CreateSocket();
 	if (listenSocket == INVALID_SOCKET)
 		return 0;
 
-	// 3. ¼ÒÄÏ ¿É¼Ç
+	// 3. ì†Œì¼“ ì˜µì…˜
 	SocketUtils::SetReuseAddress(listenSocket, true);
 
-	// 4. ÁÖ¼Ò°ª ¹ÙÀÎµù
+	// 4. ì£¼ì†Œê°’ ë°”ì¸ë”©
 	if (SocketUtils::BindAnyAddress(listenSocket, SERVER_PORT) == false)
 		return 0;
 
-	// 5. ´ë±â
+	// 5. ëŒ€ê¸°
 	if (SocketUtils::Listen(listenSocket, SOMAXCONN) == false)
 		return 0;
 
-	cout << "¼­¹ö ´ë±âÁß.................." << endl;
+	cout << "ì„œë²„ ëŒ€ê¸°ì¤‘.................." << endl;
 	SOCKADDR_IN clientAddr;
 	int addrLen = sizeof(clientAddr);
 
 	thread eThread{ EnemyThread };
 
-	// ÃÑ¾Ë ½º·¹µå
+	// ì´ì•Œ ìŠ¤ë ˆë“œ
 	thread bThread{ BulletTread };
 
 
-	// 6. Å¬¶óÀÌ¾ğÆ® Á¢¼Ó ±â´Ù¸®´Â ·çÇÁ
+	// 6. í´ë¼ì´ì–¸íŠ¸ ì ‘ì† ê¸°ë‹¤ë¦¬ëŠ” ë£¨í”„
 	while (true)
 	{
-		// 7. Å¬¶óÀÌ¾ğÆ® Á¢¼Ó ¿äÃ» ¼ö¶ô
+		// 7. í´ë¼ì´ì–¸íŠ¸ ì ‘ì† ìš”ì²­ ìˆ˜ë½
 		SOCKET clientSocket = ::accept(listenSocket, (SOCKADDR*)&clientAddr, &addrLen);
 		if (clientSocket == INVALID_SOCKET)
 		{
 			return 0;
 		}
 		SocketUtils::SetTcpNoDelay(clientSocket, true);
-		// °íÀ¯ Å¬¶óÀÌ¾ğÆ® ID »ı¼º
+		// ê³ ìœ  í´ë¼ì´ì–¸íŠ¸ ID ìƒì„±
 		int client_id = get_id();
 
-		// ¿¬°á »óÅÂ ¼³Á¤
+		// ì—°ê²° ìƒíƒœ ì„¤ì •
 		g_is_accept[client_id] = true;
 
-		// ¼ÒÅİ ÀúÀå
+		// ì†Œí…Ÿ ì €ì¥
 		g_clientSocketes[client_id] = clientSocket;
 
-		cout << "Å¬¶óÀÌ¾ğÆ® Á¢¼Ó" << endl;
+		cout << "í´ë¼ì´ì–¸íŠ¸ ì ‘ì†" << endl;
 		cout << client_id << endl;
 
-		// 8. »õ·Î¿î ½º·¹µå »ı¼ºÇÏ¿© Å¬¶óÀÌ¾ğÆ® ¿äÃ» Ã³¸®
+		// 8. ìƒˆë¡œìš´ ìŠ¤ë ˆë“œ ìƒì„±í•˜ì—¬ í´ë¼ì´ì–¸íŠ¸ ìš”ì²­ ì²˜ë¦¬
 		g_threads[client_id] = thread{ HandleThread, client_id };
 	}
 
-	// 9. ¸ğµç ½º·¹µå Á¾·áµÉ¶§ ±îÁö ±â´Ù¸²
+	// 9. ëª¨ë“  ìŠ¤ë ˆë“œ ì¢…ë£Œë ë•Œ ê¹Œì§€ ê¸°ë‹¤ë¦¼
 	for (auto& t : g_threads)
 		t.join();
 	eThread.join();
 	bThread.join();
 
-	// 10. ¸®¼Ò½º Á¤¸®
+	// 10. ë¦¬ì†ŒìŠ¤ ì •ë¦¬
 	SocketUtils::Close(listenSocket);
 	SocketUtils::Clear();
 }

@@ -19,8 +19,15 @@ constexpr char SC_MAZE_DATA = 1;
 constexpr char SC_ADD_CHARACTER = 2;
 constexpr char SC_CHARACTER_MOVE = 3;
 constexpr char SC_OTHER_CHARACTER_MOVE = 4;
-constexpr char SC_ENEMY = 5;
-constexpr char SC_BULLET = 6;
+constexpr char SC_START_ENEMY = 5;
+constexpr char SC_ENEMY = 6;
+constexpr char SC_BULLET = 7;
+
+struct enemydata {
+	int id;
+	float x, y, z;
+	bool isActive = false;
+};
 
 
 
@@ -127,18 +134,18 @@ struct SC_0THER_CHARACTER_MOVE_PACKET
 	float yaw;
 };
 
+struct SC_START_ENEMY_PACKET {
+	char	packet_size;	// 패킷 크기
+	char	packet_type;	// 패킷 종류
+	std::array<enemydata, 4> data;
+};
 struct SC_ENEMY_PACKET {
 	char	packet_size;	// 패킷 크기
 	char	packet_type;	// 패킷 종류
-	int		enemy_id;		// 적 id
+	int		enemy_id;
+	float	PosX, PosY, PosZ;
 	bool	bActive;
-
-	float	PosX;
-	float	PosY;
-	float	PosZ;
-
 };
-
 struct SC_BULLET_PACKET 
 {
 	char	packet_size;	// 패킷 크기

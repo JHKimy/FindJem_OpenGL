@@ -45,12 +45,12 @@ std::vector<glm::ivec2> Astar::FindPath(const glm::ivec2& start, const glm::ivec
 			}
 			std::reverse(path.begin(), path.end());
 
-			// 예상 경로 출력
-			std::cout << "Predicted Path: ";
-			for (const auto& tile : path) {
-				std::cout << "(" << tile.x << ", " << tile.y << ") ";
-			}
-			std::cout << std::endl;
+			//// 예상 경로 출력
+			//std::cout << "Predicted Path: ";
+			//for (const auto& tile : path) {
+			//	std::cout << "(" << tile.x << ", " << tile.y << ") ";
+			//}
+			//std::cout << std::endl;
 
 			return path;
 		}

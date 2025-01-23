@@ -120,14 +120,10 @@ bool NetworkManager::RecvThread() {
     case SC_ENEMY:
     {
         SC_ENEMY_PACKET* p = reinterpret_cast<SC_ENEMY_PACKET*>(buf);
-        //m_Scene->GetEnemy(p->enemy_id)->SetPosition(glm::vec3(p->PosX,0, 0));
-        
-        m_Scene->enemies[p->enemy_id]->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
-        m_Scene->enemies[p->enemy_id]->SetActive(p->bActive);
 
-        //cout << p->PosX <<","<< p->PosY <<"," << p->PosZ << endl;
-        //m_Scene->GetEnemy(p->enemy_id)->SetForwardVector(glm::vec3(p->DirX, 0.f, p->DirZ));
-        //m_Scene->GetCharacter()->SetYaw(p->yaw);
+         m_Scene->enemies[p->enemy_id]->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+         m_Scene->enemies[p->enemy_id]->SetActive(p->bActive);
+
         break;
     }
 
@@ -136,12 +132,21 @@ bool NetworkManager::RecvThread() {
     {
         SC_BULLET_PACKET* p = reinterpret_cast<SC_BULLET_PACKET*>(buf);
         //cout << p->bullet_id << endl;
-        //cout << p->PosX << endl;
+       // cout << p->PosX << endl;
+        // cout << "p->id" << p->player_id<< endl;
+
 
 
         m_Scene->GetCharacter()->bullets[p->bullet_id]->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
         m_Scene->GetCharacter()->bullets[p->bullet_id]->SetActive(true);
-
+        /*if (p->player_id == g_id) {
+            
+            
+        }
+        else {
+            m_Scene->GetOtherCharacter1()->bullets[p->bullet_id]->SetPosition(glm::vec3(p->PosX, p->PosY, p->PosZ));
+            m_Scene->GetOtherCharacter1()->bullets[p->bullet_id]->SetActive(true);
+        }*/
 
 
         //for (int i{}; i < m_Scene->GetCharacter()->bullets.size(); ++i) 
@@ -267,16 +272,22 @@ void NetworkManager::RecvEnemiesData()
         return;
     }
 
-    SC_ENEMY_PACKET* p = reinterpret_cast<SC_ENEMY_PACKET*>(buf);
+    SC_START_ENEMY_PACKET* p = reinterpret_cast<SC_START_ENEMY_PACKET*>(buf);
 
-    if (p->packet_type == SC_ENEMY) 
+    if (p->packet_type == SC_START_ENEMY) 
     {
-        std::cout << "Enemy packet received. EnemyID: " << p->enemy_id
-            << " Position: (" << p->PosX << ", " << p->PosY << ", " << p->PosZ << ")"
-            << std::endl;
-
+        //std::cout << "Enemy packet received. EnemyID: " << p->enemy_id
+        //    << " Position: (" << p->PosX << ", " << p->PosY << ", " << p->PosZ << ")"
+        //    << std::endl;
         // 利 按眉 积己 肺流
-        m_Scene->enemies[p->enemy_id]= make_unique<Enemy>(glm::vec3(p->PosX, p->PosY, p->PosZ));
+
+        for (int i = 0; i < m_Scene->enemies.size(); ++i) {
+            
+            m_Scene->enemies[i] = make_unique<Enemy>(glm::vec3(p->data[i].x, p->data[i].y, p->data[i].z));
+            m_Scene->enemies[i]->SetActive(p->data[i].isActive);
+          
+           
+        }
     }
     else {
         std::cout << "Unknown packet type: " << (int)p->packet_type << std::endl;

@@ -5,6 +5,7 @@
 #include <utility>
 #include <cmath>
 #include "Types.h"
+#include <unordered_map>
 
 enum class EnemyState {
     Patrol, // 순찰 상태
@@ -49,7 +50,7 @@ public:
 
 
     // AStar 알고리즘 탐색 여부
-    bool detectPath = false;
+    std::unordered_map<int, bool> detectPath;
     
     // AStar 알고리즘 경로
     std::vector<vec2> path;       
