@@ -87,7 +87,7 @@ public:
 
         //if (defeatedEnemies == g_enemies.size()) {
         if (g_totalDefeatedEnemies == 5) {
-            printf("Character win\n");
+            printf("all enemy defeated \n");
         }
 
     }
@@ -167,4 +167,15 @@ public:
     int  GetHealth() {
         return health;
     }
+
+
+
+
+    vec2 GetPositionInMaze() {
+        return { static_cast<float>(int(position.x / 5)), static_cast<float>(int(position.z / 5)) };
+    }
+
+
+
+
 };

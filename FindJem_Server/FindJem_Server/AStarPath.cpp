@@ -46,10 +46,10 @@ std::vector<vec2> Astar::FindPath(const vec2& start, const vec2& goal, const std
 			std::reverse(path.begin(), path.end());
 
 			// 예상 경로 출력
-			std::cout << "Predicted Path: ";
-			for (const auto& tile : path) {
-				std::cout << "(" << tile.x << ", " << tile.z << ") " << std::endl;
-			}
+			//std::cout << "Predicted Path: ";
+			//for (const auto& tile : path) {
+			//	std::cout << "(" << tile.x << ", " << tile.z << ") " << std::endl;
+			//}
 
 			return path;
 		}

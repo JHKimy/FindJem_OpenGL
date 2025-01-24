@@ -51,3 +51,7 @@ namespace V {
 }
 
 extern int g_totalDefeatedEnemies ; // 모든 캐릭터의 적 처치 합계
+
+extern bool g_reachExit;
+
+extern vec2 g_exitPosition;

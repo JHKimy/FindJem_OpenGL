@@ -137,7 +137,7 @@ void Send_Maze_Data(int clientid)
 
 void Send_My_Character_Data(int clientid)
 {
-	// 미로 정보 담는 패킷 구조체
+
 	SC_CHARACTER_MOVE_PACKET p;
 	p.packet_size = sizeof(p);
 	p.packet_type = SC_CHARACTER_MOVE;
@@ -187,7 +187,7 @@ void Send_Enemy_Data(int clientid)
 			//cout << "fail ! " << clientid << ": " << WSAGetLastError() << endl;
 		}
 		else {
-			cout << "Send to client " << clientid << endl;
+			//cout << "Send to client " << clientid << endl;
 		}
 
 	}
@@ -538,6 +538,24 @@ void HandleThread(int id)
 			g_characters[p->player_id].Rotate(p->dirY);
 			Send_My_Character_Data(p->player_id);
 
+
+			// 캐릭터가 출구에 도달했는지 확인
+			auto characterPosition = g_characters[p->player_id].GetPositionInMaze();
+
+			// 출구 범위 내에 있는지 확인 (5x5 범위)
+			if (characterPosition.x >= g_exitPosition.x - 0.5f && characterPosition.x <= g_exitPosition.x + 0.5f &&
+				characterPosition.z >= g_exitPosition.z - 1.f && characterPosition.z <= g_exitPosition.z + 1.f) {
+				g_reachExit = true;
+				std::cout << "Player " << id << " reached the exit!" << std::endl;
+			}
+
+			//if (defeatedEnemies == g_enemies.size()) {
+			if (g_totalDefeatedEnemies == 5 && g_reachExit) {
+				printf("Win!!!!!!!!!!!!!!!! \n");
+			}
+
+			//cout << g_exitPosition.x << " , " << g_exitPosition.z << endl;
+
 			for (auto& other : g_characters) {
 				if (other.playerID == p->player_id) continue;
 				{
@@ -626,7 +644,7 @@ int main()
 
 	for (int i = 0; i < g_mazeMap.size(); ++i) {
 		for (int j = 0; j < g_mazeMap[i].size(); ++j) {
-			cout << g_mazeMap[i][j] << " ";  // 데이터 값 출력
+			//cout << g_mazeMap[i][j] << " ";  // 데이터 값 출력
 		}
 		cout << endl;  // 각 행 끝에 줄 바꿈
 	}

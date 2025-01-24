@@ -53,7 +53,8 @@ void Enemy::Patrol(const std::vector<std::vector<int>>& mazeMap) {
             int nextX = mazeX + dir.x;
             int nextZ = mazeZ + dir.z;
 
-            //cout << dir.x << "," << dir.z << endl;
+            //
+            //  << dir.x << "," << dir.z << endl;
 
             // 다음 미로 좌표 가능한지 && 현재 방향과 반대편방향은 아닌지
             // 막혔을때 그 방향 좌우 살피기 위함

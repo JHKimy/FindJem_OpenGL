@@ -87,4 +87,6 @@ void MazeGenerator::addEntrances()
 	// 우하단 (width-2, height-1)을 출구로 설정
 	mazeMap[height - 2][width - 1] = 0;
 	mazeMap[height - 2][width - 2] = 0;
+
+	g_exitPosition = { float(width - 1), float(height - 2) }; // 출구 좌표 설정
 }

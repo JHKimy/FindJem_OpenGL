@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "Types.h"
 
 using std::vector;
 
@@ -40,4 +41,9 @@ private:
 	{
 		return x > 0 && x < width - 1 && y > 0 && y < height - 1;
 	}
+
+
+	//vec2 exitPosition;
+
+
 };
