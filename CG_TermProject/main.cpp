@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 #include "Global.h"
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -17,19 +16,16 @@
 #include <memory>
 #include "NetworkManager.h"
 #include <chrono> // 시간 측정을 위한 헤더
-using namespace std;
 
+using namespace std;
 
 // 콜백 함수
 GLvoid drawScene();
 GLvoid TimerFunction(int value);
 
-
-
 // 셰이더
 GLuint vertexShader;
 GLuint fragmentShader;
-
 
 // ===== 셰이더 만들기 ===== 
 
@@ -118,13 +114,12 @@ GLuint make_shaderProgram()
 
 
 std::shared_ptr<Scene> mainScene = nullptr;
-Controller* mainController = nullptr;
+std::unique_ptr<Controller> mainController = nullptr;
 
 
 
 void main(int argc, char** argv)
 {
-
 // ========================
 	// 1. 서버와 연결
 	if (!networkmanager.Connect())
@@ -156,7 +151,7 @@ void main(int argc, char** argv)
 	shaderProgram = make_shaderProgram();
 
 	// 씬 생성
-	mainScene = std::make_shared<Scene>(shaderProgram);
+	mainScene = make_shared<Scene>(shaderProgram);
 	
 	// NetworkManager에 Scene 연결
 	networkmanager.SetScene(mainScene);
@@ -201,7 +196,7 @@ void main(int argc, char** argv)
 
 
 	// 컨트롤러 생성
-	mainController = new Controller(mainScene, mainScene->GetCamera());
+	mainController = make_unique<Controller>(mainScene, mainScene->GetCamera());
 
 
 
@@ -246,7 +241,7 @@ void main(int argc, char** argv)
 //=========================
 
 	// delete mainScene;
-	delete mainController;
+	// delete mainController;
 }
 
 

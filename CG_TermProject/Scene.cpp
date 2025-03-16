@@ -48,7 +48,7 @@ void Scene::Initialize()
 
     for (int i{}; i < mainCharacter->bullets.size(); ++i)
     {
-        mainCharacter->bullets[i] = make_shared<Bullet>();
+        mainCharacter->bullets[i] = make_unique<Bullet>();
     }
 
     // Àû ÃÊ±âÈ­
@@ -123,9 +123,12 @@ void Scene::Render()
     //    if (bullet->IsActive()) bullet->Render(SceneShader);
     //}
 
+    //for (const auto& bullet : bullets)
+    
+    
+    
     // ÃÑ¾Ë ·»´õ¸µ
     const auto& bullets = mainCharacter->bullets;
-    //for (const auto& bullet : bullets)
     for (int i{};i<bullets.size();++i)
     {
         if (bullets[i]->IsActive()) 

@@ -14,20 +14,15 @@ public:
     Bullet();
 
     void Update(float deltaTime);
-    bool IsActive() const;
+    bool IsActive() const { return isActive; }
     void DeActivate();
     void Activate(const glm::vec3& position, const glm::vec3& newDirection);
 
 
-    void SetActive(bool a) {
-        isActive = a;
-    }
+    void SetActive(bool a) {isActive = a;}
 
 
-    glm::vec3 GetDirection() const
-    {
-        return direction;
-    }
+    glm::vec3 GetDirection() const{return direction;}
 };
 
 
@@ -36,16 +31,16 @@ public:
 class BulletPool
 {
 private:
-    std::vector<std::shared_ptr<Bullet>> pool;
-    size_t poolSize;
+    std::vector<std::unique_ptr<Bullet>> pool;
+    int poolSize;
 
 public:
-    BulletPool(size_t poolSize);
+    BulletPool(int poolSize);
     
     // 비활성화 된 총알 반환
-    std::shared_ptr<Bullet> GetBullet();
+    Bullet* GetBullet();
     void UpdateAllBullets(float deltaTime, glm::vec3 startPos);
-    const std::vector<std::shared_ptr<Bullet>>& GetAllBullets() const;
+    const std::vector<std::unique_ptr<Bullet>>& GetAllBullets() const;
 
 
 
@@ -54,6 +49,6 @@ public:
     //const std::vector<std::shared_ptr<Bullet>>& GetAllBullets() const;
 
     // 사용 가능한 총알(비활성화된 총알) 개수 반환
-    size_t GetAvailableBulletCount() const;
+    //int GetAvailableBulletCount() const;
 
 };

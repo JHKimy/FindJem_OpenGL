@@ -31,7 +31,7 @@ private:
 
 
 public:
-    vector<std::shared_ptr<Bullet>>bullets;
+    vector<std::unique_ptr<Bullet>>bullets;
 
 
 

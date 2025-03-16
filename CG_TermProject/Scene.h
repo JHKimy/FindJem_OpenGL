@@ -49,7 +49,7 @@ public:
         }
         return nullptr; // 유효하지 않은 인덱스인 경우 nullptr 반환
     }
-
+    
 
     //void SetEnemy(int num, std::unique_ptr<Enemy> enemy) {
     //    enemies[num] = std::move(enemy);

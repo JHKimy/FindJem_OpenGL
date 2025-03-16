@@ -21,9 +21,6 @@ void Bullet::Update(float deltaTime) {
     }
 }
 
-bool Bullet::IsActive() const {
-    return isActive;
-}
 
 void Bullet::DeActivate() {
     isActive = false;
@@ -39,22 +36,23 @@ void Bullet::Activate(const glm::vec3& position, const glm::vec3& newDirection)
 
 
 
+
 // ==================================
 
 
-BulletPool::BulletPool(size_t size) : poolSize(size)
+BulletPool::BulletPool(int size) : poolSize(size)
 {
 	for (size_t i{}; i < poolSize; ++i) {
-		pool.emplace_back(make_shared<Bullet>());
+		pool.emplace_back(make_unique<Bullet>());
         pool.back()->DeActivate(); // 비활성화 된 상태로 초기화
 	}
 }
 
-std::shared_ptr<Bullet> BulletPool::GetBullet()
+Bullet* BulletPool::GetBullet()
 {
     for (auto& bullet : pool) {
         if (!bullet->IsActive()) {
-            return bullet; // 비활성화된 총알 반환
+            return bullet.get(); // 비활성화된 총알 반환
         }
     }
 }
@@ -76,17 +74,17 @@ void BulletPool::UpdateAllBullets(float deltaTime, glm::vec3 startPos)
     }
 }
 
-const std::vector<std::shared_ptr<Bullet>>& BulletPool::GetAllBullets() const
+const std::vector<std::unique_ptr<Bullet>>& BulletPool::GetAllBullets() const
 {
     return pool;
 }
 
-size_t BulletPool::GetAvailableBulletCount() const {
-    size_t count = 0;
-    for (const auto& bullet : pool) {
-        if (!bullet->IsActive()) { // 비활성화된 총알만 카운트
-            ++count;
-        }
-    }
-    return count;
-}
+//int BulletPool::GetAvailableBulletCount() const {
+//    int count = 0;
+//    for (const auto& bullet : pool) {
+//        if (!bullet->IsActive()) { // 비활성화된 총알만 카운트
+//            ++count;
+//        }
+//    }
+//    return count;
+//}

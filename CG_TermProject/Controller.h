@@ -14,13 +14,12 @@ enum CommandKey {
 // 전역 변수 선언
 extern std::unordered_map<CommandKey, bool> Command;
 
-
 using enum CommandKey;  // CommandKey 멤버를 전역으로 사용 가능
 
 class Controller
 {
 private:
-	std::shared_ptr<Scene> scene = nullptr;                // Scene 참조
+	std::weak_ptr<Scene> scene;  // Scene을 소유하지 않도록 변경 (순환 참조 방지)
 	Camera* camera;
 	Character* character;
 	bool isFirstPersonView; // 현재 카메라 모드

@@ -206,8 +206,6 @@ void Send_Enemy_Data(int clientid)
 
 void Send_Bullet_Data(int clientid)
 {
-
-	
 	auto& bullets = g_characters[clientid].bulletPool.pool;
 
 	for (int i{}; i< bullets.size();++i)
@@ -215,8 +213,6 @@ void Send_Bullet_Data(int clientid)
 		if (bullets[i]->IsActive()) 
 		{
 			// 적 정보 담는 패킷 구조체
-			
-		
 			for (auto& other : g_characters) {
 				SC_BULLET_PACKET p;
 				//if (other.playerID == clientid) continue;
@@ -635,7 +631,7 @@ int main()
 {
 	// 미로 생성기
 	std::unique_ptr<MazeGenerator> mazeGenerator;
-	mazeGenerator = make_unique<MazeGenerator>(7, 7);
+	mazeGenerator = make_unique<MazeGenerator>(15, 15);
 
 	// 맵 생성 및 변환
 	mazeGenerator->GeneratePrimMaze();

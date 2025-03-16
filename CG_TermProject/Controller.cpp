@@ -22,15 +22,17 @@ std::unordered_map<CommandKey, bool> Command = {
 
 
 Controller::Controller
-(std::shared_ptr<Scene> scene, Camera* camera)
-	: scene(scene), camera(camera)
+(std::shared_ptr<Scene> scenePtr, Camera* camera)
+	: scene(scenePtr), camera(camera)
 {
+	if (auto sharedScene = scene.lock()) {
+		character = sharedScene->GetCharacter();
+	}
 }
 
 
 void Controller::Update(float deltaTime)
 {
-	character = scene->GetCharacter();
 
 	// 이전 위치 저장 (충돌 감지용)
 	glm::vec3 prevCharacterPosition = character->GetPosition();
@@ -87,13 +89,15 @@ void Controller::Update(float deltaTime)
 
 	// 충돌 감지
 	bool collisionDetected = false;
-	for (const auto& otherActor : scene->GetActors())
-	{
-		if (character != otherActor.get()
-			&& character->CheckCollision(otherActor.get()))
+	if (auto sharedScene = scene.lock()) {
+		for (const auto& otherActor : sharedScene->GetActors())
 		{
-			collisionDetected = true;
-			break;
+			if (character != otherActor.get()
+				&& character->CheckCollision(otherActor.get()))
+			{
+				collisionDetected = true;
+				break;
+			}
 		}
 	}
 
@@ -119,7 +123,7 @@ void Controller::Update(float deltaTime)
 	}
 	else if (Command[Num2]) {
 		isFirstPersonView = false; // 탑뷰 모드 활성화
-		const auto& mazeMap = scene->GetMazeMap();
+		//const auto& mazeMap = scene->GetMazeMap();
 
 		camera->TopView();
 	}
